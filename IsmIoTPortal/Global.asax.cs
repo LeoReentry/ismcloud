@@ -13,6 +13,7 @@ namespace IsmIoTPortal
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
+            GlobalFilters.Filters.Add(new RequireHttpsAttribute());
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
