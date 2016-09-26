@@ -1,0 +1,181 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<activityRootModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/ModelStore" xmlns:dm9="http://schemas.microsoft.com/dsltools/LogicalClassDesigner" xmlns:dm10="http://schemas.microsoft.com/dsltools/SimpleShapesModel" dslVersion="1.0.0.0" Id="1be34eed-cec8-4eb3-a4a8-efb095fc0312" name="EventProcessotActivity" linkedPackageId="efa2987e-5776-415a-964d-612b431394d9" xmlns="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner">
+  <packagedElements>
+    <activityRootModelHasActivity>
+      <activity Id="cbb2a774-a32c-45bc-bd8a-729bce15ad66" name="EventProcessotActivity" isAbstract="false" isLeaf="false" isActiveClass="false" isReentrant="false" isReadOnly="false" isSingleExecution="false">
+        <elementDefinition Id="222d0da5-155d-49a0-9b05-95e196f15886" />
+        <nodes>
+          <opaqueAction Id="6b6f86f3-baf2-43f1-805b-c7856d05aec6" name="Iterate Events" isLeaf="false">
+            <elementDefinition Id="4c707b4a-ba67-41ad-9fb6-10b8db2ee87f" />
+            <pins>
+              <opaqueActionHasInputValues>
+                <inputPin Id="b9fa0101-1345-43d2-b55b-1026eaede84f" name="IEnumerable&lt;EventData&gt;" isLeaf="false" ordering="Unordered" isControlType="false" isControl="false">
+                  <elementDefinition Id="48298e11-0a38-4a5b-bfc8-3abf20f98f8b" />
+                  <upperBound>
+                    <literalInteger Id="3690426b-caa0-4810-8785-4593a6fe2b11" name="2147483647" value="2147483647">
+                      <elementDefinition Id="e4b06bf6-68a0-4789-88da-510d601ee4b2" />
+                    </literalInteger>
+                  </upperBound>
+                </inputPin>
+              </opaqueActionHasInputValues>
+              <opaqueActionHasOutputValues>
+                <outputPin Id="59b6e66a-ca88-4706-88c6-8839f2ce90a4" name="EventData[serialized DeviceState ]" isLeaf="false" ordering="Unordered" isControlType="false" isControl="false">
+                  <elementDefinition Id="e903a9a6-a2c6-49e3-b05a-c7eb049a4ed3" />
+                  <objectFlowTargets>
+                    <objectFlow Id="feb9fb51-4c7a-401f-9245-412bf731cb5e" isLeaf="false" isMulticast="false" isMultireceive="false">
+                      <decisionNodeMoniker Id="08e940d6-9b41-4500-9454-db3870018be6" LastKnownName="Decision1" />
+                      <elementDefinition Id="aa2b1150-a963-423f-9dbe-342acd5ba032" />
+                    </objectFlow>
+                  </objectFlowTargets>
+                  <upperBound>
+                    <literalInteger Id="4fab924e-2347-45db-a0de-84160b10e68e" name="2147483647" value="2147483647">
+                      <elementDefinition Id="f27a3b71-bdc1-4ddf-ac70-13b112101b56" />
+                    </literalInteger>
+                  </upperBound>
+                </outputPin>
+              </opaqueActionHasOutputValues>
+            </pins>
+          </opaqueAction>
+          <initialNode Id="bfcf5e94-b500-4e36-b0cb-35aaabe928d0" name="Initial1" isLeaf="false">
+            <elementDefinition Id="b0ac482d-57d6-43d4-948d-7a1f5d1c6427" />
+            <objectFlowTargets>
+              <objectFlow Id="92dda97c-0d58-4484-8af6-fd71ae477853" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <inputPinMoniker Id="b9fa0101-1345-43d2-b55b-1026eaede84f" LastKnownName="IEnumerable&lt;EventData&gt;" />
+                <elementDefinition Id="f217ce8b-11b1-48cf-9fce-340abf2884ff" />
+              </objectFlow>
+            </objectFlowTargets>
+          </initialNode>
+          <decisionNode Id="08e940d6-9b41-4500-9454-db3870018be6" name="Decision1" isLeaf="false">
+            <elementDefinition Id="b1424c70-f49c-4724-8355-d0f2eee1b4a5" />
+            <objectFlowTargets>
+              <objectFlow Id="faae77f4-0c76-4e32-9854-d65b6c9b1b6a" guard="PRV or DAT" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <inputPinMoniker Id="85c51679-2932-4759-9a88-e104aad6b51d" LastKnownName="EventData[serialized DeviceState ]" />
+                <elementDefinition Id="2b90bdbd-37ce-4551-9fcf-394f41b7805b" />
+              </objectFlow>
+              <objectFlow Id="cd4efc05-893d-48da-92c2-ea2184e40c03" guard="UPDATE_DASHBOARD_CONTROLS" isLeaf="false" isMulticast="false" isMultireceive="false">
+                <inputPinMoniker Id="c3b854b7-e693-4dfc-b9a4-a894ed837bae" LastKnownName="EventData[serialized DeviceState ]" />
+                <elementDefinition Id="0ab7a77c-2065-4ffc-a1a4-0c61c4750213" />
+              </objectFlow>
+            </objectFlowTargets>
+          </decisionNode>
+          <opaqueAction Id="4daf380d-15f3-4100-83fb-ad17e8d20e01" name="Process Image" isLeaf="false">
+            <elementDefinition Id="efd2b5c1-063d-48eb-b4e1-e478617018a5" />
+            <pins>
+              <opaqueActionHasOutputValues>
+                <outputPin Id="0ca4f9cb-0289-418c-a0b8-db51aa37e778" name="BrokeredMessage [serialized FilamentData]" isLeaf="false" ordering="Unordered" isControlType="false" isControl="false">
+                  <elementDefinition Id="9707ba3d-56f2-480c-8894-262a4119819b" />
+                  <objectFlowTargets>
+                    <objectFlow Id="fd97143d-8026-47b5-b52a-68dcf5b6b4d5" guard="PRV" isLeaf="false" isMulticast="false" isMultireceive="false">
+                      <opaqueActionMoniker Id="1e37c076-dc94-456f-921e-8f34129e579c" LastKnownName="Send to Queue" />
+                      <elementDefinition Id="72bbba7b-b241-46e2-b4ec-5086202f1bef" />
+                    </objectFlow>
+                  </objectFlowTargets>
+                  <upperBound>
+                    <literalInteger Id="b8d77c0a-2504-42e9-b5af-fb0293a021e2" name="2147483647" value="2147483647">
+                      <elementDefinition Id="768de310-199f-40b3-aa25-b5891eb2c3ed" />
+                    </literalInteger>
+                  </upperBound>
+                </outputPin>
+              </opaqueActionHasOutputValues>
+              <opaqueActionHasOutputValues>
+                <outputPin Id="0df57bb1-7e0b-409d-9b0b-6613a84ca318" name="EventData [serialized FilamentData]" isLeaf="false" ordering="Unordered" isControlType="false" isControl="false">
+                  <elementDefinition Id="50ae3823-463a-441e-ad5e-4bccde64787f" />
+                  <objectFlowTargets>
+                    <objectFlow Id="25ddd834-3b1a-47da-92b2-f5185232dfb4" guard="DAT" isLeaf="false" isMulticast="false" isMultireceive="false">
+                      <opaqueActionMoniker Id="4e900a0d-bbce-4e0e-af62-77f8ebb9af63" LastKnownName="Send to Event Hub" />
+                      <elementDefinition Id="e55e2431-b156-4c22-bfdc-15bf304e0637" />
+                    </objectFlow>
+                  </objectFlowTargets>
+                  <upperBound>
+                    <literalInteger Id="4a76dcd8-082d-44f4-8c7b-d61bb5b595a7" name="2147483647" value="2147483647">
+                      <elementDefinition Id="96e3e0eb-f523-450e-8062-15497f6550f9" />
+                    </literalInteger>
+                  </upperBound>
+                </outputPin>
+              </opaqueActionHasOutputValues>
+              <opaqueActionHasInputValues>
+                <inputPin Id="85c51679-2932-4759-9a88-e104aad6b51d" name="EventData[serialized DeviceState ]" isLeaf="false" ordering="Unordered" isControlType="false" isControl="false">
+                  <elementDefinition Id="d3f29b6f-ce3b-4c50-a959-fdbba2679328" />
+                  <upperBound>
+                    <literalInteger Id="bd2215f8-5ed8-419e-b244-b7f879cf002c" name="2147483647" value="2147483647">
+                      <elementDefinition Id="7ed33bd7-96c3-4926-a9bd-6aac430b0ac9" />
+                    </literalInteger>
+                  </upperBound>
+                </inputPin>
+              </opaqueActionHasInputValues>
+            </pins>
+          </opaqueAction>
+          <opaqueAction Id="0aab572e-86df-4da9-8dbb-3035e6238038" name="Forward Dashboard Control Info" isLeaf="false">
+            <elementDefinition Id="649c3468-9460-4f71-87fc-c27cd46eeada" />
+            <pins>
+              <opaqueActionHasInputValues>
+                <inputPin Id="c3b854b7-e693-4dfc-b9a4-a894ed837bae" name="EventData[serialized DeviceState ]" isLeaf="false" ordering="Unordered" isControlType="false" isControl="false">
+                  <elementDefinition Id="e7dc2ea0-3c6c-4db0-a01e-f89781fd3a3f" />
+                  <upperBound>
+                    <literalInteger Id="33fa219e-e8a7-4e1c-9926-863b5bbf3264" name="2147483647" value="2147483647">
+                      <elementDefinition Id="750872ba-8acf-496c-8f76-ab20d7dc6714" />
+                    </literalInteger>
+                  </upperBound>
+                </inputPin>
+              </opaqueActionHasInputValues>
+              <opaqueActionHasOutputValues>
+                <outputPin Id="b383fe22-8d79-43c8-9c3d-dd7093358c33" name="BrokeredMessage [serialized DeviceState]" isLeaf="false" ordering="Unordered" isControlType="false" isControl="false">
+                  <elementDefinition Id="7ce62dc6-fdb0-428f-825c-8801f83529c2" />
+                  <objectFlowTargets>
+                    <objectFlow Id="211b1dfe-a124-4e2f-ae0e-a503c2613086" isLeaf="false" isMulticast="false" isMultireceive="false">
+                      <opaqueActionMoniker Id="1e37c076-dc94-456f-921e-8f34129e579c" LastKnownName="Send to Queue" />
+                      <elementDefinition Id="2e7a003c-6990-4ce3-8d3d-ab2bceab5b80" />
+                    </objectFlow>
+                  </objectFlowTargets>
+                  <upperBound>
+                    <literalInteger Id="79e15d33-4c9d-4dd4-b4e7-3d6fe8e7ac13" name="2147483647" value="2147483647">
+                      <elementDefinition Id="93d8aca9-5e8f-4601-b1a2-c7183ed32664" />
+                    </literalInteger>
+                  </upperBound>
+                </outputPin>
+              </opaqueActionHasOutputValues>
+            </pins>
+          </opaqueAction>
+          <activityFinalNode Id="b3298c90-5d2a-4b72-b70e-d0f2225d7c98" name="ActivityFinal1" isLeaf="false">
+            <elementDefinition Id="9892e45a-7a09-4c28-8008-6e66b71ed168" />
+          </activityFinalNode>
+          <opaqueAction Id="4e900a0d-bbce-4e0e-af62-77f8ebb9af63" name="Send to Event Hub" isLeaf="false">
+            <elementDefinition Id="85de7dee-ae83-4887-9ab8-8b57b379b94f" />
+            <flowNodeTargets>
+              <controlFlow Id="282019fc-4df4-4701-b92d-17cdb7f19f64" isLeaf="false">
+                <activityFinalNodeMoniker Id="b3298c90-5d2a-4b72-b70e-d0f2225d7c98" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="a126e1f4-d2d0-4780-a547-3aa91c14c7bf" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction Id="1e37c076-dc94-456f-921e-8f34129e579c" name="Send to Queue" isLeaf="false">
+            <elementDefinition Id="062a43e1-554b-47b8-8412-89748fb04b44" />
+            <flowNodeTargets>
+              <controlFlow Id="0b673d6b-05e8-4b9f-abdc-c1e0a7e20f12" isLeaf="false">
+                <activityFinalNodeMoniker Id="b3298c90-5d2a-4b72-b70e-d0f2225d7c98" LastKnownName="ActivityFinal1" />
+                <elementDefinition Id="f20b09e4-0d7a-46cc-b301-8dbc205da1b2" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+        </nodes>
+      </activity>
+    </activityRootModelHasActivity>
+  </packagedElements>
+  <package Id="efa2987e-5776-415a-964d-612b431394d9" name="ModelingProjectIsmIoT">
+    <elementDefinition Id="f1549459-ad85-405b-894a-25878edb8e8d" />
+    <profileInstances>
+      <packageHasProfileInstances Id="2928f1d2-67d1-4afc-b9a3-37604990ae2f">
+        <profileInstance Id="056049f3-240e-4b11-b5c3-c02739bb40ea" name="StandardProfileL2">
+          <elementDefinition Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791" />
+        </profileInstance>
+        <elementDefinition Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b" />
+      </packageHasProfileInstances>
+      <packageHasProfileInstances Id="bd7bfeb1-4ffc-4de5-a6a4-edca9f020f88">
+        <profileInstance Id="91b640e6-2f37-40ef-8073-f5a7f04bc352" name="StandardProfileL3">
+          <elementDefinition Id="532ea607-fb19-44b8-8502-3351b05452be" />
+        </profileInstance>
+        <elementDefinition Id="29349502-908c-4fda-9054-c48619c59ed0" />
+      </packageHasProfileInstances>
+    </profileInstances>
+  </package>
+</activityRootModel>

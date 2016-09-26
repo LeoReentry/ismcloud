@@ -1,0 +1,50 @@
+﻿@model IsmIoTPortal.Models.IsmDevice
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>IsmDevice</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Hardware.Board)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Hardware.Board)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Location.Country)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Location.Country)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Software.SoftwareVersion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Software.SoftwareVersion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DeviceId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DeviceId)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.IsmDeviceId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

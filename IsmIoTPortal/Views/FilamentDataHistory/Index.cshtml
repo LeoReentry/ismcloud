@@ -1,0 +1,234 @@
+﻿@model IsmIoTPortal.Models.DateTimeInterval
+
+@{
+    ViewBag.Title = "FilamentDataHistory";
+}
+
+<h2>@Model.DeviceId - filamentous data over time</h2>
+
+<hr />
+
+@using (Html.BeginForm())
+{
+    <div>
+        From: @Html.TextBoxFor(model => model.From, new { @id = "from" })
+        To:   @Html.TextBoxFor(model => model.To, new { @id = "to" })
+    </div>
+
+    <div class="form-group">
+        <div class="col-md-offset-5 col-md-10">
+            <!--<input type="submit" value="Submit" class="btn btn-default" />-->
+            <button class="btn btn-default">
+                <span class="glyphicon glyphicon-ok"></span> Submit
+            </button>
+        </div>
+    </div>
+}
+
+<hr />
+
+<h3>Average filament count</h3>
+<div style="width: 90%; height: 400px; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
+    <canvas id="fcchart" style="width: 100%; height: 100%;"></canvas>
+</div>
+
+<hr />
+
+<h3>Average filament length (µm)</h3>
+<div style="width: 90%; height: 400px; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
+    <canvas id="flchart" style="width: 100%; height: 100%;"></canvas>
+</div>
+
+<hr />
+
+<h3>Histogram accumulated</h3>
+<div style="width: 90%; height: 400px; margin-left: auto; margin-right: auto; margin-top: 40px;">
+    <canvas id="histchart" style="width: 100%; height: 100%"></canvas>
+</div>
+
+<hr />
+
+<h3>Table of average fc and fl</h3>
+<div style="width: 90%; height: 400px; overflow-y: auto; margin-left: auto; margin-right: auto; margin-top:40px;">
+    <table style="width: 100%;" class="table table-hover table-striped">
+        <tr>
+            <th>Time</th>
+            <th>FC</th>
+            <th>FL</th>
+        </tr>
+        @foreach (var item in Model.List)
+        {
+            <tr>
+                <td>@(item.Time)</td>
+                <td>@(item.FC)</td>
+                <td>@(item.FL)</td>
+            </tr>
+        }
+    </table>
+</div>
+
+@section scripts {
+    @* datetime picker *@
+    <link rel="stylesheet" type="text/css" href="~/Scripts/datetimepicker/jquery.datetimepicker.css" />
+    <script src="~/Scripts/datetimepicker/jquery.datetimepicker.full.min.js"></script>
+    <script src="~/Scripts/Chart.min.js"></script>
+    <script>
+
+        $(document).ready(function () {
+
+            // FC Chart
+            var fcdata = {
+                labels: [
+                    @for (int i = 0; i < Model.List.Count; i++)
+            {
+                <text> "@(Model.List.ElementAt(i).Time)" </text>
+                if (i < Model.List.Count - 1)
+                {
+                    //<text>,</text>
+                    @(",")
+                }
+            }
+                ],
+
+                datasets: [
+                    {
+                        strokeColor: "#DC143C",
+                        data: [
+                            @for (int i = 0; i < Model.List.Count; i++)
+            {
+                
+                @Model.List.ElementAt(i).FC.ToString().Replace(",", ".");
+                if (i < Model.List.Count - 1)
+                {
+                    @(",")
+                }
+            }
+                        ]
+                    }
+                ]
+            }
+
+
+            // FL Chart
+            var fldata = {
+                labels: [
+                    @for (int i = 0; i < Model.List.Count; i++)
+            {
+                <text> "@(Model.List.ElementAt(i).Time)" </text>
+                if (i < Model.List.Count - 1)
+                {
+                    //<text>,</text>
+                    @(",")
+                }
+            }
+                ],
+
+                datasets: [
+                        {
+                            strokeColor: "#228B22",
+                            data: [
+                                @for (int i = 0; i < Model.List.Count; i++)
+        {
+
+            @Model.List.ElementAt(i).FL.ToString().Replace(",", ".");
+            if (i < Model.List.Count - 1)
+            {
+                @(",")
+            }
+        }
+                            ]
+                        }
+
+                ]
+            }
+
+            // Histogram Chart
+            var histdata = {
+                labels: [
+                    @for (int i = 10; i <= 100; i += 10)
+            {
+                <text>"@(i)"</text>
+                if (i < 100)
+                {
+                    <text>,</text>
+                }
+            }
+                ],
+                datasets: [
+                    {
+                        //strokeColor: "#228B22",
+                        fillColor: "#800080",
+                        data: [
+                            @{
+                            int? h1, h2, h3, h4, h5, h6, h7, h8, h9, h10; // akkumulierte Histogram Werte
+            h1 = h2 = h3 = h4 = h5 = h6 = h7 = h8 = h9 = h10 = 0;
+            foreach (var item in Model.List)
+            {
+                h1 += item.H1;
+                h2 += item.H2;
+                h3 += item.H3;
+                h4 += item.H4;
+                h5 += item.H5;
+                h6 += item.H6;
+                h7 += item.H7;
+                h8 += item.H8;
+                h9 += item.H9;
+                h10 += item.H10;
+            }
+        }
+
+                                @if (Model.List.Count > 0)
+        {
+            @(h1)@(",")
+            @(h2)@(",")
+            @(h3)@(",")
+            @(h4)@(",")
+            @(h5)@(",")
+            @(h6)@(",")
+            @(h7)@(",")
+            @(h8)@(",")
+            @(h9)@(",")
+            @(h10)
+        }
+                        ]
+                    }
+                ]
+            }
+
+
+            var options = {
+                bezierCurve: false,
+                datasetFill: false
+            }
+
+            // FC Chart
+            var ctx = $("#fcchart").get(0).getContext("2d");
+            var chart = new Chart(ctx).Line(fcdata, options);
+            // FL Chart
+            ctx = $("#flchart").get(0).getContext("2d");
+            chart = new Chart(ctx).Line(fldata, options);
+
+            // Histogram Chart
+            ctx = $("#histchart").get(0).getContext("2d");
+            chart = new Chart(ctx).Bar(histdata);
+
+            // Date Time Picker
+            var t;
+            var f;
+            jQuery('#from').datetimepicker({
+                onChangeDateTime: function (dp, $input) {
+                    $("#from").val($input.val());
+                }
+            });
+
+            jQuery('#to').datetimepicker({
+                onChangeDateTime: function (dp, $input) {
+                    $("#to").val($input.val());
+                }
+            });
+
+        });
+
+    </script>
+}
+

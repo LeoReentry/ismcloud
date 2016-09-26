@@ -1,0 +1,151 @@
+﻿@model IsmIoTPortal.Models.PbiDashboardInfo
+
+@{
+    ViewBag.Title = "DataDashboard";
+}
+
+<h2>Power BI Dashboard Preview</h2>
+
+<p>UserId: @(Model.UserId)</p>
+
+<p><a id="DashboardLink" href="">Power BI</a></p>
+
+@*<p>@Model.DashboardId</p>*@
+
+<hr />
+
+<h3>Average filament count</h3>
+<div>
+    <iframe id="PbiTileFC" width="310" height="310"></iframe>
+    <iframe id="PbiTileFC2" width="310" height="310"></iframe>
+</div>
+
+<hr />
+
+<h3>Average filament length (µm)</h3>
+<div>
+    <iframe id="PbiTileFL" width="310" height="310"></iframe>
+    <iframe id="PbiTileFL2" width="310" height="310"></iframe>
+</div>
+
+
+@section scripts {
+
+    <script>
+        var width = 300;
+        var height = 300;
+        $(document).ready(function () {
+            //
+            var dashboardLink = "https://app.powerbi.com/groups/me/dashboards/" + "@Model.DashboardId";
+            $("#DashboardLink").attr("href", dashboardLink);
+
+            var iframe1 = document.getElementById('PbiTileFC');
+            var embedUrlFC = "@Model.TileEmbedURLs.ElementAt(0)" + "&width=" + width + "&height=" + height;
+            iframe1.src = embedUrlFC.replace('amp;', '');
+            iframe1.onload = postActionLoadTileFC;
+
+            // post the auth token to the iFrame.
+            function postActionLoadTileFC() {
+
+                accessToken = "@Model.AccessToken";
+
+                if ("" === accessToken)
+                    return;
+
+                var h = height;
+                var w = width;
+
+                // construct the push message structure
+                var m = { action: "loadTile", accessToken: accessToken, height: h, width: w };
+                message = JSON.stringify(m);
+
+                // push the message.
+                iframe1 = document.getElementById('PbiTileFC');
+                iframe1.contentWindow.postMessage(message, "*");
+            }
+
+
+
+            var iframe2 = document.getElementById('PbiTileFL');           
+            var embedUrlFL = "@Model.TileEmbedURLs.ElementAt(1)" + "&width=" + width + "&height=" + height;
+            iframe2.src = embedUrlFL.replace('amp;', '');
+            iframe2.onload = postActionLoadTileFL;
+
+            // post the auth token to the iFrame.
+            function postActionLoadTileFL() {
+
+                accessToken = "@Model.AccessToken";
+
+                if ("" === accessToken)
+                    return;
+
+                var h = height;
+                var w = width;
+
+                // construct the push message structure
+                var m = { action: "loadTile", accessToken: accessToken, height: h, width: w };
+                message = JSON.stringify(m);
+
+                // push the message.
+                iframe2 = document.getElementById('PbiTileFL');
+                iframe2.contentWindow.postMessage(message, "*");
+            }
+
+
+
+            var iframe3 = document.getElementById('PbiTileFC2');
+            var embedUrlFC2 = "@Model.TileEmbedURLs.ElementAt(2)" + "&width=" + width + "&height=" + height;
+            iframe3.src = embedUrlFC2.replace('amp;', '');
+            iframe3.onload = postActionLoadTileFC2;
+
+            // post the auth token to the iFrame.
+            function postActionLoadTileFC2() {
+
+                accessToken = "@Model.AccessToken";
+
+                if ("" === accessToken)
+                    return;
+
+                var h = height;
+                var w = width;
+
+                // construct the push message structure
+                var m = { action: "loadTile", accessToken: accessToken, height: h, width: w };
+                message = JSON.stringify(m);
+
+                // push the message.
+                iframe3 = document.getElementById('PbiTileFC2');
+                iframe3.contentWindow.postMessage(message, "*");
+            }
+
+
+
+            var iframe4 = document.getElementById('PbiTileFL2');
+            var embedUrlFL2 = "@Model.TileEmbedURLs.ElementAt(3)" + "&width=" + width + "&height=" + height;
+            iframe4.src = embedUrlFL2.replace('amp;', '');
+            iframe4.onload = postActionLoadTileFL2;
+
+            // post the auth token to the iFrame.
+            function postActionLoadTileFL2() {
+
+                accessToken = "@Model.AccessToken";
+
+                if ("" === accessToken)
+                    return;
+
+                var h = height;
+                var w = width;
+
+                // construct the push message structure
+                var m = { action: "loadTile", accessToken: accessToken, height: h, width: w };
+                message = JSON.stringify(m);
+
+                // push the message.
+                iframe4 = document.getElementById('PbiTileFL2');
+                iframe4.contentWindow.postMessage(message, "*");
+            }
+
+        });
+
+    </script>
+}

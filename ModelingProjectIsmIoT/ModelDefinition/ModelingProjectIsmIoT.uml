@@ -1,0 +1,371 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<modelStoreModel xmlns:dm0="http://schemas.microsoft.com/VisualStudio/2008/DslTools/Core" xmlns:dm1="http://schemas.microsoft.com/dsltools/Kernel" xmlns:dm2="http://schemas.microsoft.com/dsltools/Component" xmlns:dm3="http://schemas.microsoft.com/dsltools/Activity" xmlns:dm4="http://schemas.microsoft.com/dsltools/Interaction" xmlns:dm5="http://schemas.microsoft.com/dsltools/UseCase" xmlns:dm6="http://schemas.microsoft.com/dsltools/UmlModelLibrary" xmlns:dm7="http://schemas.microsoft.com/dsltools/UmlDiagrams" xmlns:dm8="http://schemas.microsoft.com/dsltools/LogicalClassDesigner" xmlns:dm9="http://schemas.microsoft.com/dsltools/SimpleShapesModel" xmlns:dm10="http://schemas.microsoft.com/VisualStudio/TeamArchitect/ActivityDesigner"
+  dslVersion="1.0.0.0"
+  Id="f1549459-ad85-405b-894a-25878edb8e8d"
+  name="ModelingProjectIsmIoT" xmlns="http://schemas.microsoft.com/dsltools/ModelStore">
+  <profileInstances>
+    <packageHasProfileInstances
+      Id="0caec977-1f8c-4ba3-a7db-8cc9ad9cc73b">
+      <profileInstance
+        Id="e34d544e-0fea-4ed6-ac5e-1b74119ac791"
+        name="StandardProfileL2" />
+    </packageHasProfileInstances>
+    <packageHasProfileInstances
+      Id="29349502-908c-4fda-9054-c48619c59ed0">
+      <profileInstance
+        Id="532ea607-fb19-44b8-8502-3351b05452be"
+        name="StandardProfileL3" />
+    </packageHasProfileInstances>
+  </profileInstances>
+  <packagedElements>
+    <packageHasNamedElement>
+      <activity
+        Id="222d0da5-155d-49a0-9b05-95e196f15886"
+        name="EventProcessotActivity"
+        isAbstract="false"
+        isLeaf="false"
+        isActiveClass="false"
+        isReentrant="false"
+        isReadOnly="false"
+        isSingleExecution="false">
+        <nodes>
+          <opaqueAction
+            Id="4c707b4a-ba67-41ad-9fb6-10b8db2ee87f"
+            name="Iterate Events"
+            isLeaf="false">
+            <pins>
+              <opaqueActionHasInputValues>
+                <inputPin
+                  Id="48298e11-0a38-4a5b-bfc8-3abf20f98f8b"
+                  name="IEnumerable&lt;EventData&gt;"
+                  isLeaf="false"
+                  ordering="Unordered"
+                  isControlType="false"
+                  isControl="false">
+                  <upperBound>
+                    <literalInteger
+                      Id="e4b06bf6-68a0-4789-88da-510d601ee4b2"
+                      name="2147483647"
+                      value="2147483647" />
+                  </upperBound>
+                </inputPin>
+              </opaqueActionHasInputValues>
+              <opaqueActionHasOutputValues>
+                <outputPin
+                  Id="e903a9a6-a2c6-49e3-b05a-c7eb049a4ed3"
+                  name="EventData[serialized DeviceState ]"
+                  isLeaf="false"
+                  ordering="Unordered"
+                  isControlType="false"
+                  isControl="false">
+                  <objectFlowTargets>
+                    <objectFlow
+                      Id="aa2b1150-a963-423f-9dbe-342acd5ba032"
+                      isLeaf="false"
+                      isMulticast="false"
+                      isMultireceive="false">
+                      <decisionNodeMoniker
+                        Id="b1424c70-f49c-4724-8355-d0f2eee1b4a5"
+                        LastKnownName="Decision1"
+                        LastKnownLocation="ModelingProjectIsmIoT.uml" />
+                    </objectFlow>
+                  </objectFlowTargets>
+                  <upperBound>
+                    <literalInteger
+                      Id="f27a3b71-bdc1-4ddf-ac70-13b112101b56"
+                      name="2147483647"
+                      value="2147483647" />
+                  </upperBound>
+                </outputPin>
+              </opaqueActionHasOutputValues>
+            </pins>
+          </opaqueAction>
+          <initialNode
+            Id="b0ac482d-57d6-43d4-948d-7a1f5d1c6427"
+            name="Initial1"
+            isLeaf="false">
+            <objectFlowTargets>
+              <objectFlow
+                Id="f217ce8b-11b1-48cf-9fce-340abf2884ff"
+                isLeaf="false"
+                isMulticast="false"
+                isMultireceive="false">
+                <inputPinMoniker
+                  Id="48298e11-0a38-4a5b-bfc8-3abf20f98f8b"
+                  LastKnownName="IEnumerable&lt;EventData&gt;"
+                  LastKnownLocation="ModelingProjectIsmIoT.uml" />
+              </objectFlow>
+            </objectFlowTargets>
+          </initialNode>
+          <decisionNode
+            Id="b1424c70-f49c-4724-8355-d0f2eee1b4a5"
+            name="Decision1"
+            isLeaf="false">
+            <objectFlowTargets>
+              <objectFlow
+                Id="2b90bdbd-37ce-4551-9fcf-394f41b7805b"
+                guard="PRV or DAT"
+                isLeaf="false"
+                isMulticast="false"
+                isMultireceive="false">
+                <inputPinMoniker
+                  Id="d3f29b6f-ce3b-4c50-a959-fdbba2679328"
+                  LastKnownName="EventData[serialized DeviceState ]"
+                  LastKnownLocation="ModelingProjectIsmIoT.uml" />
+              </objectFlow>
+              <objectFlow
+                Id="0ab7a77c-2065-4ffc-a1a4-0c61c4750213"
+                guard="UPDATE_DASHBOARD_CONTROLS"
+                isLeaf="false"
+                isMulticast="false"
+                isMultireceive="false">
+                <inputPinMoniker
+                  Id="e7dc2ea0-3c6c-4db0-a01e-f89781fd3a3f"
+                  LastKnownName="EventData[serialized DeviceState ]"
+                  LastKnownLocation="ModelingProjectIsmIoT.uml" />
+              </objectFlow>
+            </objectFlowTargets>
+          </decisionNode>
+          <opaqueAction
+            Id="efd2b5c1-063d-48eb-b4e1-e478617018a5"
+            name="Process Image"
+            isLeaf="false">
+            <pins>
+              <opaqueActionHasOutputValues>
+                <outputPin
+                  Id="9707ba3d-56f2-480c-8894-262a4119819b"
+                  name="BrokeredMessage [serialized FilamentData]"
+                  isLeaf="false"
+                  ordering="Unordered"
+                  isControlType="false"
+                  isControl="false">
+                  <objectFlowTargets>
+                    <objectFlow
+                      Id="72bbba7b-b241-46e2-b4ec-5086202f1bef"
+                      guard="PRV"
+                      isLeaf="false"
+                      isMulticast="false"
+                      isMultireceive="false">
+                      <opaqueActionMoniker
+                        Id="062a43e1-554b-47b8-8412-89748fb04b44"
+                        LastKnownName="Send to Queue"
+                        LastKnownLocation="ModelingProjectIsmIoT.uml" />
+                    </objectFlow>
+                  </objectFlowTargets>
+                  <upperBound>
+                    <literalInteger
+                      Id="768de310-199f-40b3-aa25-b5891eb2c3ed"
+                      name="2147483647"
+                      value="2147483647" />
+                  </upperBound>
+                </outputPin>
+              </opaqueActionHasOutputValues>
+              <opaqueActionHasOutputValues>
+                <outputPin
+                  Id="50ae3823-463a-441e-ad5e-4bccde64787f"
+                  name="EventData [serialized FilamentData]"
+                  isLeaf="false"
+                  ordering="Unordered"
+                  isControlType="false"
+                  isControl="false">
+                  <objectFlowTargets>
+                    <objectFlow
+                      Id="e55e2431-b156-4c22-bfdc-15bf304e0637"
+                      guard="DAT"
+                      isLeaf="false"
+                      isMulticast="false"
+                      isMultireceive="false">
+                      <opaqueActionMoniker
+                        Id="85de7dee-ae83-4887-9ab8-8b57b379b94f"
+                        LastKnownName="Send to Event Hub"
+                        LastKnownLocation="ModelingProjectIsmIoT.uml" />
+                    </objectFlow>
+                  </objectFlowTargets>
+                  <upperBound>
+                    <literalInteger
+                      Id="96e3e0eb-f523-450e-8062-15497f6550f9"
+                      name="2147483647"
+                      value="2147483647" />
+                  </upperBound>
+                </outputPin>
+              </opaqueActionHasOutputValues>
+              <opaqueActionHasInputValues>
+                <inputPin
+                  Id="d3f29b6f-ce3b-4c50-a959-fdbba2679328"
+                  name="EventData[serialized DeviceState ]"
+                  isLeaf="false"
+                  ordering="Unordered"
+                  isControlType="false"
+                  isControl="false">
+                  <upperBound>
+                    <literalInteger
+                      Id="7ed33bd7-96c3-4926-a9bd-6aac430b0ac9"
+                      name="2147483647"
+                      value="2147483647" />
+                  </upperBound>
+                </inputPin>
+              </opaqueActionHasInputValues>
+            </pins>
+          </opaqueAction>
+          <opaqueAction
+            Id="649c3468-9460-4f71-87fc-c27cd46eeada"
+            name="Forward Dashboard Control Info"
+            isLeaf="false">
+            <pins>
+              <opaqueActionHasInputValues>
+                <inputPin
+                  Id="e7dc2ea0-3c6c-4db0-a01e-f89781fd3a3f"
+                  name="EventData[serialized DeviceState ]"
+                  isLeaf="false"
+                  ordering="Unordered"
+                  isControlType="false"
+                  isControl="false">
+                  <upperBound>
+                    <literalInteger
+                      Id="750872ba-8acf-496c-8f76-ab20d7dc6714"
+                      name="2147483647"
+                      value="2147483647" />
+                  </upperBound>
+                </inputPin>
+              </opaqueActionHasInputValues>
+              <opaqueActionHasOutputValues>
+                <outputPin
+                  Id="7ce62dc6-fdb0-428f-825c-8801f83529c2"
+                  name="BrokeredMessage [serialized DeviceState]"
+                  isLeaf="false"
+                  ordering="Unordered"
+                  isControlType="false"
+                  isControl="false">
+                  <objectFlowTargets>
+                    <objectFlow
+                      Id="2e7a003c-6990-4ce3-8d3d-ab2bceab5b80"
+                      isLeaf="false"
+                      isMulticast="false"
+                      isMultireceive="false">
+                      <opaqueActionMoniker
+                        Id="062a43e1-554b-47b8-8412-89748fb04b44"
+                        LastKnownName="Send to Queue"
+                        LastKnownLocation="ModelingProjectIsmIoT.uml" />
+                    </objectFlow>
+                  </objectFlowTargets>
+                  <upperBound>
+                    <literalInteger
+                      Id="93d8aca9-5e8f-4601-b1a2-c7183ed32664"
+                      name="2147483647"
+                      value="2147483647" />
+                  </upperBound>
+                </outputPin>
+              </opaqueActionHasOutputValues>
+            </pins>
+          </opaqueAction>
+          <activityFinalNode
+            Id="9892e45a-7a09-4c28-8008-6e66b71ed168"
+            name="ActivityFinal1"
+            isLeaf="false" />
+          <opaqueAction
+            Id="85de7dee-ae83-4887-9ab8-8b57b379b94f"
+            name="Send to Event Hub"
+            isLeaf="false">
+            <flowNodeTargets>
+              <controlFlow
+                Id="a126e1f4-d2d0-4780-a547-3aa91c14c7bf"
+                isLeaf="false">
+                <activityFinalNodeMoniker
+                  Id="9892e45a-7a09-4c28-8008-6e66b71ed168"
+                  LastKnownName="ActivityFinal1"
+                  LastKnownLocation="ModelingProjectIsmIoT.uml" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction
+            Id="062a43e1-554b-47b8-8412-89748fb04b44"
+            name="Send to Queue"
+            isLeaf="false">
+            <flowNodeTargets>
+              <controlFlow
+                Id="f20b09e4-0d7a-46cc-b301-8dbc205da1b2"
+                isLeaf="false">
+                <activityFinalNodeMoniker
+                  Id="9892e45a-7a09-4c28-8008-6e66b71ed168"
+                  LastKnownName="ActivityFinal1"
+                  LastKnownLocation="ModelingProjectIsmIoT.uml" />
+              </controlFlow>
+            </flowNodeTargets>
+          </opaqueAction>
+          <opaqueAction
+            Id="31afd913-1bd0-4274-b9d2-e2bde3aa99fb"
+            name="Action1"
+            isLeaf="false">
+            <pins>
+              <opaqueActionHasInputValues>
+                <inputPin
+                  Id="6ddd3067-0cd0-4f77-988a-670d6afcd1aa"
+                  name="Input1"
+                  isLeaf="false"
+                  ordering="Unordered"
+                  isControlType="false"
+                  isControl="false">
+                  <upperBound>
+                    <literalInteger
+                      Id="969796e4-5174-470e-a8be-6a1fa509f205"
+                      name="2147483647"
+                      value="2147483647" />
+                  </upperBound>
+                </inputPin>
+              </opaqueActionHasInputValues>
+              <opaqueActionHasOutputValues>
+                <outputPin
+                  Id="86adc67f-a09c-475a-88a7-884a3be7c764"
+                  name="Output1"
+                  isLeaf="false"
+                  ordering="Unordered"
+                  isControlType="false"
+                  isControl="false">
+                  <objectFlowTargets>
+                    <objectFlow
+                      Id="1e1b13af-5300-497c-ab3d-ec501d32d8d1"
+                      guard="x &gt; 10"
+                      isLeaf="false"
+                      isMulticast="false"
+                      isMultireceive="false">
+                      <opaqueActionMoniker
+                        Id="4c707b4a-ba67-41ad-9fb6-10b8db2ee87f"
+                        LastKnownName="Iterate Events"
+                        LastKnownLocation="ModelingProjectIsmIoT.uml" />
+                    </objectFlow>
+                  </objectFlowTargets>
+                  <upperBound>
+                    <literalInteger
+                      Id="07d8880b-903d-47b8-8881-642a26e9ad1d"
+                      name="2147483647"
+                      value="2147483647" />
+                  </upperBound>
+                </outputPin>
+              </opaqueActionHasOutputValues>
+            </pins>
+          </opaqueAction>
+        </nodes>
+      </activity>
+    </packageHasNamedElement>
+  </packagedElements>
+  <primitiveType
+    Id="220a3521-e091-4221-bae9-3ef9018e845c"
+    name="Integer"
+    isAbstract="false"
+    isLeaf="false" />
+  <primitiveType
+    Id="8943dc84-709e-4f62-b15a-a3273aa6f165"
+    name="Boolean"
+    isAbstract="false"
+    isLeaf="false" />
+  <primitiveType
+    Id="59259974-6d55-42c6-b7bd-763d77ac8ef9"
+    name="String"
+    isAbstract="false"
+    isLeaf="false" />
+  <primitiveType
+    Id="3ab42e7d-4969-445a-b209-471f5cb8209c"
+    name="UnlimitedNatural"
+    isAbstract="false"
+    isLeaf="false" />
+</modelStoreModel>

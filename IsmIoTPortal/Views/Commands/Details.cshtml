@@ -1,0 +1,50 @@
+﻿@model IsmIoTPortal.Models.Command
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Command</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.IsmDevice.DeviceId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IsmDevice.DeviceId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Cmd)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Cmd)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Timestamp)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Timestamp)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CommandStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CommandStatus)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.CommandId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

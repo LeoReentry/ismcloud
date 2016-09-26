@@ -1,0 +1,34 @@
+﻿@model IsmIoTPortal.Models.Hardware
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Hardware</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Board)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Board)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Camera)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Camera)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.HardwareId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

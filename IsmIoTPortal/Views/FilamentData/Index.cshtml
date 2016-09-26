@@ -1,0 +1,129 @@
+﻿@model IEnumerable<IsmIoTPortal.Models.FilamentData>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.IsmDevice.DeviceId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Time)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FC)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FL)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.H1)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.H2)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.H3)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.H4)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.H5)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.H6)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.H7)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.H8)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.H9)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.H10)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DeviceId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BlobUriImg)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BlobUriColoredImg)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.IsmDevice.DeviceId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Time)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FC)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FL)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.H1)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.H2)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.H3)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.H4)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.H5)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.H6)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.H7)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.H8)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.H9)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.H10)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DeviceId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BlobUriImg)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BlobUriColoredImg)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.FilamentDataId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.FilamentDataId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.FilamentDataId })
+        </td>
+    </tr>
+}
+
+</table>

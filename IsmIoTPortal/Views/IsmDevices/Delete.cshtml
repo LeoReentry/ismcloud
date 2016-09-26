@@ -1,0 +1,56 @@
+﻿@model IsmIoTPortal.Models.IsmDevice
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>IsmDevice</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Hardware.Board)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Hardware.Board)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Location.Country)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Location.Country)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Software.SoftwareVersion)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Software.SoftwareVersion)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DeviceId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DeviceId)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>
