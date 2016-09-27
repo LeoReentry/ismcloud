@@ -235,12 +235,10 @@
   <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
-    <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="ClassDiagram1.cs" />
     <Compile Include="CommandType.cs" />
-    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CommandsController.cs" />
     <Compile Include="Controllers\ContactsController.cs" />
     <Compile Include="Controllers\FilamentDataController.cs" />
@@ -248,7 +246,6 @@
     <Compile Include="Controllers\HardwareController.cs" />
     <Compile Include="Controllers\IsmDevicesController.cs" />
     <Compile Include="Controllers\LocationsController.cs" />
-    <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SoftwareController.cs" />
     <Compile Include="DashboardHub.cs" />
     <Compile Include="Global.asax.cs">
@@ -271,19 +268,16 @@
       <DependentUpon>201512291519580_RollbackHistExperiments.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\DateTimeInterval.cs" />
     <Compile Include="Models\DeviceState.cs" />
     <Compile Include="Models\FilamentData.cs" />
     <Compile Include="Models\Hardware.cs" />
-    <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ImagingProcessorWorkerInstance.cs" />
     <Compile Include="Models\IsmDevice.cs" />
     <Compile Include="Models\IsmIoTPortalContext.cs" />
     <Compile Include="Models\Location.cs" />
-    <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\PbiDashboardInfo.cs" />
     <Compile Include="Models\Software.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -371,24 +365,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
-    <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
-    <Content Include="Views\Account\ConfirmEmail.cshtml" />
-    <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
-    <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
-    <Content Include="Views\Account\ForgotPassword.cshtml" />
-    <Content Include="Views\Account\ForgotPasswordConfirmation.cshtml" />
-    <Content Include="Views\Account\Login.cshtml" />
-    <Content Include="Views\Account\Register.cshtml" />
-    <Content Include="Views\Account\ResetPassword.cshtml" />
-    <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
-    <Content Include="Views\Account\SendCode.cshtml" />
-    <Content Include="Views\Account\VerifyCode.cshtml" />
-    <Content Include="Views\Manage\AddPhoneNumber.cshtml" />
-    <Content Include="Views\Manage\ChangePassword.cshtml" />
-    <Content Include="Views\Manage\Index.cshtml" />
-    <Content Include="Views\Manage\ManageLogins.cshtml" />
-    <Content Include="Views\Manage\SetPassword.cshtml" />
-    <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Contacts\Create.cshtml" />
