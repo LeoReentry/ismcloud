@@ -19,6 +19,7 @@ using Microsoft.ServiceBus.Messaging;
 
 namespace IsmIoTPortal.Controllers
 {
+    [Authorize]
     public class IsmDevicesController : Controller
     {
         private IsmIoTPortalContext db = new IsmIoTPortalContext();

@@ -9,6 +9,7 @@ using System.Web.Mvc;
 
 namespace IsmIoTPortal.Controllers
 {
+    [Authorize]
     public class FilamentDataHistoryController : Controller
     {
         private IsmIoTPortalContext db = new IsmIoTPortalContext();
