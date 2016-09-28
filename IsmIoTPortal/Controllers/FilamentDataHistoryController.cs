@@ -66,7 +66,8 @@ namespace IsmIoTPortal.Controllers
                 // local
                 //{"redirect_uri", "http://localhost:39860/FilamentDataHistory/Redirect"}
                 // cloud
-                {"redirect_uri", "http://" + IsmIoTSettings.Settings.webDomain + "/FilamentDataHistory/Redirect"}
+                // TODO: No hardcoded domain
+                {"redirect_uri", IsmIoTSettings.Settings.disabledHttpAddress + "/FilamentDataHistory/Redirect"}
             };
 
             //Create sign-in query string
@@ -86,7 +87,8 @@ namespace IsmIoTPortal.Controllers
             // local
             //string redirectUri = "http://localhost:39860/FilamentDataHistory/Redirect";
             // cloud
-            string redirectUri = "http://" + IsmIoTSettings.Settings.webDomain + "/FilamentDataHistory/Redirect";
+            // TODO: No hardcoded domain
+            string redirectUri = IsmIoTSettings.Settings.disabledHttpAddress + "/FilamentDataHistory/Redirect";
             string authorityUri = "https://login.windows.net/common/oauth2/authorize/";
 
             // Get the auth code
@@ -111,7 +113,8 @@ namespace IsmIoTPortal.Controllers
             // local
             //return new RedirectResult("http://localhost:39860/FilamentDataHistory/DataDashboard");
             // cloud
-            return new RedirectResult("http://" + IsmIoTSettings.Settings.webDomain + "/FilamentDataHistory/DataDashboard");
+            // TODO: No hardcoded domain
+            return new RedirectResult(IsmIoTSettings.Settings.disabledHttpAddress + "/FilamentDataHistory/DataDashboard");
         }
 
         public ActionResult DataDashboard()

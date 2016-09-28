@@ -42,7 +42,8 @@ namespace IsmIoTPortal.Controllers
                 // local
                 //signalRHubConnection = new HubConnection("http://localhost:39860/");
                 // cloud
-                signalRHubConnection = new HubConnection("http://" + IsmIoTSettings.Settings.webDomain);
+                // TODO: No hardcoded domain
+                signalRHubConnection = new HubConnection(IsmIoTSettings.Settings.webCompleteAddress);
 
                 signalRHubProxy = signalRHubConnection.CreateHubProxy("DashboardHub");
 
