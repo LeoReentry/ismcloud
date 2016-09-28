@@ -336,6 +336,7 @@
       <Link>connections.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Properties\PublishProfiles\ismiot - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\ismiotportal - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\IsmIoTPortal.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
