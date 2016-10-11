@@ -186,6 +186,29 @@ namespace ImagingProcessorWorker
                 this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > UpdateDashboardDeviceStateControls Exception: {1} <br>", DateTime.Now.ToString(), ex.Message)));
             }
         }
+        /// <summary>
+        /// Generate a Uri to BLOB with SAS read access for the Matlab code from the original BLOB Uri
+        /// </summary>
+        /// <param name="blobUri">URI pointing to the BLOB this function grants access to.</param>
+        /// <returns>Full URI with SAS.</returns>
+        private string GetBlobSasUri(string blobUri)
+        {
+            // Get access to container
+            var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.ismiotstorage); //CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortalBlob); //blobClient.GetContainerReference("ismportal");
+            // Get BLOB (by filename, not full URI)
+            var blob = blobContainer.GetBlobReference(blobUri.Split('/').Last());
+            // Access Policy
+            var policy = new SharedAccessBlobPolicy()
+            {
+                Permissions = SharedAccessBlobPermissions.Read,
+                SharedAccessStartTime = DateTimeOffset.UtcNow.AddMinutes(-15),
+                SharedAccessExpiryTime = DateTimeOffset.UtcNow.AddMinutes(15)
+            };
+            // Return full URI
+            return blob.Uri + blob.GetSharedAccessSignature(policy);
+        }
 
         private void ProcessImage(DeviceState DeviceState)
         {
@@ -193,7 +216,7 @@ namespace ImagingProcessorWorker
             {
                 //
                 MWArray[] argsIn = new MWArray[6];
-                argsIn[0] = DeviceState.CurrentCaptureUri; // Path / Uri of the image
+                argsIn[0] = GetBlobSasUri(DeviceState.CurrentCaptureUri); // Path / Uri of the image (with Shared Access Signature for MATLAB)
                 argsIn[1] = DeviceState.VarianceThreshold; //var_thresh = 0.0025; % variance threshold
                 argsIn[2] = DeviceState.DistanceMapThreshold; //dist_thresh = 8.5; % distance - map threshold
                 argsIn[3] = DeviceState.RGThreshold; //RG_thresh = 3.75; % R.R.G.threshold
@@ -237,12 +260,11 @@ namespace ImagingProcessorWorker
                 double fc = single_lengths.Length; // FC
 
                 // colored image
-                var blobUriColored = "";
+                CloudBlockBlob blob;
                 string coloredImage = argsOut[2].ToString();
                 using (System.IO.FileStream fs = new System.IO.FileStream(coloredImage, System.IO.FileMode.Open))
                 {
-                    blobUriColored = GenerateBlobUriAsync().Result;
-                    var blob = new CloudBlockBlob(new Uri(blobUriColored));
+                    blob = GenerateBlobAsync().Result;
                     fs.Position = 0;
                     blob.UploadFromStream(fs);
                 }
@@ -257,7 +279,7 @@ namespace ImagingProcessorWorker
                     int id = db.IsmDevices.Where(d => d.DeviceId == DeviceState.DeviceId).First().IsmDeviceId;
 
                     IsmIoTPortal.Models.FilamentData fildata = new IsmIoTPortal.Models.FilamentData(fc, fl, id, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10,
-                        DeviceState.DeviceId, DeviceState.CurrentCaptureUri, blobUriColored);
+                        DeviceState.DeviceId, DeviceState.CurrentCaptureUri, blob.Uri.ToString());
 
                     // 1.) Sende in Queue für DashboardBroker
                     // FilamentData ist [DataContract], somit sind die Objekte mit DataContractSerializer serialisierbar
@@ -306,27 +328,21 @@ namespace ImagingProcessorWorker
             }
         }
 
-        // BlobUri generation
-        public async Task<string> GenerateBlobUriAsync()
+        /// <summary>
+        /// Generates a new BLOB.
+        /// </summary>
+        /// <returns>Reference to BLOB.</returns>
+        public async Task<CloudBlockBlob> GenerateBlobAsync()
         {
-
             //var storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
+            // Connect to BLOB container
             string conStr = Settings.ismiotstorage; //System.Configuration.ConfigurationSettings.AppSettings.Get("ismiotstorage");
             var storageAccount = CloudStorageAccount.Parse(conStr);
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(Settings.containerPortalBlob); //blobClient.GetContainerReference("ismiot");
-            await blobContainer.CreateIfNotExistsAsync();
-
+            var blobContainer = blobClient.GetContainerReference(Settings.containerPortalBlob); //blobClient.GetContainerReference("ismportal");
+            // Generate new BLOB
             var blobName = String.Format("coloredImage_{0}", Guid.NewGuid().ToString());
-            CloudBlockBlob blob = blobContainer.GetBlockBlobReference(blobName);
-
-            SharedAccessBlobPolicy sasConstraints = new SharedAccessBlobPolicy();
-            sasConstraints.SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-5);
-            sasConstraints.SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24);
-            sasConstraints.Permissions = SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.Write;
-            string sasBlobToken = blob.GetSharedAccessSignature(sasConstraints);
-
-            return blob.Uri + sasBlobToken;
+            return blobContainer.GetBlockBlobReference(blobName);
         }
 
         public int GetInterval(double val)
