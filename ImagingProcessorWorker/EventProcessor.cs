@@ -314,7 +314,7 @@ namespace ImagingProcessorWorker
             string conStr = Settings.ismiotstorage; //System.Configuration.ConfigurationSettings.AppSettings.Get("ismiotstorage");
             var storageAccount = CloudStorageAccount.Parse(conStr);
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(Settings.containerCaptureUploads); //blobClient.GetContainerReference("ismiot");
+            var blobContainer = blobClient.GetContainerReference(Settings.containerPortalBlob); //blobClient.GetContainerReference("ismiot");
             await blobContainer.CreateIfNotExistsAsync();
 
             var blobName = String.Format("coloredImage_{0}", Guid.NewGuid().ToString());
