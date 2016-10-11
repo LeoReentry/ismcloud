@@ -249,7 +249,7 @@ namespace IsmDevice
         {
             var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.ismiotstorage); //CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerCaptureUploads); //blobClient.GetContainerReference("ismiot");
+            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortalBlob); //blobClient.GetContainerReference("ismiot");
             await blobContainer.CreateIfNotExistsAsync();
 
             var blobName = String.Format("deviceUpload_{0}", Guid.NewGuid().ToString());
