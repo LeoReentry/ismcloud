@@ -51,7 +51,8 @@ namespace FeedbackReceiverWorker
                 // local
                 //signalRHubConnection = new HubConnection("http://localhost:39860/");
                 // cloud
-                signalRHubConnection = new HubConnection("http://" + Settings.webDomain);
+                // TODO: No hardcoded domain
+                signalRHubConnection = new HubConnection(Settings.webCompleteAddress);
 
                 signalRHubProxy = signalRHubConnection.CreateHubProxy("DashboardHub");
 
