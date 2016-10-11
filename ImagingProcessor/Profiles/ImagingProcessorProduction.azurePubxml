@@ -19,6 +19,7 @@
     <AzureStorageAccountName>ismiotstorage</AzureStorageAccountName>
     <AzureAppendTimestampToDeploymentLabel>True</AzureAppendTimestampToDeploymentLabel>
     <EnableRemoteDebugger>True</EnableRemoteDebugger>
-    <RemoteDebuggerConnectorCertificateThumbprint>3C361DF964B29EC920B158DD4A1DCF0E4D866AC1</RemoteDebuggerConnectorCertificateThumbprint>
+    <RemoteDebuggerConnectorCertificateThumbprint>CDA110CB35CCFD0B48DA81687F12AA8A8597007E</RemoteDebuggerConnectorCertificateThumbprint>
+    <AzureHostedServiceResourceGroup />
   </PropertyGroup>
 </Project>
