@@ -79,21 +79,13 @@ namespace IsmDevice
 
         public async Task DoWorkAsync()
         {
-            string blobUri;
-
             // Zum testen simuliere Kamera Capture durch zufälliges Element aus List<byte[]> mit vorgeladenen Bildern
             device.CurrentCameraCapture = device.CameraCaptures.ElementAt(device.Rand.Next(device.CameraCaptures.Count));
-
-            blobUri = await device.GenerateBlobUriAsync();
-
-            // Upload
-            //device.OnWriteLine(new WriteLineEventArgs("Uploading..."));
-            var blob = new CloudBlockBlob(new Uri(blobUri));
-
+            // Get reference to BLOB
+            var blob = await device.GenerateBlobUriAsync();
+            // Upload BLOB (we don't need a SAS here since we're already authenticated)
             await blob.UploadFromByteArrayAsync(device.CurrentCameraCapture, 0, device.CurrentCameraCapture.Length);
-
-            device.DeviceState.CurrentCaptureUri = blobUri;
-
+            device.DeviceState.CurrentCaptureUri = blob.Uri.ToString();
             await device.SendDeviceToCloudMessagesAsync();
         }
     }

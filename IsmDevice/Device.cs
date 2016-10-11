@@ -244,8 +244,11 @@ namespace IsmDevice
             OnWriteLine(new WriteLineEventArgs(String.Format("{0} > Sending DeviceState for Dashboard-Controls", DateTime.Now), Colors.Red));
         }
 
-        // BlobUri generation
-        public async Task<string> GenerateBlobUriAsync()
+        /// <summary>
+        /// Function that generates a BLOB URI
+        /// </summary>
+        /// <returns></returns>
+        public async Task<CloudBlockBlob> GenerateBlobUriAsync()
         {
             var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.ismiotstorage); //CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
             var blobClient = storageAccount.CreateCloudBlobClient();
@@ -253,17 +256,7 @@ namespace IsmDevice
             await blobContainer.CreateIfNotExistsAsync();
 
             var blobName = String.Format("deviceUpload_{0}", Guid.NewGuid().ToString());
-            CloudBlockBlob blob = blobContainer.GetBlockBlobReference(blobName);
-
-            SharedAccessBlobPolicy sasConstraints = new SharedAccessBlobPolicy();
-            //sasConstraints.SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-5);
-            //sasConstraints.SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24);
-            sasConstraints.SharedAccessStartTime = DateTime.UtcNow.AddDays(-1);
-            sasConstraints.SharedAccessExpiryTime = DateTime.UtcNow.AddDays(1);
-            sasConstraints.Permissions = SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.Write;
-            string sasBlobToken = blob.GetSharedAccessSignature(sasConstraints);
-
-            return blob.Uri + sasBlobToken;
+            return blobContainer.GetBlockBlobReference(blobName);
         }
 
         public void Start(Message msg)
