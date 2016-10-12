@@ -20,7 +20,7 @@ namespace IsmIoTPortal.Models
         [DataMember]
         public int CapturePeriod { get; set; }
         [DataMember]
-        public string CurrentCaptureUri { get; set; }
+        public string CurrentCaptureName { get; set; }
 
         // Matlab Filament-Algorithm Params
         [DataMember]

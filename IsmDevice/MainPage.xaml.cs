@@ -58,7 +58,7 @@ namespace IsmDevice
             //
 
             //Device device = new Device(DeviceId, iotHubUri, deviceKey, storageConnectionString, containerName);
-            Device device = new Device(IsmIoTSettings.Settings.DeviceId, IsmIoTSettings.Settings.iotHubUri, IsmIoTSettings.Settings.deviceKey, IsmIoTSettings.Settings.ismiotstorage, IsmIoTSettings.Settings.containerCaptureSet);
+            Device device = new Device(IsmIoTSettings.Settings.DeviceId, IsmIoTSettings.Settings.iotHubUri, IsmIoTSettings.Settings.deviceKey, IsmIoTSettings.Settings.storageConnection, IsmIoTSettings.Settings.containerCaptureSet);
 
             // Device Events
             //
