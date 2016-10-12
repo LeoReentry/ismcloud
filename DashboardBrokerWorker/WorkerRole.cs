@@ -153,8 +153,8 @@ namespace DashboardBrokerWorker
                         */
 
                         // Get full URI with Shared Access Signature to send to Portal
-                        var imgUri = GetBlobSasUri(data.BlobImgName);
-                        var colImgUri = GetBlobSasUri(data.BlobColoredImgName);
+                        var imgUri = GetBlobSasUri(data.BlobUriImg);
+                        var colImgUri = GetBlobSasUri(data.BlobUriColoredImg);
 
                         // Sende Daten an Dashboards
                         signalRHubProxy.Invoke<string>("DataForDashboard", data.DeviceId, imgUri, data.FC.ToString(), data.FL.ToString(), colImgUri).ContinueWith(t =>

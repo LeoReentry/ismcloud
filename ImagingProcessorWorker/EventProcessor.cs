@@ -295,10 +295,10 @@ namespace ImagingProcessorWorker
 
                     /*
                     // 1.) Sende Daten an Dashboards
-                    signalRHubProxy.Invoke<string>("DataForDashboard", fildata.DeviceId, fildata.BlobImgName, fildata.FC.ToString(), fildata.FL.ToString(), fildata.BlobColoredImgName).ContinueWith(t =>
+                    signalRHubProxy.Invoke<string>("DataForDashboard", fildata.DeviceId, fildata.BlobUriImg, fildata.FC.ToString(), fildata.FL.ToString(), fildata.BlobUriColoredImg).ContinueWith(t =>
                     {
                         //Console.WriteLine(t.Result);
-                        this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > Send Filament Data to Dashboard <br>BlobUriimg: {1}", DateTime.Now.ToString(), fildata.BlobImgName)));
+                        this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > Send Filament Data to Dashboard <br>BlobUriimg: {1}", DateTime.Now.ToString(), fildata.BlobUriImg)));
                     });
                     */
 

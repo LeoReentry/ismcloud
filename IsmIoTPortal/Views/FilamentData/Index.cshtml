@@ -57,10 +57,10 @@
             @Html.DisplayNameFor(model => model.DeviceId)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.BlobImgName)
+            @Html.DisplayNameFor(model => model.BlobUriImg)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.BlobColoredImgName)
+            @Html.DisplayNameFor(model => model.BlobUriColoredImg)
         </th>
         <th></th>
     </tr>
@@ -113,10 +113,10 @@
             @Html.DisplayFor(modelItem => item.DeviceId)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.BlobImgName)
+            @Html.DisplayFor(modelItem => item.BlobUriImg)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.BlobColoredImgName)
+            @Html.DisplayFor(modelItem => item.BlobUriColoredImg)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.FilamentDataId }) |

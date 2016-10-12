@@ -49,7 +49,7 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "FilamentDataId,Time,FC,FL,H1,H2,H3,H4,H5,H6,H7,H8,H9,H10,IsmDeviceId,DeviceId,BlobImgName,BlobColoredImgName")] FilamentData filamentData)
+        public ActionResult Create([Bind(Include = "FilamentDataId,Time,FC,FL,H1,H2,H3,H4,H5,H6,H7,H8,H9,H10,IsmDeviceId,DeviceId,BlobUriImg,BlobUriColoredImg")] FilamentData filamentData)
         {
             if (ModelState.IsValid)
             {
@@ -83,7 +83,7 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "FilamentDataId,Time,FC,FL,H1,H2,H3,H4,H5,H6,H7,H8,H9,H10,IsmDeviceId,DeviceId,BlobImgName,BlobColoredImgName")] FilamentData filamentData)
+        public ActionResult Edit([Bind(Include = "FilamentDataId,Time,FC,FL,H1,H2,H3,H4,H5,H6,H7,H8,H9,H10,IsmDeviceId,DeviceId,BlobUriImg,BlobUriColoredImg")] FilamentData filamentData)
         {
             if (ModelState.IsValid)
             {
