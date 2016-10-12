@@ -211,13 +211,17 @@ namespace ImagingProcessorWorker
             // Return full URI
             return blob.Uri + blob.GetSharedAccessSignature(policy);
         }
-
         private void ProcessImage(DeviceState DeviceState)
         {
             try
             {
                 //
                 MWArray[] argsIn = new MWArray[6];
+                if (DeviceState.CurrentCaptureName == null)
+                {
+                    this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > No image in stored in device. Can't process. <br>", DateTime.Now.ToString())));
+                    return;
+                }
                 argsIn[0] = GetBlobSasUri(DeviceState.CurrentCaptureName); // Path / Uri of the image (with Shared Access Signature for MATLAB)
                 argsIn[1] = DeviceState.VarianceThreshold; //var_thresh = 0.0025; % variance threshold
                 argsIn[2] = DeviceState.DistanceMapThreshold; //dist_thresh = 8.5; % distance - map threshold
