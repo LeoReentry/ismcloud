@@ -34,7 +34,7 @@ namespace Logging
 
         // Azure Storage 
         //private string storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=storageacclogs;AccountKey=AlTunZcRR9c1TP8PR5Tko35zWQ3K5X3PTYfl+uhKzncvCY6N6ZbmkesoGIg5ka65sNe04Qhfvh8Zk6sRbpLTqg==";
-        private string storageConnectionString = Settings.ismiotstorage; //System.Configuration.ConfigurationSettings.AppSettings.Get("ismiotstorage");
+        private string storageConnectionString = Settings.storageConnection; //System.Configuration.ConfigurationSettings.AppSettings.Get("ismiotstorage");
         private CloudStorageAccount storageAccount;
         private CloudBlobClient blobClient;
         private CloudBlobContainer container;

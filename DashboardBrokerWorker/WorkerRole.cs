@@ -92,9 +92,9 @@ namespace DashboardBrokerWorker
         private string GetBlobSasUri(string blobName)
         {
             // Get access to container
-            var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.ismiotstorage); //CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
+            var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.storageConnection);
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortalBlob); //blobClient.GetContainerReference("ismportal");
+            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortal);
             // Get BLOB (by filename, not full URI)
             var blob = blobContainer.GetBlockBlobReference(blobName);
             // Access Policy

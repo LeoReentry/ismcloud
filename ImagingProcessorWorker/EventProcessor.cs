@@ -196,9 +196,9 @@ namespace ImagingProcessorWorker
         private string GetBlobSasUri(string blobName)
         {
             // Get access to container
-            var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.ismiotstorage); //CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
+            var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.storageConnection);
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortalBlob); //blobClient.GetContainerReference("ismportal");
+            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortal);
             // Get BLOB (by filename, not full URI)
             var blob = blobContainer.GetBlockBlobReference(blobName);
             // Access Policy
@@ -338,10 +338,10 @@ namespace ImagingProcessorWorker
         {
             //var storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
             // Connect to BLOB container
-            string conStr = Settings.ismiotstorage; //System.Configuration.ConfigurationSettings.AppSettings.Get("ismiotstorage");
+            string conStr = Settings.storageConnection;
             var storageAccount = CloudStorageAccount.Parse(conStr);
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(Settings.containerPortalBlob); //blobClient.GetContainerReference("ismportal");
+            var blobContainer = blobClient.GetContainerReference(Settings.containerPortal);
             // Generate new BLOB
             var blobName = String.Format("coloredImage_{0}", Guid.NewGuid().ToString());
             return blobContainer.GetBlockBlobReference(blobName);
