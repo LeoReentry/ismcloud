@@ -186,19 +186,21 @@ namespace ImagingProcessorWorker
                 this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > UpdateDashboardDeviceStateControls Exception: {1} <br>", DateTime.Now.ToString(), ex.Message)));
             }
         }
+
         /// <summary>
-        /// Generate a Uri to BLOB with SAS read access for the Matlab code from the original BLOB Uri
+        /// Generates a URI with SAS to a specific BLOB.
+        /// Grants Read Access for 15 minutes.
         /// </summary>
-        /// <param name="blobUri">URI pointing to the BLOB this function grants access to.</param>
-        /// <returns>Full URI with SAS.</returns>
-        private string GetBlobSasUri(string blobUri)
+        /// <param name="blobName">Name of the BLOB access to is wanted.</param>
+        /// <returns>Complete URI as string.</returns>
+        private string GetBlobSasUri(string blobName)
         {
             // Get access to container
             var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.ismiotstorage); //CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
             var blobClient = storageAccount.CreateCloudBlobClient();
             var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortalBlob); //blobClient.GetContainerReference("ismportal");
             // Get BLOB (by filename, not full URI)
-            var blob = blobContainer.GetBlobReference(blobUri.Split('/').Last());
+            var blob = blobContainer.GetBlockBlobReference(blobName);
             // Access Policy
             var policy = new SharedAccessBlobPolicy()
             {
@@ -216,7 +218,7 @@ namespace ImagingProcessorWorker
             {
                 //
                 MWArray[] argsIn = new MWArray[6];
-                argsIn[0] = GetBlobSasUri(DeviceState.CurrentCaptureUri); // Path / Uri of the image (with Shared Access Signature for MATLAB)
+                argsIn[0] = GetBlobSasUri(DeviceState.CurrentCaptureName); // Path / Uri of the image (with Shared Access Signature for MATLAB)
                 argsIn[1] = DeviceState.VarianceThreshold; //var_thresh = 0.0025; % variance threshold
                 argsIn[2] = DeviceState.DistanceMapThreshold; //dist_thresh = 8.5; % distance - map threshold
                 argsIn[3] = DeviceState.RGThreshold; //RG_thresh = 3.75; % R.R.G.threshold
@@ -279,7 +281,7 @@ namespace ImagingProcessorWorker
                     int id = db.IsmDevices.Where(d => d.DeviceId == DeviceState.DeviceId).First().IsmDeviceId;
 
                     IsmIoTPortal.Models.FilamentData fildata = new IsmIoTPortal.Models.FilamentData(fc, fl, id, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10,
-                        DeviceState.DeviceId, DeviceState.CurrentCaptureUri, blob.Uri.ToString());
+                        DeviceState.DeviceId, DeviceState.CurrentCaptureName, blob.Name);
 
                     // 1.) Sende in Queue für DashboardBroker
                     // FilamentData ist [DataContract], somit sind die Objekte mit DataContractSerializer serialisierbar
@@ -293,10 +295,10 @@ namespace ImagingProcessorWorker
 
                     /*
                     // 1.) Sende Daten an Dashboards
-                    signalRHubProxy.Invoke<string>("DataForDashboard", fildata.DeviceId, fildata.BlobUriImg, fildata.FC.ToString(), fildata.FL.ToString(), fildata.BlobUriColoredImg).ContinueWith(t =>
+                    signalRHubProxy.Invoke<string>("DataForDashboard", fildata.DeviceId, fildata.BlobImgName, fildata.FC.ToString(), fildata.FL.ToString(), fildata.BlobColoredImgName).ContinueWith(t =>
                     {
                         //Console.WriteLine(t.Result);
-                        this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > Send Filament Data to Dashboard <br>BlobUriimg: {1}", DateTime.Now.ToString(), fildata.BlobUriImg)));
+                        this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > Send Filament Data to Dashboard <br>BlobUriimg: {1}", DateTime.Now.ToString(), fildata.BlobImgName)));
                     });
                     */
 

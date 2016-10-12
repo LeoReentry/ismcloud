@@ -66,10 +66,10 @@ namespace IsmDevice
             // Zum testen simuliere Kamera Capture durch zufälliges Element aus List<byte[]> mit vorgeladenen Bildern
             device.CurrentCameraCapture = device.CameraCaptures.ElementAt(device.Rand.Next(device.CameraCaptures.Count));
             // Get reference to BLOB
-            var blob = await device.GenerateBlobUriAsync();
+            var blob = await device.GenerateBlobAsync();
             // Upload BLOB (we don't need a SAS here since we're already authenticated)
             await blob.UploadFromByteArrayAsync(device.CurrentCameraCapture, 0, device.CurrentCameraCapture.Length);
-            device.DeviceState.CurrentCaptureUri = blob.Uri.ToString();
+            device.DeviceState.CurrentCaptureName = blob.Name;
             await device.SendDeviceToCloudMessagesAsync();
         }
     }

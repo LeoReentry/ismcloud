@@ -226,7 +226,7 @@ namespace IsmDevice
             message.MessageId = Guid.NewGuid().ToString();
 
             await DeviceClient.SendEventAsync(message);
-            //OnWriteLine(new WriteLineEventArgs(String.Format("{0} > Sending d2c message: {1}", DateTime.Now, DeviceState.CurrentCaptureUri)));
+            //OnWriteLine(new WriteLineEventArgs(String.Format("{0} > Sending d2c message: {1}", DateTime.Now, DeviceState.CurrentCaptureName)));
         }
 
         public async Task D2CSendDeviceStateAsync()
@@ -245,17 +245,19 @@ namespace IsmDevice
         }
 
         /// <summary>
-        /// Function that generates a BLOB URI
+        /// Function that generates a BLOB for uploading
         /// </summary>
-        /// <returns></returns>
-        public async Task<CloudBlockBlob> GenerateBlobUriAsync()
+        /// <returns>Reference to BLOB</returns>
+        public async Task<CloudBlockBlob> GenerateBlobAsync()
         {
+            // Get access to BLOB Container
             var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.ismiotstorage); //CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortalBlob); //blobClient.GetContainerReference("ismiot");
+            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortalBlob); //blobClient.GetContainerReference("ismportal");
             await blobContainer.CreateIfNotExistsAsync();
-
+            // Generate name
             var blobName = String.Format("deviceUpload_{0}", Guid.NewGuid().ToString());
+            // Return reference to BLOB
             return blobContainer.GetBlockBlobReference(blobName);
         }
 
