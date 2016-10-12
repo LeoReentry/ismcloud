@@ -17,6 +17,8 @@ using System.Runtime.Serialization;
 using IsmIoTPortal;
 using IsmIoTPortal.Models;
 using IsmIoTSettings;
+using Microsoft.WindowsAzure.Storage.Blob;
+using Microsoft.WindowsAzure.Storage;
 
 namespace DashboardBrokerWorker
 {
@@ -81,6 +83,31 @@ namespace DashboardBrokerWorker
             Trace.TraceInformation("DashboardBrokerWorker has stopped");
         }
 
+        /// <summary>
+        /// Generates a URI with SAS to a specific BLOB.
+        /// Grants Read Access for 15 minutes.
+        /// </summary>
+        /// <param name="blobName">Name of the BLOB access to is wanted.</param>
+        /// <returns>Complete URI as string.</returns>
+        private string GetBlobSasUri(string blobName)
+        {
+            // Get access to container
+            var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.ismiotstorage); //CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortalBlob); //blobClient.GetContainerReference("ismportal");
+            // Get BLOB (by filename, not full URI)
+            var blob = blobContainer.GetBlockBlobReference(blobName);
+            // Access Policy
+            var policy = new SharedAccessBlobPolicy()
+            {
+                Permissions = SharedAccessBlobPermissions.Read,
+                SharedAccessStartTime = DateTimeOffset.UtcNow.AddMinutes(-15),
+                SharedAccessExpiryTime = DateTimeOffset.UtcNow.AddMinutes(15)
+            };
+            // Return full URI
+            return blob.Uri + blob.GetSharedAccessSignature(policy);
+        }
+
         private async Task RunAsync(CancellationToken cancellationToken)
         {
             // Receive Messages from dashboardqueue Queue and send message to SignalR Hub to update dashboards
@@ -125,8 +152,12 @@ namespace DashboardBrokerWorker
                         }
                         */
 
+                        // Get full URI with Shared Access Signature to send to Portal
+                        var imgUri = GetBlobSasUri(data.BlobUriImg);
+                        var colImgUri = GetBlobSasUri(data.BlobUriColoredImg);
+
                         // Sende Daten an Dashboards
-                        signalRHubProxy.Invoke<string>("DataForDashboard", data.DeviceId, data.BlobUriImg, data.FC.ToString(), data.FL.ToString(), data.BlobUriColoredImg).ContinueWith(t =>
+                        signalRHubProxy.Invoke<string>("DataForDashboard", data.DeviceId, imgUri, data.FC.ToString(), data.FL.ToString(), colImgUri).ContinueWith(t =>
                         {
                             //Console.WriteLine(t.Result);
                         });

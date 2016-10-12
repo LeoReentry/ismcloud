@@ -226,7 +226,7 @@ namespace IsmDevice
             message.MessageId = Guid.NewGuid().ToString();
 
             await DeviceClient.SendEventAsync(message);
-            //OnWriteLine(new WriteLineEventArgs(String.Format("{0} > Sending d2c message: {1}", DateTime.Now, DeviceState.CurrentCaptureUri)));
+            //OnWriteLine(new WriteLineEventArgs(String.Format("{0} > Sending d2c message: {1}", DateTime.Now, DeviceState.CurrentCaptureName)));
         }
 
         public async Task D2CSendDeviceStateAsync()
@@ -244,26 +244,21 @@ namespace IsmDevice
             OnWriteLine(new WriteLineEventArgs(String.Format("{0} > Sending DeviceState for Dashboard-Controls", DateTime.Now), Colors.Red));
         }
 
-        // BlobUri generation
-        public async Task<string> GenerateBlobUriAsync()
+        /// <summary>
+        /// Function that generates a BLOB for uploading
+        /// </summary>
+        /// <returns>Reference to BLOB</returns>
+        public async Task<CloudBlockBlob> GenerateBlobAsync()
         {
+            // Get access to BLOB Container
             var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.ismiotstorage); //CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerCaptureUploads); //blobClient.GetContainerReference("ismiot");
+            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortalBlob); //blobClient.GetContainerReference("ismportal");
             await blobContainer.CreateIfNotExistsAsync();
-
+            // Generate name
             var blobName = String.Format("deviceUpload_{0}", Guid.NewGuid().ToString());
-            CloudBlockBlob blob = blobContainer.GetBlockBlobReference(blobName);
-
-            SharedAccessBlobPolicy sasConstraints = new SharedAccessBlobPolicy();
-            //sasConstraints.SharedAccessStartTime = DateTime.UtcNow.AddMinutes(-5);
-            //sasConstraints.SharedAccessExpiryTime = DateTime.UtcNow.AddHours(24);
-            sasConstraints.SharedAccessStartTime = DateTime.UtcNow.AddDays(-1);
-            sasConstraints.SharedAccessExpiryTime = DateTime.UtcNow.AddDays(1);
-            sasConstraints.Permissions = SharedAccessBlobPermissions.Read | SharedAccessBlobPermissions.Write;
-            string sasBlobToken = blob.GetSharedAccessSignature(sasConstraints);
-
-            return blob.Uri + sasBlobToken;
+            // Return reference to BLOB
+            return blobContainer.GetBlockBlobReference(blobName);
         }
 
         public void Start(Message msg)

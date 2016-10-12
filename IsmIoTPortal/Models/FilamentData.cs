@@ -61,7 +61,7 @@ namespace IsmIoTPortal.Models
 
         public FilamentData(double fc, double fl, int ismdeviceid, 
             int h1, int h2, int h3, int h4, int h5, int h6, int h7, int h8, int h9, int h10,
-            string deviceid, string uriImg, string uriColored)
+            string deviceid, string uriImg, string uriColoredImg)
         {
             //Time = DateTime.Now; // uninitialisiert lassen und in ASA Query dann SELECT System.Timestamp AS Time..
             FC = fc;
@@ -81,7 +81,7 @@ namespace IsmIoTPortal.Models
 
             DeviceId = deviceid;
             BlobUriImg = uriImg;
-            BlobUriColoredImg = uriColored;
+            BlobUriColoredImg = uriColoredImg;
         }
     }
 }
