@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -12,11 +14,13 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.AspNet.SignalR.Client;
 using Microsoft.ServiceBus.Messaging;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Runtime.Serialization;
 using IsmIoTPortal;
 using IsmIoTPortal.Models;
 using IsmIoTSettings;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage;
 
@@ -42,7 +46,13 @@ namespace DashboardBrokerWorker
         public override void Run()
         {
             Trace.TraceInformation("DashboardBrokerWorker is running");
-        
+            authority = "https://login.windows.net/ismportal.onmicrosoft.com/";// String.Format(CultureInfo.InvariantCulture, aadInstance, tenant);
+            authContext = new AuthenticationContext(authority);
+            clientCredential = new ClientCredential(clientId, appKey);
+            Authenticate().Wait();
+                //.ContinueWith(t =>
+                //Trace.TraceInformation("Authentication was " + t.Result)
+            //).Wait();
             try
             {
                 this.RunAsync(this.cancellationTokenSource.Token).Wait();
@@ -52,6 +62,87 @@ namespace DashboardBrokerWorker
                 this.runCompleteEvent.Set();
             }
         }
+
+        #region Authentication
+
+        //
+        // The Client ID is used by the application to uniquely identify itself to Azure AD.
+        // The App Key is a credential used by the application to authenticate to Azure AD.
+        // The Tenant is the name of the Azure AD tenant in which this application is registered.
+        // The AAD Instance is the instance of Azure, for example public Azure or Azure China.
+        // The Authority is the sign-in URL of the tenant.
+        //
+        private  string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+        private  string tenant = ConfigurationManager.AppSettings["ida:Tenant"];
+        private  string clientId = ConfigurationManager.AppSettings["ida:DashboardClientId"];
+        private  string appKey = ConfigurationManager.AppSettings["ida:DashboardAppKey"];
+        private string authority = "";
+        //
+        // To authenticate to the To Do list service, the client needs to know the service's App ID URI.
+        // To contact the To Do list service we need it's URL as well.
+        //
+        private  string portalResourceId = ConfigurationManager.AppSettings["ida:PortalResourceId"];
+        private  string portalBaseAddress = ConfigurationManager.AppSettings["ida:PortalBaseAddress"];
+
+        private  HttpClient httpClient = new HttpClient();
+        private  AuthenticationContext authContext = null;
+        private  ClientCredential clientCredential = null;
+
+        /// <summary>
+        /// This functions tries to authenticate the WorkerRole on the IoT Portal. That way it can access SignalR
+        /// </summary>
+        /// <returns>True for success, false for failure</returns>
+        private async Task<bool> Authenticate()
+        {
+            //
+            // Get an access token from Azure AD using client credentials.
+            // If the attempt to get a token fails because the server is unavailable, retry twice after 3 seconds each.
+            //
+            AuthenticationResult result = null;
+            var retryCount = 0;
+            var retry = false;
+
+            do
+            {
+                Trace.TraceInformation("Authenticate. Try number {0}\n", retryCount+1);
+                retry = false;
+                try
+                {
+                    // ADAL includes an in memory cache, so this call will only send a message to the server if the cached token is expired.
+                    result = await authContext.AcquireTokenAsync(this.portalResourceId, this.clientCredential);
+                }
+                catch (AdalException ex)
+                {
+                    if (ex.ErrorCode == "temporarily_unavailable")
+                    {
+                        retry = true;
+                        retryCount++;
+                        Thread.Sleep(3000);
+                    }
+
+                    Trace.TraceInformation(
+                        String.Format("An error occurred while acquiring a token\nTime: {0}\nError: {1}\nRetry: {2}\n",
+                            DateTime.Now.ToString(),
+                            ex.ToString(),
+                            retry.ToString()));
+                }
+                catch (Exception ex)
+                {
+                    Trace.TraceInformation("Error: {0}\n", ex.Message);
+                }
+
+            } while ((retry == true) && (retryCount < 3));
+
+            if (result == null)
+            {
+                Trace.TraceInformation("Canceling attempt to contact To Do list service.\n");
+                return false;
+            }
+            Trace.TraceInformation("Success!\n");
+            return true;
+        }
+
+        #endregion
 
         public override bool OnStart()
         {
