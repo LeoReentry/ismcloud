@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
@@ -14,6 +15,7 @@ using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using System.Text;
 using System.Threading;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 
@@ -32,10 +34,97 @@ namespace IsmIoTPortal.Controllers
         static ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
 
         static HubConnection signalRHubConnection = null; 
-        static IHubProxy signalRHubProxy = null; 
+        static IHubProxy signalRHubProxy = null;
+
+        #region Authentication
+
+        //
+        // The Client ID is used by the application to uniquely identify itself to Azure AD.
+        // The App Key is a credential used by the application to authenticate to Azure AD.
+        // The Tenant is the name of the Azure AD tenant in which this application is registered.
+        // The AAD Instance is the instance of Azure, for example public Azure or Azure China.
+        // The Authority is the sign-in URL of the tenant.
+        //
+        private static readonly string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+        private static readonly string tenant = ConfigurationManager.AppSettings["ida:TenantId"];
+        private static readonly string clientId = ConfigurationManager.AppSettings["ida:DeviceControllerClientId"];
+        private static readonly string appKey = ConfigurationManager.AppSettings["ida:DeviceControllerAppKey"];
+        private static string authority = "";
+        //
+        // To authenticate for SignalR, the client needs to know the service's App ID URI.
+        //
+        private static string portalResourceId = ConfigurationManager.AppSettings["ida:PortalResourceId"];
+
+        private static AuthenticationContext authContext = null;
+        private static ClientCredential clientCredential = null;
+        private static AuthenticationResult authResult = null;
+
+        /// <summary>
+        /// This functions tries to authenticate the WorkerRole on the IoT Portal. That way it can access SignalR
+        /// </summary>
+        /// <returns>True for success, false for failure</returns>
+        private static async Task<bool> Authenticate()
+        {
+            //
+            // Get an access token from Azure AD using client credentials.
+            // If the attempt to get a token fails because the server is unavailable, retry twice after 3 seconds each.
+            //
+            AuthenticationResult result = null;
+            var retryCount = 0;
+            var retry = false;
+
+            do
+            {
+                retry = false;
+                try
+                {
+                    // ADAL includes an in memory cache, so this call will only send a message to the server if the cached token is expired.
+                    result = await authContext.AcquireTokenAsync(portalResourceId, clientCredential);
+                    //authContext.AcquireTokenAsync(portalResourceId, clientCredential)
+                    //    .ContinueWith(t =>
+                    //    {
+                    //        authResult = t.Result;
+
+                    //    });
+                    Console.WriteLine("nop");
+                }
+                catch (AdalException ex)
+                {
+                    if (ex.ErrorCode == "temporarily_unavailable")
+                    {
+                        retry = true;
+                        retryCount++;
+                        Thread.Sleep(3000);
+                    }
+                    
+                }
+                catch (Exception ex)
+                {
+                    
+                }
+
+            } while (retry && (retryCount < 3));
+
+            if (result == null)
+            {
+                return false;
+            }
+            // If authentication was successful, save the authentication result to private field, so it can be read later
+            authResult = result;
+            
+            return true;
+        }
+
+        #endregion
 
         private static void InitializeSignalR()
         {
+            // Authentication
+            authority = aadInstance + tenant;
+            authContext = new AuthenticationContext(authority);
+            clientCredential = new ClientCredential(clientId, appKey);
+            Authenticate().Wait();
+
             // Nur einmal für die Webseiten dieser Web App Instanz eine SignalR Hub Connection + Proxy anlegen (wird erkannt, wenn noch null ist)
             if (signalRHubConnection == null)
             {
@@ -44,6 +133,9 @@ namespace IsmIoTPortal.Controllers
                 // cloud
                 // TODO: No hardcoded domain
                 signalRHubConnection = new HubConnection(IsmIoTSettings.Settings.webCompleteAddress);
+                // Add authentication token to headers
+                signalRHubConnection.Headers.Add("Authorization", "Bearer " + authResult.AccessToken);
+                signalRHubConnection.Headers.Add("Bearer", authResult.AccessToken);
 
                 signalRHubProxy = signalRHubConnection.CreateHubProxy("DashboardHub");
 
