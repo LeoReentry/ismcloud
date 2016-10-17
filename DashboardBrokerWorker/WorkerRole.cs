@@ -32,8 +32,8 @@ namespace DashboardBrokerWorker
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
         //
-        HubConnection signalRHubConnection = null;
-        IHubProxy signalRHubProxy = null;
+        static HubConnection signalRHubConnection = null;
+        static IHubProxy signalRHubProxy = null;
 
         //
         // connection string for the queues listen rule
@@ -65,19 +65,19 @@ namespace DashboardBrokerWorker
         // The AAD Instance is the instance of Azure, for example public Azure or Azure China.
         // The Authority is the sign-in URL of the tenant.
         //
-        private  string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
-        private  string tenant = ConfigurationManager.AppSettings["ida:TenantId"];
-        private  string clientId = ConfigurationManager.AppSettings["ida:DashboardClientId"];
-        private  string appKey = ConfigurationManager.AppSettings["ida:DashboardAppKey"];
+        private readonly string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+        private readonly string tenant = ConfigurationManager.AppSettings["ida:TenantId"];
+        private readonly string clientId = ConfigurationManager.AppSettings["ida:DashboardClientId"];
+        private readonly string appKey = ConfigurationManager.AppSettings["ida:DashboardAppKey"];
         private string authority = "";
         //
         // To authenticate for SignalR, the client needs to know the service's App ID URI.
         //
-        private  string portalResourceId = ConfigurationManager.AppSettings["ida:PortalResourceId"];
+        private string portalResourceId = ConfigurationManager.AppSettings["ida:PortalResourceId"];
         
-        private  AuthenticationContext authContext = null;
-        private  ClientCredential clientCredential = null;
-        private AuthenticationResult authResult = null;
+        private AuthenticationContext authContext = null;
+        private ClientCredential clientCredential = null;
+        private static AuthenticationResult authResult = null;
 
         /// <summary>
         /// This functions tries to authenticate the WorkerRole on the IoT Portal. That way it can access SignalR
@@ -129,6 +129,7 @@ namespace DashboardBrokerWorker
                 Trace.TraceInformation("Authentication was unsuccessful.\n");
                 return false;
             }
+            // If authentication was successful, save the authentication result to private field, so it can be read later
             authResult = result;
             Trace.TraceInformation("Authentication was successful.\n");
             return true;
@@ -205,7 +206,7 @@ namespace DashboardBrokerWorker
             //options.AutoRenewTimeout = TimeSpan.FromMinutes(1); // Gets or sets the maximum duration within which the lock will be renewed automatically. This value should be greater than the longest message lock duration; for example, the LockDuration Property. 
             options.MaxConcurrentCalls = 1;
             options.ExceptionReceived += OnMessage_ExceptionReceived;
-
+            
             //Stopwatch sw = new Stopwatch();
 
 
@@ -288,7 +289,7 @@ namespace DashboardBrokerWorker
             Trace.WriteLine(String.Format("Exception in OnMessage_ExceptionReceived: {0}"), e.Exception.Message);
         }
 
-        private void InitializeSignalR()
+        private static void InitializeSignalR()
         {
             // SignalR 
             //
@@ -299,8 +300,10 @@ namespace DashboardBrokerWorker
                 // cloud
                 // TODO: No hardcoded domain
                 signalRHubConnection = new HubConnection(Settings.webCompleteAddress);
+                // Add authentication token to headers
                 signalRHubConnection.Headers.Add("Authorization", "Bearer " + authResult.AccessToken);
                 signalRHubConnection.Headers.Add("Bearer", authResult.AccessToken);
+
                 signalRHubProxy = signalRHubConnection.CreateHubProxy("DashboardHub");
 
                 // Connect
