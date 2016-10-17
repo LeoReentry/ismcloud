@@ -66,7 +66,7 @@ namespace DashboardBrokerWorker
         // The Authority is the sign-in URL of the tenant.
         //
         private  string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
-        private  string tenant = ConfigurationManager.AppSettings["ida:Tenant"];
+        private  string tenant = ConfigurationManager.AppSettings["ida:TenantId"];
         private  string clientId = ConfigurationManager.AppSettings["ida:DashboardClientId"];
         private  string appKey = ConfigurationManager.AppSettings["ida:DashboardAppKey"];
         private string authority = "";
@@ -299,7 +299,8 @@ namespace DashboardBrokerWorker
                 // cloud
                 // TODO: No hardcoded domain
                 signalRHubConnection = new HubConnection(Settings.webCompleteAddress);
-                //signalRHubConnection.ConnectionToken = authResult.AccessToken;
+                signalRHubConnection.Headers.Add("Authorization", "Bearer " + authResult.AccessToken);
+                signalRHubConnection.Headers.Add("Bearer", authResult.AccessToken);
                 signalRHubProxy = signalRHubConnection.CreateHubProxy("DashboardHub");
 
                 // Connect

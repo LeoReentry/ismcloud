@@ -2,12 +2,14 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Globalization;
+using System.IdentityModel.Tokens;
 using System.Linq;
 using System.Web;
 using Owin;
 using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Cookies;
 using Microsoft.Owin.Security.OpenIdConnect;
+using Microsoft.Owin.Security.ActiveDirectory;
 
 namespace IsmIoTPortal
 {
@@ -24,6 +26,17 @@ namespace IsmIoTPortal
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
             app.UseCookieAuthentication(new CookieAuthenticationOptions());
+
+            app.UseWindowsAzureActiveDirectoryBearerAuthentication(
+                new WindowsAzureActiveDirectoryBearerAuthenticationOptions
+                {
+                    Tenant = tenantId,
+                    TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidAudiences = new List<string> { ConfigurationManager.AppSettings["ida:PortalResourceId"] }
+                    }
+
+                });
 
             app.UseOpenIdConnectAuthentication(
                 new OpenIdConnectAuthenticationOptions
