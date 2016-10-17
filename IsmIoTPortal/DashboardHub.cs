@@ -4,11 +4,17 @@ using System.Linq;
 using System.Web;
 using Microsoft.AspNet.SignalR;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace IsmIoTPortal
 {
     public class DashboardHub : Hub
     {
+        public override Task OnConnected()
+        {
+            var user = Context.User;
+            return Clients.Caller.hubReceived("Welcome, " + user.Identity.Name);
+        }
         // Dashboard
         //
         public void RegisterForDashboard(string DeviceId)

@@ -32,8 +32,8 @@ namespace DashboardBrokerWorker
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
         //
-        static HubConnection signalRHubConnection = null;
-        static IHubProxy signalRHubProxy = null;
+        HubConnection signalRHubConnection = null;
+        IHubProxy signalRHubProxy = null;
 
         //
         // connection string for the queues listen rule
@@ -46,13 +46,6 @@ namespace DashboardBrokerWorker
         public override void Run()
         {
             Trace.TraceInformation("DashboardBrokerWorker is running");
-            authority = "https://login.windows.net/ismportal.onmicrosoft.com/";// String.Format(CultureInfo.InvariantCulture, aadInstance, tenant);
-            authContext = new AuthenticationContext(authority);
-            clientCredential = new ClientCredential(clientId, appKey);
-            Authenticate().Wait();
-                //.ContinueWith(t =>
-                //Trace.TraceInformation("Authentication was " + t.Result)
-            //).Wait();
             try
             {
                 this.RunAsync(this.cancellationTokenSource.Token).Wait();
@@ -78,15 +71,13 @@ namespace DashboardBrokerWorker
         private  string appKey = ConfigurationManager.AppSettings["ida:DashboardAppKey"];
         private string authority = "";
         //
-        // To authenticate to the To Do list service, the client needs to know the service's App ID URI.
-        // To contact the To Do list service we need it's URL as well.
+        // To authenticate for SignalR, the client needs to know the service's App ID URI.
         //
         private  string portalResourceId = ConfigurationManager.AppSettings["ida:PortalResourceId"];
-        private  string portalBaseAddress = ConfigurationManager.AppSettings["ida:PortalBaseAddress"];
-
-        private  HttpClient httpClient = new HttpClient();
+        
         private  AuthenticationContext authContext = null;
         private  ClientCredential clientCredential = null;
+        private AuthenticationResult authResult = null;
 
         /// <summary>
         /// This functions tries to authenticate the WorkerRole on the IoT Portal. That way it can access SignalR
@@ -128,17 +119,18 @@ namespace DashboardBrokerWorker
                 }
                 catch (Exception ex)
                 {
-                    Trace.TraceInformation("Error: {0}\n", ex.Message);
+                    Trace.TraceInformation("Error during authentication: {0}\n", ex.Message);
                 }
 
-            } while ((retry == true) && (retryCount < 3));
+            } while (retry && (retryCount < 3));
 
             if (result == null)
             {
-                Trace.TraceInformation("Canceling attempt to contact To Do list service.\n");
+                Trace.TraceInformation("Authentication was unsuccessful.\n");
                 return false;
             }
-            Trace.TraceInformation("Success!\n");
+            authResult = result;
+            Trace.TraceInformation("Authentication was successful.\n");
             return true;
         }
 
@@ -148,6 +140,12 @@ namespace DashboardBrokerWorker
         {
             // Legen Sie die maximale Anzahl an gleichzeitigen Verbindungen fest.
             ServicePointManager.DefaultConnectionLimit = 12;
+            
+            // Authenticate 
+            authority = aadInstance + tenant;
+            authContext = new AuthenticationContext(authority);
+            clientCredential = new ClientCredential(clientId, appKey);
+            Authenticate().Wait();
 
             // Informationen zum Behandeln von Konfigurationsänderungen
             // finden Sie im MSDN-Thema unter http://go.microsoft.com/fwlink/?LinkId=166357.
@@ -290,7 +288,7 @@ namespace DashboardBrokerWorker
             Trace.WriteLine(String.Format("Exception in OnMessage_ExceptionReceived: {0}"), e.Exception.Message);
         }
 
-        private static void InitializeSignalR()
+        private void InitializeSignalR()
         {
             // SignalR 
             //
@@ -301,7 +299,7 @@ namespace DashboardBrokerWorker
                 // cloud
                 // TODO: No hardcoded domain
                 signalRHubConnection = new HubConnection(Settings.webCompleteAddress);
-
+                //signalRHubConnection.ConnectionToken = authResult.AccessToken;
                 signalRHubProxy = signalRHubConnection.CreateHubProxy("DashboardHub");
 
                 // Connect
