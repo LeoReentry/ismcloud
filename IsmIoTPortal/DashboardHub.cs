@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace IsmIoTPortal
 {
+    [Authorize]
     public class DashboardHub : Hub
     {
         public override Task OnConnected()
