@@ -250,7 +250,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="AuthenticationHelper.cs" />
     <Compile Include="ClassDiagram1.cs" />
     <Compile Include="CommandType.cs" />
     <Compile Include="Controllers\AccountController.cs" />
@@ -296,6 +295,7 @@
     <Compile Include="Models\PbiDashboardInfo.cs" />
     <Compile Include="Models\Software.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SignalRHelper.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
