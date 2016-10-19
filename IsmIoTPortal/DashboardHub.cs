@@ -4,9 +4,11 @@ using System.Linq;
 using System.Web;
 using Microsoft.AspNet.SignalR;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace IsmIoTPortal
 {
+    [Authorize]
     public class DashboardHub : Hub
     {
         // Dashboard
