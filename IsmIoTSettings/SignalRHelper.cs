@@ -30,7 +30,11 @@ namespace IsmIoTSettings
             // Initialize asynchronously so that no thread is blocked
             Init().ContinueWith(t =>
             {
-                if (t.Exception != null) Console.WriteLine(t.Exception);
+                t.Exception?.Handle(e =>
+                {
+                    Console.WriteLine(e.Message);
+                    return true;
+                });
                 Initialized = t.Result;
             });
         }
@@ -116,6 +120,22 @@ namespace IsmIoTSettings
         }
 
         /// <summary>
+        /// Connects the SignalR connection.
+        /// </summary>
+        private void ConnectSignalR()
+        {
+            // Connect
+            SignalRHubConnection.Start().ContinueWith(t =>
+            {
+                t.Exception?.Handle(e =>
+                {
+                    Console.WriteLine(e.Message);
+                    return true;
+                });
+            }).Wait();
+
+        }
+        /// <summary>
         /// Initializes SignalR connection to Hub only if not yet initialized.
         /// </summary>
         private void InitSignalR()
@@ -133,23 +153,7 @@ namespace IsmIoTSettings
                 SignalRHubConnection.Headers.Add("Bearer", _authResult.AccessToken);
 
                 SignalRHubProxy = SignalRHubConnection.CreateHubProxy("DashboardHub");
-
-                // Connect
-                SignalRHubConnection.Start().ContinueWith(t =>
-                {
-                    if (t.Exception != null)
-                    {
-                        t.Exception.Handle(e =>
-                        {
-                            Console.WriteLine(e.Message);
-                            return true;
-                        });
-                    }
-                    else
-                    {
-                        //Console.WriteLine("Verbindung aufgebaut!");
-                    }
-                }).Wait();
+                ConnectSignalR();
             }
 
         }
@@ -183,8 +187,15 @@ namespace IsmIoTSettings
         /// <returns>True for success.</returns>
         public async Task<bool> CheckClientTask()
         {
+            // If disconnected, reconnect
+            if (SignalRHubConnection.State == ConnectionState.Disconnected)
+            {
+                if (!IsTokenValid()) await UpdateToken();
+                ConnectSignalR();
+                return SignalRHubConnection.State == ConnectionState.Connected;
+            }
             // If not initialized or not connected, try to initialize again
-            if (SignalRHubConnection.State == ConnectionState.Disconnected || !Initialized) return await Init();
+            if (!Initialized) return await Init();
             // Update Token if necessary
             if (!IsTokenValid()) return await UpdateToken();
             // If everything is fine, return true
