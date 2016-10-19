@@ -33,7 +33,7 @@ namespace IsmIoTPortal.Controllers
         static RegistryManager registryManager = RegistryManager.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
         static ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
 
-        static SignalRHelper signalRHelper = new SignalRHelper();
+        static IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper("DeviceController");
 
 
         private async static Task SendCloudToDevicePortalCommandAsync(int CommandId, string DeviceId, string cmd)
@@ -445,15 +445,8 @@ namespace IsmIoTPortal.Controllers
             int CommandId = db.Entry(cmd).Entity.CommandId; 
 
             await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.START);
-
-            if (signalRHelper.Authenticated)
-            {
-                // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
-                await signalRHelper.SignalRHubProxy.Invoke<string>("IsmDevicesIndexChanged").ContinueWith(t =>
-                {
-                    //Console.WriteLine(t.Result);
-                });
-            }
+            // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
+            await signalRHelper.IsmDevicesIndexChangedTask();
 
             return RedirectToAction("Index");
         }
@@ -479,14 +472,8 @@ namespace IsmIoTPortal.Controllers
 
             await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.STOP);
 
-            if (signalRHelper.Authenticated)
-            {
-                // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
-                await signalRHelper.SignalRHubProxy.Invoke<string>("IsmDevicesIndexChanged").ContinueWith(t =>
-                {
-                    //Console.WriteLine(t.Result);
-                });
-            }
+            // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
+            await signalRHelper.IsmDevicesIndexChangedTask();
 
             return RedirectToAction("Index");
         }
@@ -511,15 +498,9 @@ namespace IsmIoTPortal.Controllers
             int CommandId = db.Entry(cmd).Entity.CommandId;
 
             await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.START_PREVIEW);
-            
-            if (signalRHelper.Authenticated)
-            {
-                // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
-                await signalRHelper.SignalRHubProxy.Invoke<string>("IsmDevicesIndexChanged").ContinueWith(t =>
-                {
-                    //Console.WriteLine(t.Result);
-                });
-            }
+
+            // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
+            await signalRHelper.IsmDevicesIndexChangedTask();
 
             return RedirectToAction("Index");
         }
@@ -544,15 +525,9 @@ namespace IsmIoTPortal.Controllers
             int CommandId = db.Entry(cmd).Entity.CommandId;
 
             await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.STOP_PREVIEW);
-            
-            if (signalRHelper.Authenticated)
-            {
-                // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
-                await signalRHelper.SignalRHubProxy.Invoke<string>("IsmDevicesIndexChanged").ContinueWith(t =>
-                {
-                    //Console.WriteLine(t.Result);
-                });
-            }
+
+            // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
+            await signalRHelper.IsmDevicesIndexChangedTask();
 
             return RedirectToAction("Index");
         }

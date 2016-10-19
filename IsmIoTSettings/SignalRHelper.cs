@@ -206,7 +206,7 @@ namespace IsmIoTSettings
         /// Invokes DataForDashboard only if client is properly authenticated.
         /// </summary>
         /// <returns>True if successful.</returns>
-        public async Task<bool> DataDorDashboardTask(string deviceId, string fC, string fL, string imgUri, string colUri)
+        public async Task<bool> DataDorDashboardTask(string deviceId, string imgUri, string fC, string fL, string colUri)
         {
             var isAuthorized = await CheckAuthTask();
             if (isAuthorized)
@@ -222,7 +222,7 @@ namespace IsmIoTSettings
         {
             var isAuthorized = await CheckAuthTask();
             if (isAuthorized)
-                await SignalRHubProxy.Invoke<string>("DataForDashboard", deviceId, capturePeriod, varThresh, distMapThresh, rGThresh, restrFillThres, dilVal).ContinueWith(t => { });
+                await SignalRHubProxy.Invoke<string>("ValuesForDashboardControls", deviceId, capturePeriod, varThresh, distMapThresh, rGThresh, restrFillThres, dilVal).ContinueWith(t => { });
             return isAuthorized;
         }
         #endregion
