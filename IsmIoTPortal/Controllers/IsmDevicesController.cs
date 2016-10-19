@@ -33,7 +33,7 @@ namespace IsmIoTPortal.Controllers
         static RegistryManager registryManager = RegistryManager.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
         static ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
 
-        static AuthenticationHelper signalRHelper = new AuthenticationHelper();
+        static SignalRHelper signalRHelper = new SignalRHelper();
 
 
         private async static Task SendCloudToDevicePortalCommandAsync(int CommandId, string DeviceId, string cmd)

@@ -7,16 +7,23 @@ using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace IsmIoTPortal
 {
-    public class AuthenticationHelper
+    /// <summary>
+    /// Helper class that manages authentication on SignalR Hub and exposes the connection.
+    /// </summary>
+    public class SignalRHelper
     {
-        public AuthenticationHelper()
+        // Constructor
+        public SignalRHelper()
         {
             // Authentication
             authority = aadInstance + tenant;
             authContext = new AuthenticationContext(authority);
             clientCredential = new ClientCredential(clientId, appKey);
+            // Initialize asynchronously so that no thread is blocked
             Init();
         }
+
+        #region fields, properties
         //
         // The Client ID is used by the application to uniquely identify itself to Azure AD.
         // The App Key is a credential used by the application to authenticate to Azure AD.
@@ -33,17 +40,19 @@ namespace IsmIoTPortal
         // To authenticate for SignalR, the client needs to know the service's App ID URI.
         //
         private string portalResourceId = ConfigurationManager.AppSettings["ida:PortalResourceId"];
-        private AuthenticationContext authContext = null;
-        private ClientCredential clientCredential = null;
+        private readonly AuthenticationContext authContext = null;
+        private readonly ClientCredential clientCredential = null;
 
         // Variables for public access
         // Authentication result
-        public AuthenticationResult authResult = null;
+        private AuthenticationResult authResult = null;
         // Authentication complete
         public bool Authenticated = false;
         // SignalR 
         public HubConnection SignalRHubConnection = null;
         public IHubProxy SignalRHubProxy = null;
+
+        #endregion
 
         /// <summary>
         /// This function will authenticate IsmDevicesController in AAD and initialize SignalR if so.
@@ -93,9 +102,7 @@ namespace IsmIoTPortal
             } while (retry && (retryCount < 3));
 
             if (result == null)
-            {
                 return false;
-            }
 
             // If authentication was successful, save the authentication result to private field, so it can be read later
             authResult = result;

@@ -11,11 +11,6 @@ namespace IsmIoTPortal
     [Authorize]
     public class DashboardHub : Hub
     {
-        public override Task OnConnected()
-        {
-            var user = Context.User;
-            return Clients.Caller.hubReceived("Welcome, " + user.Identity.Name);
-        }
         // Dashboard
         //
         public void RegisterForDashboard(string DeviceId)
