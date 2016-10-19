@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
@@ -177,14 +178,14 @@ namespace IsmIoTSettings
         }
 
         /// <summary>
-        /// Checks if SignalR Client is authenticated and authenticates if it isn't. Updates Token if expired.
+        /// Checks if SignalR Client is authenticated and connected. Authenticates/connects if it isn't. Updates Token if expired.
         /// </summary>
         /// <returns>True for success.</returns>
-        public async Task<bool> CheckAuthTask()
+        public async Task<bool> CheckClientTask()
         {
-            // If not authenticated, try to initialize again
-            if (!Initialized) return await Init();
-            // Update Headers if necessary
+            // If not initialized or not connected, try to initialize again
+            if (SignalRHubConnection.State == ConnectionState.Disconnected || !Initialized) return await Init();
+            // Update Token if necessary
             if (!IsTokenValid()) return await UpdateToken();
             // If everything is fine, return true
             return true;
@@ -196,10 +197,10 @@ namespace IsmIoTSettings
         /// <returns>True if successful.</returns>
         public async Task<bool> IsmDevicesIndexChangedTask()
         {
-            var isAuthorized = await CheckAuthTask();
-            if (isAuthorized)
+            var isConnected = await CheckClientTask();
+            if (isConnected)
                 await SignalRHubProxy.Invoke<string>("IsmDevicesIndexChanged").ContinueWith(t => { });
-            return isAuthorized;
+            return isConnected;
         }
 
         /// <summary>
@@ -208,10 +209,10 @@ namespace IsmIoTSettings
         /// <returns>True if successful.</returns>
         public async Task<bool> DataDorDashboardTask(string deviceId, string imgUri, string fC, string fL, string colUri)
         {
-            var isAuthorized = await CheckAuthTask();
-            if (isAuthorized)
+            var isConnected = await CheckClientTask();
+            if (isConnected)
                 await SignalRHubProxy.Invoke<string>("DataForDashboard", deviceId, imgUri, fC, fL, colUri).ContinueWith(t => { });
-            return isAuthorized;
+            return isConnected;
         }
 
         /// <summary>
@@ -220,10 +221,10 @@ namespace IsmIoTSettings
         /// <returns>True if successful.</returns>
         public async Task<bool> ValuesForDashboardControlsTask(string deviceId, int capturePeriod, double varThresh, double distMapThresh, double rGThresh, double restrFillThres, double dilVal)
         {
-            var isAuthorized = await CheckAuthTask();
-            if (isAuthorized)
+            var isConnected = await CheckClientTask();
+            if (isConnected)
                 await SignalRHubProxy.Invoke<string>("ValuesForDashboardControls", deviceId, capturePeriod, varThresh, distMapThresh, rGThresh, restrFillThres, dilVal).ContinueWith(t => { });
-            return isAuthorized;
+            return isConnected;
         }
         #endregion
     }
