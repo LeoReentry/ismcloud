@@ -21,5 +21,15 @@ namespace IsmIoTPortal
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
         }
+        protected void Application_BeginRequest(Object sender, EventArgs e)
+        {
+            switch (Request.Url.Scheme)
+            {
+                case "https":
+                    Response.AddHeader("Strict-Transport-Security", "max-age=300");
+                    break;
+            }
+        }
+
     }
 }
