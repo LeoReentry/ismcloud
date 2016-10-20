@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.Entity;
 using System.Linq;
@@ -14,6 +15,7 @@ using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using System.Text;
 using System.Threading;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.ServiceBus;
 using Microsoft.ServiceBus.Messaging;
 
@@ -31,40 +33,8 @@ namespace IsmIoTPortal.Controllers
         static RegistryManager registryManager = RegistryManager.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
         static ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
 
-        static HubConnection signalRHubConnection = null; 
-        static IHubProxy signalRHubProxy = null; 
+        static IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper("DeviceController");
 
-        private static void InitializeSignalR()
-        {
-            // Nur einmal für die Webseiten dieser Web App Instanz eine SignalR Hub Connection + Proxy anlegen (wird erkannt, wenn noch null ist)
-            if (signalRHubConnection == null)
-            {
-                // local
-                //signalRHubConnection = new HubConnection("http://localhost:39860/");
-                // cloud
-                // TODO: No hardcoded domain
-                signalRHubConnection = new HubConnection(IsmIoTSettings.Settings.webCompleteAddress);
-
-                signalRHubProxy = signalRHubConnection.CreateHubProxy("DashboardHub");
-
-                // Connect
-                signalRHubConnection.Start().ContinueWith(t =>
-                {
-                    if (t.Exception != null)
-                    {
-                        t.Exception.Handle(e =>
-                        {
-                            Console.WriteLine(e.Message);
-                            return true;
-                        });
-                    }
-                    else
-                    {
-                        //Console.WriteLine("Verbindung aufgebaut!");
-                    }
-                }).Wait();
-            }
-        } 
 
         private async static Task SendCloudToDevicePortalCommandAsync(int CommandId, string DeviceId, string cmd)
         {
@@ -124,8 +94,6 @@ namespace IsmIoTPortal.Controllers
         // GET: IsmDevices
         public async Task<ActionResult> Index()
         {
-            // Initialisiere static Komponenten wie SignalR Hub connection + proxy
-            InitializeSignalR();
 
             var ismDevices = db.IsmDevices.Include(i => i.Hardware).Include(i => i.Location).Include(i => i.Software);
             
@@ -477,12 +445,8 @@ namespace IsmIoTPortal.Controllers
             int CommandId = db.Entry(cmd).Entity.CommandId; 
 
             await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.START);
-
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
-            await signalRHubProxy.Invoke<string>("IsmDevicesIndexChanged").ContinueWith(t =>
-            {
-                //Console.WriteLine(t.Result);
-            });
+            await signalRHelper.IsmDevicesIndexChangedTask();
 
             return RedirectToAction("Index");
         }
@@ -509,10 +473,7 @@ namespace IsmIoTPortal.Controllers
             await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.STOP);
 
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
-            await signalRHubProxy.Invoke<string>("IsmDevicesIndexChanged").ContinueWith(t =>
-            {
-                //Console.WriteLine(t.Result);
-            });
+            await signalRHelper.IsmDevicesIndexChangedTask();
 
             return RedirectToAction("Index");
         }
@@ -539,10 +500,7 @@ namespace IsmIoTPortal.Controllers
             await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.START_PREVIEW);
 
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
-            await signalRHubProxy.Invoke<string>("IsmDevicesIndexChanged").ContinueWith(t =>
-            {
-                //Console.WriteLine(t.Result);
-            });
+            await signalRHelper.IsmDevicesIndexChangedTask();
 
             return RedirectToAction("Index");
         }
@@ -569,10 +527,7 @@ namespace IsmIoTPortal.Controllers
             await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.STOP_PREVIEW);
 
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
-            await signalRHubProxy.Invoke<string>("IsmDevicesIndexChanged").ContinueWith(t =>
-            {
-                //Console.WriteLine(t.Result);
-            });
+            await signalRHelper.IsmDevicesIndexChangedTask();
 
             return RedirectToAction("Index");
         }

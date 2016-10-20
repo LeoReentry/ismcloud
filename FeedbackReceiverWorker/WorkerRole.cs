@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -15,6 +16,7 @@ using IsmIoTPortal.Models;
 using IsmIoTPortal;
 using System.Data.Entity;
 using IsmIoTSettings;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 
 namespace FeedbackReceiverWorker
 {
@@ -29,12 +31,7 @@ namespace FeedbackReceiverWorker
 
         static FeedbackReceiver<FeedbackBatch> feedbackReceiver = null;
 
-        // local
-        static HubConnection signalRHubConnection = null;
-        // cloud
-        //static HubConnection signalRHubConnection = null;
-
-        static IHubProxy signalRHubProxy = null;
+        static IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper("Feedback");
 
         private static void Initialize()
         {
@@ -44,34 +41,6 @@ namespace FeedbackReceiverWorker
                 // Start receiving feedbacks
                 feedbackReceiver = serviceClient.GetFeedbackReceiver();
                 ReceiveFeedbackAsync();
-            }
-            // 
-            if (signalRHubConnection == null)
-            {
-                // local
-                //signalRHubConnection = new HubConnection("http://localhost:39860/");
-                // cloud
-                // TODO: No hardcoded domain
-                signalRHubConnection = new HubConnection(Settings.webCompleteAddress);
-
-                signalRHubProxy = signalRHubConnection.CreateHubProxy("DashboardHub");
-
-                // Connect
-                signalRHubConnection.Start().ContinueWith(t =>
-                {
-                    if (t.Exception != null)
-                    {
-                        t.Exception.Handle(e =>
-                        {
-                            Console.WriteLine(e.Message);
-                            return true;
-                        });
-                    }
-                    else
-                    {
-                        //Console.WriteLine("Verbindung aufgebaut!");
-                    }
-                }).Wait();
             }
         }
 
@@ -123,10 +92,7 @@ namespace FeedbackReceiverWorker
                 db.Entry(entry).State = EntityState.Modified;
                 db.SaveChanges();
 
-                await signalRHubProxy.Invoke<string>("IsmDevicesIndexChanged").ContinueWith(t =>
-                {
-                    //Console.WriteLine(t.Result);
-                });
+                await signalRHelper.IsmDevicesIndexChangedTask();
             }
         }
 

@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Net;
 using System.Threading;
@@ -12,11 +14,13 @@ using Microsoft.WindowsAzure.Storage;
 using Microsoft.AspNet.SignalR.Client;
 using Microsoft.ServiceBus.Messaging;
 using System.IO;
+using System.Net.Http;
 using System.Text;
 using System.Runtime.Serialization;
 using IsmIoTPortal;
 using IsmIoTPortal.Models;
 using IsmIoTSettings;
+using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Microsoft.WindowsAzure.Storage.Blob;
 using Microsoft.WindowsAzure.Storage;
 
@@ -28,8 +32,7 @@ namespace DashboardBrokerWorker
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
         //
-        static HubConnection signalRHubConnection = null;
-        static IHubProxy signalRHubProxy = null;
+        static IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper("Dashboard");
 
         //
         // connection string for the queues listen rule
@@ -42,7 +45,6 @@ namespace DashboardBrokerWorker
         public override void Run()
         {
             Trace.TraceInformation("DashboardBrokerWorker is running");
-        
             try
             {
                 this.RunAsync(this.cancellationTokenSource.Token).Wait();
@@ -52,6 +54,7 @@ namespace DashboardBrokerWorker
                 this.runCompleteEvent.Set();
             }
         }
+        
 
         public override bool OnStart()
         {
@@ -62,9 +65,7 @@ namespace DashboardBrokerWorker
             // finden Sie im MSDN-Thema unter http://go.microsoft.com/fwlink/?LinkId=166357.
 
             bool result = base.OnStart();
-
-            //
-            InitializeSignalR();
+            
 
             Trace.TraceInformation("DashboardBrokerWorker has been started");
 
@@ -116,7 +117,7 @@ namespace DashboardBrokerWorker
             //options.AutoRenewTimeout = TimeSpan.FromMinutes(1); // Gets or sets the maximum duration within which the lock will be renewed automatically. This value should be greater than the longest message lock duration; for example, the LockDuration Property. 
             options.MaxConcurrentCalls = 1;
             options.ExceptionReceived += OnMessage_ExceptionReceived;
-
+            
             //Stopwatch sw = new Stopwatch();
 
 
@@ -156,11 +157,8 @@ namespace DashboardBrokerWorker
                         var imgUri = GetBlobSasUri(data.BlobUriImg);
                         var colImgUri = GetBlobSasUri(data.BlobUriColoredImg);
 
-                        // Sende Daten an Dashboards
-                        signalRHubProxy.Invoke<string>("DataForDashboard", data.DeviceId, imgUri, data.FC.ToString(), data.FL.ToString(), colImgUri).ContinueWith(t =>
-                        {
-                            //Console.WriteLine(t.Result);
-                        });
+                        signalRHelper.DataDorDashboardTask(data.DeviceId, imgUri, data.FC.ToString(), data.FL.ToString(),
+                            colImgUri).ContinueWith(t => { }, cancellationToken);
 
                         /*sw.Start();*/
 
@@ -171,12 +169,9 @@ namespace DashboardBrokerWorker
                         DeviceState deviceState = message.GetBody<DeviceState>();
 
                         //Sende Values der Controls mit SignalR and Dashboard
-                        signalRHubProxy.Invoke("ValuesForDashboardControls", deviceState.DeviceId, deviceState.CapturePeriod,
+                        signalRHelper.ValuesForDashboardControlsTask(deviceState.DeviceId, deviceState.CapturePeriod,
                             deviceState.VarianceThreshold, deviceState.DistanceMapThreshold, deviceState.RGThreshold,
-                            deviceState.RestrictedFillingThreshold, deviceState.DilateValue).ContinueWith(t =>
-                            {
-                                //Console.WriteLine(t.Result);
-                            });
+                            deviceState.RestrictedFillingThreshold, deviceState.DilateValue).ContinueWith(t => { }, cancellationToken);
 
                         //message.Complete();
                         break;
@@ -197,39 +192,6 @@ namespace DashboardBrokerWorker
         private void OnMessage_ExceptionReceived(object sender, ExceptionReceivedEventArgs e)
         {
             Trace.WriteLine(String.Format("Exception in OnMessage_ExceptionReceived: {0}"), e.Exception.Message);
-        }
-
-        private static void InitializeSignalR()
-        {
-            // SignalR 
-            //
-            if (signalRHubConnection == null)
-            {
-                // local
-                //signalRHubConnection = new HubConnection("http://localhost:39860/");
-                // cloud
-                // TODO: No hardcoded domain
-                signalRHubConnection = new HubConnection(Settings.webCompleteAddress);
-
-                signalRHubProxy = signalRHubConnection.CreateHubProxy("DashboardHub");
-
-                // Connect
-                signalRHubConnection.Start().ContinueWith(t =>
-                {
-                    if (t.Exception != null)
-                    {
-                        t.Exception.Handle(e =>
-                        {
-                            Console.WriteLine(e.Message);
-                            return true;
-                        });
-                    }
-                    else
-                    {
-                        Console.WriteLine("Verbindung aufgebaut!");
-                    }
-                }).Wait();
-            }
         }
     }
 }
