@@ -20,6 +20,22 @@ namespace IsmIoTPortal
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
+            MvcHandler.DisableMvcResponseHeader = true;
         }
+        protected void Application_BeginRequest(Object sender, EventArgs e)
+        {
+            switch (Request.Url.Scheme)
+            {
+                case "https":
+                    Response.AddHeader("Strict-Transport-Security", "max-age=300");
+                    break;
+            }
+        }
+
+        protected void Application_PreSendRequestHeaders()
+        {
+            Response.Headers.Remove("Server");
+        }
+
     }
 }

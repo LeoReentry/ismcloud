@@ -25,7 +25,10 @@ namespace IsmIoTPortal
         {
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
-            app.UseCookieAuthentication(new CookieAuthenticationOptions());
+            app.UseCookieAuthentication(new CookieAuthenticationOptions()
+            {
+                CookieName = "WeAreSpecialToo"
+            });
 
             // Use Winodws Azure Active Directory Bearer Authentication
             // This allows access to SignalR using JSON Web Tokens (JWT)
