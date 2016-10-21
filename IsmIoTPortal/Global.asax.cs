@@ -20,6 +20,7 @@ namespace IsmIoTPortal
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AntiForgeryConfig.UniqueClaimTypeIdentifier = ClaimTypes.NameIdentifier;
+            MvcHandler.DisableMvcResponseHeader = true;
         }
         protected void Application_BeginRequest(Object sender, EventArgs e)
         {
