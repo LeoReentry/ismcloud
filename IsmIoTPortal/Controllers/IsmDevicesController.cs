@@ -124,6 +124,7 @@ namespace IsmIoTPortal.Controllers
 
         // POST: IsmDevices/Dashboard/<DeviceState>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<ActionResult> Dashboard(DeviceState deviceState)
         {
             // If device doesn't exist, redirect to index
