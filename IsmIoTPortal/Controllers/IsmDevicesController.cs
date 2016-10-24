@@ -251,7 +251,7 @@ namespace IsmIoTPortal.Controllers
         public ActionResult Edit(int? id, [Bind(Include = "IsmDeviceId,DeviceId,LocationId,SoftwareId,HardwareId")] IsmDevice ismDevice)
         {
             // Check Device ID against a whitelist of values to prevent XSS
-            if (!IsmIoTSettings.RegexHelper.Number.IsMatch(ismDevice.DeviceId))
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(ismDevice.DeviceId))
                 return HttpNotFound();
             // Check that POST device ID is the same as ID parameter
             if (id == null || id != ismDevice.IsmDeviceId)
