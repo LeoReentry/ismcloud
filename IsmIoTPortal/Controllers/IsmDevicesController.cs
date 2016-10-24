@@ -112,9 +112,12 @@ namespace IsmIoTPortal.Controllers
         // GET: IsmDevices/Dashboard/<DeviceId>
         public async Task<ActionResult> Dashboard(string DeviceId)
         {
+            // If device doesn't exist, redirect to index
+            if (await registryManager.GetDeviceAsync(DeviceId) == null)
+                return RedirectToAction("Index");
+            // Load page
             DeviceState deviceState = new DeviceState();
             deviceState.DeviceId = DeviceId;
-
             //await C2DGetDeviceStateAsync(DeviceId);
             return View(deviceState);
         }
@@ -123,6 +126,10 @@ namespace IsmIoTPortal.Controllers
         [HttpPost]
         public async Task<ActionResult> Dashboard(DeviceState deviceState)
         {
+            // If device doesn't exist, redirect to index
+            // The rest of the user input is sanitized by parsing the value to numbers
+            if (await registryManager.GetDeviceAsync(deviceState.DeviceId) == null)
+                return RedirectToAction("Index");
             // C2D Message die dem Device einen durch die Controls veränderten DeviceState mitteilt
             await C2DSetDeviceStateAsync(deviceState.DeviceId, deviceState);
             //ModelState.Clear();
@@ -132,6 +139,9 @@ namespace IsmIoTPortal.Controllers
 
         public async Task<ActionResult> ShowKey(string deviceId)
         {
+            // If device doesn't exist, redirect to index
+            if (await registryManager.GetDeviceAsync(deviceId) == null)
+                return RedirectToAction("Index");
             Device device = await registryManager.GetDeviceAsync(deviceId);
             string key = device.Authentication.SymmetricKey.PrimaryKey.ToString();
             return View(model:key);
@@ -241,8 +251,15 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "IsmDeviceId,DeviceId,LocationId,SoftwareId,HardwareId")] IsmDevice ismDevice)
+        public ActionResult Edit(int? id, [Bind(Include = "IsmDeviceId,DeviceId,LocationId,SoftwareId,HardwareId")] IsmDevice ismDevice)
         {
+            // Check that POST device ID is the same as ID parameter
+            if (id == null || id != ismDevice.IsmDeviceId)
+                return HttpNotFound();
+            // Return error if device doesn't exist
+            if (db.IsmDevices.Find(ismDevice.IsmDeviceId) == null)
+                return HttpNotFound();
+
             if (ModelState.IsValid)
             {
                 db.Entry(ismDevice).State = EntityState.Modified;
@@ -315,6 +332,10 @@ namespace IsmIoTPortal.Controllers
             // Nur wenn erster Schritt gut ging weitermachen und aus DB löschen
             // Vermeidet Device Leak
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+            
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
 
             Task deleteFromIoTHubTask =
                 Task.Factory.StartNew((stateObj) =>
@@ -347,6 +368,11 @@ namespace IsmIoTPortal.Controllers
         {
 
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
@@ -388,6 +414,12 @@ namespace IsmIoTPortal.Controllers
         public async Task<ActionResult> Provision(int id)
         {
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
@@ -429,6 +461,12 @@ namespace IsmIoTPortal.Controllers
         public async Task<ActionResult> Start(int id)
         {
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
@@ -455,6 +493,11 @@ namespace IsmIoTPortal.Controllers
         public async Task<ActionResult> Stop(int id)
         {
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
@@ -482,6 +525,11 @@ namespace IsmIoTPortal.Controllers
         public async Task<ActionResult> StartPreview(int id)
         {
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
@@ -509,6 +557,11 @@ namespace IsmIoTPortal.Controllers
         public async Task<ActionResult> StopPreview(int id)
         {
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
