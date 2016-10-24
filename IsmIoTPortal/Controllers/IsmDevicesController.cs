@@ -50,23 +50,6 @@ namespace IsmIoTPortal.Controllers
             await serviceClient.SendAsync(deviceId, commandMessage); 
         }
 
-        //
-        // Device State Anfordern
-        private static async Task C2DGetDeviceStateAsync(string DeviceId)
-        {
-            //var commandMessage = new Message();
-            var commandMessage = new Message(Encoding.UTF8.GetBytes(CommandType.GET_DEVICE_STATE));
-            commandMessage.Properties["command"] = CommandType.GET_DEVICE_STATE;
-            /* Die Reaktion des Devices auf GET_DEVICE_STATE, soll das Senden des gesamten Device-States
-               sein (Algorithm-Parameter, Cam & Pulser-Parameter, aktueller state (running, preview,...) usw.)
-               --> Diese vielen Infos alle in die MessageId zu "tricksen" ist nicht schön, desshalb wird hier ohne ACK's gearbeitet.
-               Das Device sendet als Reaktion eine D2C UPDATE_DASHBOARD_CONTROLS message die vom DashboardBroker entsprechend
-               mit dem update der Controls auf dem Dashboard per SignalR behandelt werden kann.
-            */
-            //commandMessage.Ack = DeliveryAcknowledgement.Full;
-            commandMessage.MessageId = Guid.NewGuid().ToString();
-            await serviceClient.SendAsync(DeviceId, commandMessage);
-        }
 
         // Device State Setzen
         private static async Task C2DSetDeviceStateAsync(string deviceId, DeviceState deviceState)
