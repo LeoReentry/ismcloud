@@ -1,42 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using IsmIoTPortal.Models;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices;
-using Microsoft.Azure.Devices.Common.Exceptions;
-using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using System.Text;
 using System.Threading;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.ServiceBus;
-using Microsoft.ServiceBus.Messaging;
 
 namespace IsmIoTPortal.Controllers
 {
     [Authorize]
     public class IsmDevicesController : Controller
     {
-        private IsmIoTPortalContext db = new IsmIoTPortalContext();
+        private readonly IsmIoTPortalContext db = new IsmIoTPortalContext();
 
         //static string connectionString = "HostName=iothubism.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=nhhwSNpr3p68FcTZfvPEfU7xvJRH/jOpTcWQbQMoKAg=";
         //static RegistryManager registryManager = RegistryManager.CreateFromConnectionString(connectionString);
         //static ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(connectionString);
-  
-        static RegistryManager registryManager = RegistryManager.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
-        static ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
 
-        static IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper("DeviceController");
+        private static readonly RegistryManager registryManager = RegistryManager.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
+        private static readonly ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
+
+        private static readonly IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper("DeviceController");
 
 
-        private async static Task SendCloudToDevicePortalCommandAsync(int CommandId, string DeviceId, string cmd)
+        private static async Task SendCloudToDevicePortalCommandAsync(int commandId, string deviceId, string cmd)
         {
             //var commandMessage = new Message();
             //var commandMessage = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(cmd)));
@@ -54,13 +46,13 @@ namespace IsmIoTPortal.Controllers
 
             commandMessage.Properties["command"] = cmd;
             commandMessage.Ack = DeliveryAcknowledgement.Full;
-            commandMessage.MessageId = MessageIdPrefix.CMD + " " + CommandId.ToString();
-            await serviceClient.SendAsync(DeviceId, commandMessage); 
+            commandMessage.MessageId = MessageIdPrefix.CMD + " " + commandId.ToString();
+            await serviceClient.SendAsync(deviceId, commandMessage); 
         }
 
         //
         // Device State Anfordern
-        private async static Task C2DGetDeviceStateAsync(string DeviceId)
+        private static async Task C2DGetDeviceStateAsync(string DeviceId)
         {
             //var commandMessage = new Message();
             var commandMessage = new Message(Encoding.UTF8.GetBytes(CommandType.GET_DEVICE_STATE));
@@ -77,7 +69,7 @@ namespace IsmIoTPortal.Controllers
         }
 
         // Device State Setzen
-        private async static Task C2DSetDeviceStateAsync(string DeviceId, DeviceState deviceState)
+        private static async Task C2DSetDeviceStateAsync(string deviceId, DeviceState deviceState)
         {
             // Durch View veränderter DeviceState in Message Body packen
             string serializedDeviceState = JsonConvert.SerializeObject(deviceState);
@@ -87,7 +79,7 @@ namespace IsmIoTPortal.Controllers
 
             //commandMessage.Ack = DeliveryAcknowledgement.Full;
             commandMessage.MessageId = Guid.NewGuid().ToString();
-            await serviceClient.SendAsync(DeviceId, commandMessage);
+            await serviceClient.SendAsync(deviceId, commandMessage);
         }
 
 
@@ -110,14 +102,14 @@ namespace IsmIoTPortal.Controllers
         }
 
         // GET: IsmDevices/Dashboard/<DeviceId>
-        public async Task<ActionResult> Dashboard(string DeviceId)
+        public async Task<ActionResult> Dashboard(string deviceId)
         {
             // If device doesn't exist, redirect to index
-            if (await registryManager.GetDeviceAsync(DeviceId) == null)
+            if (await registryManager.GetDeviceAsync(deviceId) == null)
                 return RedirectToAction("Index");
             // Load page
             DeviceState deviceState = new DeviceState();
-            deviceState.DeviceId = DeviceId;
+            deviceState.DeviceId = deviceId;
             //await C2DGetDeviceStateAsync(DeviceId);
             return View(deviceState);
         }
@@ -144,14 +136,14 @@ namespace IsmIoTPortal.Controllers
             if (await registryManager.GetDeviceAsync(deviceId) == null)
                 return RedirectToAction("Index");
             Device device = await registryManager.GetDeviceAsync(deviceId);
-            string key = device.Authentication.SymmetricKey.PrimaryKey.ToString();
+            string key = device.Authentication.SymmetricKey.PrimaryKey;
             return View(model:key);
         }
 
-        private async static Task<string> AddDeviceAsync(string deviceId)
+        private static async Task<string> AddDeviceAsync(string deviceId)
         {
             Device device = await registryManager.AddDeviceAsync(new Device(deviceId));
-            return device.Authentication.SymmetricKey.PrimaryKey.ToString();
+            return device.Authentication.SymmetricKey.PrimaryKey;
         }
 
 
@@ -358,10 +350,7 @@ namespace IsmIoTPortal.Controllers
             .ContinueWith((ant, ct) =>
             {
             }, cts.Token)
-            .ContinueWith<ActionResult>((ant) =>
-            {
-                return RedirectToAction("Index");
-            }, TaskContinuationOptions.NotOnCanceled);
+            .ContinueWith<ActionResult>((ant) => RedirectToAction("Index"), TaskContinuationOptions.NotOnCanceled);
         }
 
         // GET: IsmDevices/Unprovision/5
@@ -377,11 +366,13 @@ namespace IsmIoTPortal.Controllers
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
-            Command cmd = new Command();
-            cmd.Cmd = CommandType.UNPROVISION;
-            cmd.Timestamp = DateTime.Now;
-            cmd.IsmDeviceId = id;
-            cmd.IsmDevice = ismDevice;
+            Command cmd = new Command
+            {
+                Cmd = CommandType.UNPROVISION,
+                Timestamp = DateTime.Now,
+                IsmDeviceId = id,
+                IsmDevice = ismDevice
+            };
 
             device.Status = DeviceStatus.Disabled;
 
@@ -392,6 +383,7 @@ namespace IsmIoTPortal.Controllers
             }
             catch (Exception)
             {
+                // ignored
             }
 
             switch (t.Status)
@@ -439,6 +431,7 @@ namespace IsmIoTPortal.Controllers
             }
             catch (Exception)
             {
+                // ignored
             }
 
             switch (t.Status)
@@ -481,9 +474,9 @@ namespace IsmIoTPortal.Controllers
             // Write Command to DB
             db.Commands.Add(cmd);
             db.SaveChanges();
-            int CommandId = db.Entry(cmd).Entity.CommandId; 
+            int commandId = db.Entry(cmd).Entity.CommandId; 
 
-            await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.START);
+            await SendCloudToDevicePortalCommandAsync(commandId, device.Id, CommandType.START);
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
             await signalRHelper.IsmDevicesIndexChangedTask();
 
@@ -502,19 +495,21 @@ namespace IsmIoTPortal.Controllers
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
-            Command cmd = new Command();
-            cmd.Cmd = CommandType.STOP;
-            cmd.Timestamp = DateTime.Now;
-            cmd.IsmDeviceId = id;
-            cmd.IsmDevice = ismDevice;
-            cmd.CommandStatus = CommandStatus.PENDING;
+            Command cmd = new Command
+            {
+                Cmd = CommandType.STOP,
+                Timestamp = DateTime.Now,
+                IsmDeviceId = id,
+                IsmDevice = ismDevice,
+                CommandStatus = CommandStatus.PENDING
+            };
 
             // Write Command to DB
             db.Commands.Add(cmd);
             db.SaveChanges();
-            int CommandId = db.Entry(cmd).Entity.CommandId;
+            int commandId = db.Entry(cmd).Entity.CommandId;
 
-            await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.STOP);
+            await SendCloudToDevicePortalCommandAsync(commandId, device.Id, CommandType.STOP);
 
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
             await signalRHelper.IsmDevicesIndexChangedTask();
@@ -534,19 +529,21 @@ namespace IsmIoTPortal.Controllers
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
-            Command cmd = new Command();
-            cmd.Cmd = CommandType.START_PREVIEW;
-            cmd.Timestamp = DateTime.Now;
-            cmd.IsmDeviceId = id;
-            cmd.IsmDevice = ismDevice;
-            cmd.CommandStatus = CommandStatus.PENDING;
+            Command cmd = new Command
+            {
+                Cmd = CommandType.START_PREVIEW,
+                Timestamp = DateTime.Now,
+                IsmDeviceId = id,
+                IsmDevice = ismDevice,
+                CommandStatus = CommandStatus.PENDING
+            };
 
             // Write Command to DB
             db.Commands.Add(cmd);
             db.SaveChanges();
-            int CommandId = db.Entry(cmd).Entity.CommandId;
+            int commandId = db.Entry(cmd).Entity.CommandId;
 
-            await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.START_PREVIEW);
+            await SendCloudToDevicePortalCommandAsync(commandId, device.Id, CommandType.START_PREVIEW);
 
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
             await signalRHelper.IsmDevicesIndexChangedTask();
@@ -566,19 +563,21 @@ namespace IsmIoTPortal.Controllers
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
-            Command cmd = new Command();
-            cmd.Cmd = CommandType.STOP_PREVIEW;
-            cmd.Timestamp = DateTime.Now;
-            cmd.IsmDeviceId = id;
-            cmd.IsmDevice = ismDevice;
-            cmd.CommandStatus = CommandStatus.PENDING;
+            Command cmd = new Command
+            {
+                Cmd = CommandType.STOP_PREVIEW,
+                Timestamp = DateTime.Now,
+                IsmDeviceId = id,
+                IsmDevice = ismDevice,
+                CommandStatus = CommandStatus.PENDING
+            };
 
             // Write Command to DB
             db.Commands.Add(cmd);
             db.SaveChanges();
-            int CommandId = db.Entry(cmd).Entity.CommandId;
+            int commandId = db.Entry(cmd).Entity.CommandId;
 
-            await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.STOP_PREVIEW);
+            await SendCloudToDevicePortalCommandAsync(commandId, device.Id, CommandType.STOP_PREVIEW);
 
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
             await signalRHelper.IsmDevicesIndexChangedTask();
