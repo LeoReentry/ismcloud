@@ -87,9 +87,14 @@ namespace IsmIoTPortal.Controllers
         // GET: IsmDevices/Dashboard/<DeviceId>
         public async Task<ActionResult> Dashboard(string deviceId)
         {
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(deviceId))
+                return HttpNotFound();
+
             // If device doesn't exist, redirect to index
             if (await registryManager.GetDeviceAsync(deviceId) == null)
                 return RedirectToAction("Index");
+
             // Load page
             DeviceState deviceState = new DeviceState();
             deviceState.DeviceId = deviceId;
@@ -98,14 +103,21 @@ namespace IsmIoTPortal.Controllers
         }
 
         // POST: IsmDevices/Dashboard/<DeviceState>
+        // Use Bind to whitelist values which can be set through web interface
+        // Malicious attacks with additional form data can not be successful
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Dashboard(DeviceState deviceState)
+        public async Task<ActionResult> Dashboard([Bind(Include = "DeviceId,VarianceThreshold,DistanceMapThreshold,RGThreshold,RestrictedFillingThreshold,DilateValue,CapturePeriod")]DeviceState deviceState)
         {
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(deviceState.DeviceId))
+                return HttpNotFound();
+
             // If device doesn't exist, redirect to index
             // The rest of the user input is sanitized by parsing the value to numbers
             if (await registryManager.GetDeviceAsync(deviceState.DeviceId) == null)
                 return RedirectToAction("Index");
+
             // C2D Message die dem Device einen durch die Controls veränderten DeviceState mitteilt
             await C2DSetDeviceStateAsync(deviceState.DeviceId, deviceState);
             //ModelState.Clear();
@@ -115,9 +127,14 @@ namespace IsmIoTPortal.Controllers
 
         public async Task<ActionResult> ShowKey(string deviceId)
         {
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(deviceId))
+                return HttpNotFound();
+
             // If device doesn't exist, redirect to index
             if (await registryManager.GetDeviceAsync(deviceId) == null)
                 return RedirectToAction("Index");
+
             Device device = await registryManager.GetDeviceAsync(deviceId);
             string key = device.Authentication.SymmetricKey.PrimaryKey;
             return View(model:key);
@@ -161,6 +178,10 @@ namespace IsmIoTPortal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include = "IsmDeviceId,DeviceId,LocationId,SoftwareId,HardwareId")] IsmDevice ismDevice)
         {
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(ismDevice.DeviceId))
+                return HttpNotFound();
+
             if (ModelState.IsValid)
             {
                 // Zuerst einmal in DB anlegen
@@ -229,6 +250,9 @@ namespace IsmIoTPortal.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int? id, [Bind(Include = "IsmDeviceId,DeviceId,LocationId,SoftwareId,HardwareId")] IsmDevice ismDevice)
         {
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Number.IsMatch(ismDevice.DeviceId))
+                return HttpNotFound();
             // Check that POST device ID is the same as ID parameter
             if (id == null || id != ismDevice.IsmDeviceId)
                 return HttpNotFound();
