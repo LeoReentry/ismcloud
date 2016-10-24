@@ -35,7 +35,7 @@ namespace IsmIoTPortal.Controllers
             if (Request.IsAuthenticated)
             {
                 // Redirect to home page if the user is authenticated.
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "IsmDevices");
             }
 
             return View();
