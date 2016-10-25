@@ -255,6 +255,7 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CommandsController.cs" />
     <Compile Include="Controllers\ContactsController.cs" />
+    <Compile Include="Controllers\ErrorController.cs" />
     <Compile Include="Controllers\FilamentDataController.cs" />
     <Compile Include="Controllers\FilamentDataHistoryController.cs" />
     <Compile Include="Controllers\HardwareController.cs" />
@@ -435,6 +436,10 @@
     <Content Include="Views\Account\SignOutCallback.cshtml" />
     <Content Include="Service References\AzureAD\ConnectedService.json" />
     <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Error\NotFound.cshtml" />
+    <Content Include="Views\Error\Index.cshtml" />
+    <Content Include="Views\Error\Unavailable.cshtml" />
+    <Content Include="Views\Error\BadRequest.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
