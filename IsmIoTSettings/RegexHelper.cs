@@ -16,8 +16,8 @@ namespace IsmIoTSettings
         /// </summary>
         public static Regex Word = new Regex(@"^[A-Za-z]+$");
         /// <summary>
-        /// Matches if only alphanumerical characters are used, including underscore and hyphen, minimum length 1
+        /// Matches if only alphanumerical characters, including underscore, are used, minimum length 1
         /// </summary>
-        public static Regex Text = new Regex(@"^[A-Za-z0-9_-]+$");
+        public static Regex Text = new Regex(@"^[A-Za-z0-9_]+$");
     }
 }
