@@ -342,6 +342,16 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ClassDiagram1.cd" />
+    <Content Include="..\IsmIoTSettings\appsettings.Release.config">
+      <Link>appsettings.Release.config</Link>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\IsmIoTSettings\appsettings.config">
+      <Link>appsettings.config</Link>
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="..\IsmIoTSettings\connections.config">
       <Link>connections.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

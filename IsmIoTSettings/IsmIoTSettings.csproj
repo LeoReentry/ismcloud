@@ -63,6 +63,10 @@
     <Compile Include="SignalRHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="appsettings.Release.config">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="appsettings.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <SubType>Designer</SubType>

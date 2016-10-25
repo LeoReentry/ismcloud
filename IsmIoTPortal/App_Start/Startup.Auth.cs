@@ -19,6 +19,7 @@ namespace IsmIoTPortal
         private static string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
         private static string tenantId = ConfigurationManager.AppSettings["ida:TenantId"];
         private static string postLogoutRedirectUri = ConfigurationManager.AppSettings["ida:PostLogoutRedirectUri"];
+        private static string redirectUri = ConfigurationManager.AppSettings["ida:RedirectUri"];
         private static string authority = aadInstance + tenantId;
 
         public void ConfigureAuth(IAppBuilder app)
@@ -49,7 +50,8 @@ namespace IsmIoTPortal
                 {
                     ClientId = clientId,
                     Authority = authority,
-                    PostLogoutRedirectUri = postLogoutRedirectUri
+                    PostLogoutRedirectUri = postLogoutRedirectUri,
+                    RedirectUri = redirectUri
                 });
         }
     }
