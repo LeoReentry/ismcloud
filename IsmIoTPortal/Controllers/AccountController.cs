@@ -9,6 +9,7 @@ using Microsoft.Owin.Security;
 
 namespace IsmIoTPortal.Controllers
 {
+    [AllowAnonymous]
     public class AccountController : Controller
     {
         public void SignIn()

@@ -13,7 +13,6 @@ using System.Threading;
 
 namespace IsmIoTPortal.Controllers
 {
-    [Authorize]
     public class IsmDevicesController : Controller
     {
         private readonly IsmIoTPortalContext db = new IsmIoTPortalContext();

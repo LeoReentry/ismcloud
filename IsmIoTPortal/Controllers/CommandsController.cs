@@ -10,7 +10,7 @@ using IsmIoTPortal.Models;
 
 namespace IsmIoTPortal.Controllers
 {
-    [Authorize]
+    [CustomAuthorize]
     public class CommandsController : Controller
     {
         private IsmIoTPortalContext db = new IsmIoTPortalContext();
