@@ -297,7 +297,6 @@
     <Compile Include="Models\Software.cs" />
     <Compile Include="CustomAuthorizeAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SignalRHelper.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -343,20 +342,14 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ClassDiagram1.cd" />
-    <Content Include="..\IsmIoTSettings\appsettings.Release.config">
-      <Link>appsettings.Release.config</Link>
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="..\IsmIoTSettings\connections.Secret.config">
+      <Link>connections.Secret.config</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="..\IsmIoTSettings\appsettings.config">
-      <Link>appsettings.config</Link>
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="..\IsmIoTSettings\connections.Public.config">
+      <Link>connections.Public.config</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="..\IsmIoTSettings\connections.config">
-      <Link>connections.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="Properties\PublishProfiles\ismiotportal - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\ismportal - Web Deploy.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -20,9 +21,8 @@ namespace IsmIoTPortal.Controllers
         //static string connectionString = "HostName=iothubism.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=nhhwSNpr3p68FcTZfvPEfU7xvJRH/jOpTcWQbQMoKAg=";
         //static RegistryManager registryManager = RegistryManager.CreateFromConnectionString(connectionString);
         //static ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(connectionString);
-
-        private static readonly RegistryManager registryManager = RegistryManager.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
-        private static readonly ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
+        private static readonly RegistryManager registryManager = RegistryManager.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
+        private static readonly ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
 
         private static readonly IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper("DeviceController");
 
