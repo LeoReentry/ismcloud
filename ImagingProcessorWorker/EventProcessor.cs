@@ -339,7 +339,7 @@ namespace ImagingProcessorWorker
         {
             //var storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
             // Connect to BLOB container
-            string conStr = Settings.storageConnection;
+            string conStr = CloudConfigurationManager.GetSetting("storageConnection");
             var storageAccount = CloudStorageAccount.Parse(conStr);
             var blobClient = storageAccount.CreateCloudBlobClient();
             var blobContainer = blobClient.GetContainerReference(CloudConfigurationManager.GetSetting("containerPortal"));
