@@ -26,12 +26,17 @@ namespace FeedbackReceiverWorker
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
         //static string connectionString = "HostName=iothubism.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=nhhwSNpr3p68FcTZfvPEfU7xvJRH/jOpTcWQbQMoKAg=";
-        static string connectionString = Settings.ismiothub;//System.Configuration.ConfigurationSettings.AppSettings.Get("ismiothub");
+        private static string connectionString = CloudConfigurationManager.GetSetting("ismiothub");//System.Configuration.ConfigurationSettings.AppSettings.Get("ismiothub");
         static ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(connectionString);
 
         static FeedbackReceiver<FeedbackBatch> feedbackReceiver = null;
 
-        static IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper("Feedback");
+        private static readonly string AadInstance = CloudConfigurationManager.GetSetting("ida-AADInstance");
+        private static readonly string Tenant = CloudConfigurationManager.GetSetting("ida-TenantId");
+        private static readonly string PortalResourceId = CloudConfigurationManager.GetSetting("ida-PortalResourceId");
+        private static readonly string ClientId = CloudConfigurationManager.GetSetting("ida-FeedbackClientId");
+        private static readonly string AppKey = CloudConfigurationManager.GetSetting("ida-FeedbackAppKey");
+        private static readonly IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper(AadInstance, Tenant, PortalResourceId, ClientId, AppKey);
 
         private static void Initialize()
         {

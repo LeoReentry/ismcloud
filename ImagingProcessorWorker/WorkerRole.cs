@@ -316,7 +316,7 @@ namespace ImagingProcessorWorker
                 Technically, and IoT hub could have multiple endpoints that are compatible with Event Hubs.
                 At this time the only Event Hubs - compatible endpoint is called "messages/events", so it is a fixed string. */
                 string iotHubD2cEndpoint = "messages/events";
-                string eventHubName = Settings.iotHubName; //"IsmIoTHub";
+                string eventHubName = CloudConfigurationManager.GetSetting("iotHubName"); //"IsmIoTHub";
                 string consumerGroupName = EventHubConsumerGroup.DefaultGroupName;
                 // Alternativ geht auch CurrentRoleInstance.Id (ist auch unique)
                 //string eventProcessorHostName = Guid.NewGuid().ToString();
@@ -329,10 +329,10 @@ namespace ImagingProcessorWorker
                 eventProcessorHost = new EventProcessorHost(eventProcessorHostName,
                                                             iotHubD2cEndpoint, // eigentlich steht hier der EventHub Name aber siehe Kommentar, bei IoTHubs ist hier der fixe string "messages/events" notwendig
                                                             consumerGroupName,
-                                                            //iotHubConnectionString,
-                                                            Settings.ismiothub,//System.Configuration.ConfigurationSettings.AppSettings.Get("ismiothub"),
-                                                            //EventProcessor.StorageConnectionString, 
-                                                            Settings.ismiotstorage,//System.Configuration.ConfigurationSettings.AppSettings.Get("ismiotstorage"),
+                                                           //iotHubConnectionString,
+                                                           CloudConfigurationManager.GetSetting("ismiothub"),//System.Configuration.ConfigurationSettings.AppSettings.Get("ismiothub"),
+                                                                                                             //EventProcessor.StorageConnectionString, 
+                                                            CloudConfigurationManager.GetSetting("ismiotstorage"),//System.Configuration.ConfigurationSettings.AppSettings.Get("ismiotstorage"),
                                                             eventHubName.ToLowerInvariant());
 
                 factory = new EventProcessorFactory(logfile);
