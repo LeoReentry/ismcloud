@@ -36,6 +36,7 @@ namespace IsmIoTPortal
         protected void Application_PreSendRequestHeaders()
         {
             Response.Headers.Remove("Server");
+            Response.AddHeader("X-Frame-Options", "DENY");
         }
 
     }
