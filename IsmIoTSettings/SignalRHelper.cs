@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Configuration;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Newtonsoft.Json.Bson;
 
 namespace IsmIoTSettings
 {
@@ -97,9 +94,17 @@ namespace IsmIoTSettings
         // Variables for public access
         // Authentication result
         // Authentication complete
+        /// <summary>
+        /// True if SignalR connection is established
+        /// </summary>
         public bool Initialized { get; private set; } = false;
-        // SignalR 
+        /// <summary>
+        /// Reference to HubConnection object.
+        /// </summary>
         public HubConnection SignalRHubConnection { get; private set; }
+        /// <summary>
+        /// The SignalR proxy used to connect to the Hub.
+        /// </summary>
         public IHubProxy SignalRHubProxy { get; private set; }
 
         #endregion
