@@ -1,4 +1,5 @@
 ﻿@*@model string*@
+@using System.Configuration
 @model IsmIoTPortal.Models.DeviceState
 
 @{
@@ -232,7 +233,7 @@
                 commandMessage.MessageId = Guid.NewGuid().ToString();
                 //commandMessage.Ack = Microsoft.Azure.Devices.DeliveryAcknowledgement.Full;
                 //Microsoft.Azure.Devices.ServiceClient serviceClient = Microsoft.Azure.Devices.ServiceClient.CreateFromConnectionString("HostName=iothubism.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=nhhwSNpr3p68FcTZfvPEfU7xvJRH/jOpTcWQbQMoKAg=");
-                Microsoft.Azure.Devices.ServiceClient serviceClient = Microsoft.Azure.Devices.ServiceClient.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub/*System.Configuration.ConfigurationSettings.AppSettings.Get("ismiothub")*/);
+                Microsoft.Azure.Devices.ServiceClient serviceClient = Microsoft.Azure.Devices.ServiceClient.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString/*System.Configuration.ConfigurationSettings.AppSettings.Get("ismiothub")*/);
                 System.Threading.Tasks.Task.Factory.StartNew(() => serviceClient.SendAsync(Model.DeviceId, commandMessage));
             }
         });

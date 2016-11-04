@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.SignalR;
+﻿using System.Configuration;
+using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Owin;
 
@@ -12,7 +13,7 @@ namespace IsmIoTPortal
             ConfigureAuth(app);
 
             //string connectionString = "Endpoint=sb://sbbackplane.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=ZpiOSzx3IwtzV/kSQ2o4DXPLtZK5AlBiqFGjXganEMM=";
-            string connectionString = IsmIoTSettings.Settings.sbRootManage;
+            string connectionString = ConfigurationManager.ConnectionStrings["sbRootManage"].ConnectionString;
             GlobalHost.DependencyResolver.UseServiceBus(connectionString, "IsmIoT");
 
             app.MapSignalR();

@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure;
 
 namespace Logging
 {
@@ -34,7 +35,7 @@ namespace Logging
 
         // Azure Storage 
         //private string storageConnectionString = "DefaultEndpointsProtocol=https;AccountName=storageacclogs;AccountKey=AlTunZcRR9c1TP8PR5Tko35zWQ3K5X3PTYfl+uhKzncvCY6N6ZbmkesoGIg5ka65sNe04Qhfvh8Zk6sRbpLTqg==";
-        private string storageConnectionString = Settings.storageConnection; //System.Configuration.ConfigurationSettings.AppSettings.Get("ismiotstorage");
+        private string storageConnectionString = CloudConfigurationManager.GetSetting("storageConnection"); //System.Configuration.ConfigurationSettings.AppSettings.Get("ismiotstorage");
         private CloudStorageAccount storageAccount;
         private CloudBlobClient blobClient;
         private CloudBlobContainer container;
@@ -53,7 +54,7 @@ namespace Logging
             LogfileName = name;
             storageAccount = CloudStorageAccount.Parse(storageConnectionString);
             blobClient = storageAccount.CreateCloudBlobClient();
-            container = blobClient.GetContainerReference(Settings.containerLogs);
+            container = blobClient.GetContainerReference(CloudConfigurationManager.GetSetting("containerLogs"));
             blob = container.GetBlockBlobReference(LogfileName);
 
             // Erzeugt initiales Logfile (BlockBlob) bestehend aus 2 Blocks

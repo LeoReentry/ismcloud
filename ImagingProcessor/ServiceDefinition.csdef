@@ -1,9 +1,18 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <ServiceDefinition name="ImagingProcessor" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
   <WorkerRole name="ImagingProcessorWorker" vmsize="ExtraSmall">
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="APPINSIGHTS_INSTRUMENTATIONKEY" />
+      <Setting name="iotHubName" />
+      <Setting name="ismiothub" />
+      <Setting name="ismiotstorage" />
+      <Setting name="storageConnection" />
+      <Setting name="containerLogs" />
+      <Setting name="containerPortal" />
+      <Setting name="sbRootManage" />
+      <Setting name="dashboardqueue_name" />
+      <Setting name="eventHubName" />
     </ConfigurationSettings>
     <Startup>
       <Task commandLine="SetupWorkerRolePrerequisites.exe" executionContext="elevated" taskType="simple">

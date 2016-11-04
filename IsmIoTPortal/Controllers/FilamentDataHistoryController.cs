@@ -9,7 +9,6 @@ using System.Web.Mvc;
 
 namespace IsmIoTPortal.Controllers
 {
-    [Authorize]
     public class FilamentDataHistoryController : Controller
     {
         private IsmIoTPortalContext db = new IsmIoTPortalContext();
@@ -22,6 +21,10 @@ namespace IsmIoTPortal.Controllers
         // GET: FilamentDataHistory
         public ActionResult Index(string DeviceId)
         {
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(DeviceId))
+                return HttpNotFound();
+
             // default interval when you visit Index of FilamentDataHistoryController
             // is e.g. the last Hour
             int hours = 24;
@@ -31,13 +34,13 @@ namespace IsmIoTPortal.Controllers
             defaultInterval.To = DateTime.UtcNow;
 
             defaultInterval.List = db.FilamentData.Where(d => d.DeviceId == DeviceId).Where(d => d.Time >= defaultInterval.From && d.Time <= defaultInterval.To).ToList<FilamentData>();
-
+            
             return View(defaultInterval);
         }
 
         //Post: FilamentDataHistory/<interval>
         [HttpPost]
-        public ActionResult Index(DateTimeInterval interval)
+        public ActionResult Index([Bind(Include = "DeviceId,To,From")]DateTimeInterval interval)
         {
             // query new filament data list with the posted interval
             var data = db.FilamentData.Where(d => d.DeviceId == interval.DeviceId).Where(d => d.Time >= interval.From && d.Time <= interval.To);

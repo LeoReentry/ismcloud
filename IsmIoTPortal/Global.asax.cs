@@ -16,6 +16,7 @@ namespace IsmIoTPortal
         {
             AreaRegistration.RegisterAllAreas();
             GlobalFilters.Filters.Add(new RequireHttpsAttribute());
+            GlobalFilters.Filters.Add(new CustomAuthorizeAttribute());
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
@@ -35,6 +36,7 @@ namespace IsmIoTPortal
         protected void Application_PreSendRequestHeaders()
         {
             Response.Headers.Remove("Server");
+            Response.AddHeader("X-Frame-Options", "DENY");
         }
 
     }

@@ -1,42 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
-using System.Web;
 using System.Web.Mvc;
 using IsmIoTPortal.Models;
 using System.Threading.Tasks;
 using Microsoft.Azure.Devices;
-using Microsoft.Azure.Devices.Common.Exceptions;
-using Microsoft.AspNet.SignalR.Client;
 using Newtonsoft.Json;
 using System.Text;
 using System.Threading;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.ServiceBus;
-using Microsoft.ServiceBus.Messaging;
 
 namespace IsmIoTPortal.Controllers
 {
-    [Authorize]
     public class IsmDevicesController : Controller
     {
-        private IsmIoTPortalContext db = new IsmIoTPortalContext();
+        private readonly IsmIoTPortalContext db = new IsmIoTPortalContext();
 
         //static string connectionString = "HostName=iothubism.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=nhhwSNpr3p68FcTZfvPEfU7xvJRH/jOpTcWQbQMoKAg=";
         //static RegistryManager registryManager = RegistryManager.CreateFromConnectionString(connectionString);
         //static ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(connectionString);
-  
-        static RegistryManager registryManager = RegistryManager.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
-        static ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(IsmIoTSettings.Settings.ismiothub);
+        private static readonly RegistryManager registryManager = RegistryManager.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
+        private static readonly ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
 
-        static IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper("DeviceController");
+        private static readonly IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper("DeviceController");
 
 
-        private async static Task SendCloudToDevicePortalCommandAsync(int CommandId, string DeviceId, string cmd)
+        private static async Task SendCloudToDevicePortalCommandAsync(int commandId, string deviceId, string cmd)
         {
             //var commandMessage = new Message();
             //var commandMessage = new Message(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(cmd)));
@@ -54,30 +45,13 @@ namespace IsmIoTPortal.Controllers
 
             commandMessage.Properties["command"] = cmd;
             commandMessage.Ack = DeliveryAcknowledgement.Full;
-            commandMessage.MessageId = MessageIdPrefix.CMD + " " + CommandId.ToString();
-            await serviceClient.SendAsync(DeviceId, commandMessage); 
+            commandMessage.MessageId = MessageIdPrefix.CMD + " " + commandId.ToString();
+            await serviceClient.SendAsync(deviceId, commandMessage); 
         }
 
-        //
-        // Device State Anfordern
-        private async static Task C2DGetDeviceStateAsync(string DeviceId)
-        {
-            //var commandMessage = new Message();
-            var commandMessage = new Message(Encoding.UTF8.GetBytes(CommandType.GET_DEVICE_STATE));
-            commandMessage.Properties["command"] = CommandType.GET_DEVICE_STATE;
-            /* Die Reaktion des Devices auf GET_DEVICE_STATE, soll das Senden des gesamten Device-States
-               sein (Algorithm-Parameter, Cam & Pulser-Parameter, aktueller state (running, preview,...) usw.)
-               --> Diese vielen Infos alle in die MessageId zu "tricksen" ist nicht schön, desshalb wird hier ohne ACK's gearbeitet.
-               Das Device sendet als Reaktion eine D2C UPDATE_DASHBOARD_CONTROLS message die vom DashboardBroker entsprechend
-               mit dem update der Controls auf dem Dashboard per SignalR behandelt werden kann.
-            */
-            //commandMessage.Ack = DeliveryAcknowledgement.Full;
-            commandMessage.MessageId = Guid.NewGuid().ToString();
-            await serviceClient.SendAsync(DeviceId, commandMessage);
-        }
 
         // Device State Setzen
-        private async static Task C2DSetDeviceStateAsync(string DeviceId, DeviceState deviceState)
+        private static async Task C2DSetDeviceStateAsync(string deviceId, DeviceState deviceState)
         {
             // Durch View veränderter DeviceState in Message Body packen
             string serializedDeviceState = JsonConvert.SerializeObject(deviceState);
@@ -87,7 +61,7 @@ namespace IsmIoTPortal.Controllers
 
             //commandMessage.Ack = DeliveryAcknowledgement.Full;
             commandMessage.MessageId = Guid.NewGuid().ToString();
-            await serviceClient.SendAsync(DeviceId, commandMessage);
+            await serviceClient.SendAsync(deviceId, commandMessage);
         }
 
 
@@ -110,19 +84,39 @@ namespace IsmIoTPortal.Controllers
         }
 
         // GET: IsmDevices/Dashboard/<DeviceId>
-        public async Task<ActionResult> Dashboard(string DeviceId)
+        public async Task<ActionResult> Dashboard(string deviceId)
         {
-            DeviceState deviceState = new DeviceState();
-            deviceState.DeviceId = DeviceId;
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(deviceId))
+                return HttpNotFound();
 
+            // If device doesn't exist, redirect to index
+            if (await registryManager.GetDeviceAsync(deviceId) == null)
+                return RedirectToAction("Index");
+
+            // Load page
+            DeviceState deviceState = new DeviceState();
+            deviceState.DeviceId = deviceId;
             //await C2DGetDeviceStateAsync(DeviceId);
             return View(deviceState);
         }
 
         // POST: IsmDevices/Dashboard/<DeviceState>
+        // Use Bind to whitelist values which can be set through web interface
+        // Malicious attacks with additional form data can not be successful
         [HttpPost]
-        public async Task<ActionResult> Dashboard(DeviceState deviceState)
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> Dashboard([Bind(Include = "DeviceId,VarianceThreshold,DistanceMapThreshold,RGThreshold,RestrictedFillingThreshold,DilateValue,CapturePeriod")]DeviceState deviceState)
         {
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(deviceState.DeviceId))
+                return HttpNotFound();
+
+            // If device doesn't exist, redirect to index
+            // The rest of the user input is sanitized by parsing the value to numbers
+            if (await registryManager.GetDeviceAsync(deviceState.DeviceId) == null)
+                return RedirectToAction("Index");
+
             // C2D Message die dem Device einen durch die Controls veränderten DeviceState mitteilt
             await C2DSetDeviceStateAsync(deviceState.DeviceId, deviceState);
             //ModelState.Clear();
@@ -132,15 +126,23 @@ namespace IsmIoTPortal.Controllers
 
         public async Task<ActionResult> ShowKey(string deviceId)
         {
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(deviceId))
+                return HttpNotFound();
+
+            // If device doesn't exist, redirect to index
+            if (await registryManager.GetDeviceAsync(deviceId) == null)
+                return RedirectToAction("Index");
+
             Device device = await registryManager.GetDeviceAsync(deviceId);
-            string key = device.Authentication.SymmetricKey.PrimaryKey.ToString();
+            string key = device.Authentication.SymmetricKey.PrimaryKey;
             return View(model:key);
         }
 
-        private async static Task<string> AddDeviceAsync(string deviceId)
+        private static async Task<string> AddDeviceAsync(string deviceId)
         {
             Device device = await registryManager.AddDeviceAsync(new Device(deviceId));
-            return device.Authentication.SymmetricKey.PrimaryKey.ToString();
+            return device.Authentication.SymmetricKey.PrimaryKey;
         }
 
 
@@ -175,6 +177,10 @@ namespace IsmIoTPortal.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create([Bind(Include = "IsmDeviceId,DeviceId,LocationId,SoftwareId,HardwareId")] IsmDevice ismDevice)
         {
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(ismDevice.DeviceId))
+                return HttpNotFound();
+
             if (ModelState.IsValid)
             {
                 // Zuerst einmal in DB anlegen
@@ -241,8 +247,18 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "IsmDeviceId,DeviceId,LocationId,SoftwareId,HardwareId")] IsmDevice ismDevice)
+        public ActionResult Edit(int? id, [Bind(Include = "IsmDeviceId,DeviceId,LocationId,SoftwareId,HardwareId")] IsmDevice ismDevice)
         {
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(ismDevice.DeviceId))
+                return HttpNotFound();
+            // Check that POST device ID is the same as ID parameter
+            if (id == null || id != ismDevice.IsmDeviceId)
+                return HttpNotFound();
+            // Return error if device doesn't exist
+            if (db.IsmDevices.Find(ismDevice.IsmDeviceId) == null)
+                return HttpNotFound();
+
             if (ModelState.IsValid)
             {
                 db.Entry(ismDevice).State = EntityState.Modified;
@@ -315,6 +331,10 @@ namespace IsmIoTPortal.Controllers
             // Nur wenn erster Schritt gut ging weitermachen und aus DB löschen
             // Vermeidet Device Leak
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+            
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
 
             Task deleteFromIoTHubTask =
                 Task.Factory.StartNew((stateObj) =>
@@ -336,10 +356,7 @@ namespace IsmIoTPortal.Controllers
             .ContinueWith((ant, ct) =>
             {
             }, cts.Token)
-            .ContinueWith<ActionResult>((ant) =>
-            {
-                return RedirectToAction("Index");
-            }, TaskContinuationOptions.NotOnCanceled);
+            .ContinueWith<ActionResult>((ant) => RedirectToAction("Index"), TaskContinuationOptions.NotOnCanceled);
         }
 
         // GET: IsmDevices/Unprovision/5
@@ -347,14 +364,21 @@ namespace IsmIoTPortal.Controllers
         {
 
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
-            Command cmd = new Command();
-            cmd.Cmd = CommandType.UNPROVISION;
-            cmd.Timestamp = DateTime.Now;
-            cmd.IsmDeviceId = id;
-            cmd.IsmDevice = ismDevice;
+            Command cmd = new Command
+            {
+                Cmd = CommandType.UNPROVISION,
+                Timestamp = DateTime.Now,
+                IsmDeviceId = id,
+                IsmDevice = ismDevice
+            };
 
             device.Status = DeviceStatus.Disabled;
 
@@ -365,6 +389,7 @@ namespace IsmIoTPortal.Controllers
             }
             catch (Exception)
             {
+                // ignored
             }
 
             switch (t.Status)
@@ -388,6 +413,12 @@ namespace IsmIoTPortal.Controllers
         public async Task<ActionResult> Provision(int id)
         {
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
@@ -406,6 +437,7 @@ namespace IsmIoTPortal.Controllers
             }
             catch (Exception)
             {
+                // ignored
             }
 
             switch (t.Status)
@@ -429,6 +461,12 @@ namespace IsmIoTPortal.Controllers
         public async Task<ActionResult> Start(int id)
         {
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
@@ -442,9 +480,9 @@ namespace IsmIoTPortal.Controllers
             // Write Command to DB
             db.Commands.Add(cmd);
             db.SaveChanges();
-            int CommandId = db.Entry(cmd).Entity.CommandId; 
+            int commandId = db.Entry(cmd).Entity.CommandId; 
 
-            await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.START);
+            await SendCloudToDevicePortalCommandAsync(commandId, device.Id, CommandType.START);
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
             await signalRHelper.IsmDevicesIndexChangedTask();
 
@@ -455,22 +493,29 @@ namespace IsmIoTPortal.Controllers
         public async Task<ActionResult> Stop(int id)
         {
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
-            Command cmd = new Command();
-            cmd.Cmd = CommandType.STOP;
-            cmd.Timestamp = DateTime.Now;
-            cmd.IsmDeviceId = id;
-            cmd.IsmDevice = ismDevice;
-            cmd.CommandStatus = CommandStatus.PENDING;
+            Command cmd = new Command
+            {
+                Cmd = CommandType.STOP,
+                Timestamp = DateTime.Now,
+                IsmDeviceId = id,
+                IsmDevice = ismDevice,
+                CommandStatus = CommandStatus.PENDING
+            };
 
             // Write Command to DB
             db.Commands.Add(cmd);
             db.SaveChanges();
-            int CommandId = db.Entry(cmd).Entity.CommandId;
+            int commandId = db.Entry(cmd).Entity.CommandId;
 
-            await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.STOP);
+            await SendCloudToDevicePortalCommandAsync(commandId, device.Id, CommandType.STOP);
 
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
             await signalRHelper.IsmDevicesIndexChangedTask();
@@ -482,22 +527,29 @@ namespace IsmIoTPortal.Controllers
         public async Task<ActionResult> StartPreview(int id)
         {
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
-            Command cmd = new Command();
-            cmd.Cmd = CommandType.START_PREVIEW;
-            cmd.Timestamp = DateTime.Now;
-            cmd.IsmDeviceId = id;
-            cmd.IsmDevice = ismDevice;
-            cmd.CommandStatus = CommandStatus.PENDING;
+            Command cmd = new Command
+            {
+                Cmd = CommandType.START_PREVIEW,
+                Timestamp = DateTime.Now,
+                IsmDeviceId = id,
+                IsmDevice = ismDevice,
+                CommandStatus = CommandStatus.PENDING
+            };
 
             // Write Command to DB
             db.Commands.Add(cmd);
             db.SaveChanges();
-            int CommandId = db.Entry(cmd).Entity.CommandId;
+            int commandId = db.Entry(cmd).Entity.CommandId;
 
-            await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.START_PREVIEW);
+            await SendCloudToDevicePortalCommandAsync(commandId, device.Id, CommandType.START_PREVIEW);
 
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
             await signalRHelper.IsmDevicesIndexChangedTask();
@@ -509,22 +561,29 @@ namespace IsmIoTPortal.Controllers
         public async Task<ActionResult> StopPreview(int id)
         {
             IsmDevice ismDevice = db.IsmDevices.Find(id);
+
+            // Check that id was correct
+            if (ismDevice == null)
+                return HttpNotFound();
+
             Device device = await registryManager.GetDeviceAsync(ismDevice.DeviceId);
 
             // Command for Command History
-            Command cmd = new Command();
-            cmd.Cmd = CommandType.STOP_PREVIEW;
-            cmd.Timestamp = DateTime.Now;
-            cmd.IsmDeviceId = id;
-            cmd.IsmDevice = ismDevice;
-            cmd.CommandStatus = CommandStatus.PENDING;
+            Command cmd = new Command
+            {
+                Cmd = CommandType.STOP_PREVIEW,
+                Timestamp = DateTime.Now,
+                IsmDeviceId = id,
+                IsmDevice = ismDevice,
+                CommandStatus = CommandStatus.PENDING
+            };
 
             // Write Command to DB
             db.Commands.Add(cmd);
             db.SaveChanges();
-            int CommandId = db.Entry(cmd).Entity.CommandId;
+            int commandId = db.Entry(cmd).Entity.CommandId;
 
-            await SendCloudToDevicePortalCommandAsync(CommandId, device.Id, CommandType.STOP_PREVIEW);
+            await SendCloudToDevicePortalCommandAsync(commandId, device.Id, CommandType.STOP_PREVIEW);
 
             // Damit alle offenen Portal Clients das Hinzufügen eines neuen Commands mitbekommen
             await signalRHelper.IsmDevicesIndexChangedTask();

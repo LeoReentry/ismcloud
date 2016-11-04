@@ -10,7 +10,6 @@ using IsmIoTPortal.Models;
 
 namespace IsmIoTPortal.Controllers
 {
-    [Authorize]
     public class HardwareController : Controller
     {
         private IsmIoTPortalContext db = new IsmIoTPortalContext();
