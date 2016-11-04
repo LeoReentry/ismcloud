@@ -16,7 +16,6 @@
         function onBodyLoadHandler() {
             if (self === top) {
                 document.getElementsByTagName("body")[0].style.display = 'block';
-                document.getElementById('EnableScript').style.display = 'none';
             } else {
                 top.location = self.location;
             }
