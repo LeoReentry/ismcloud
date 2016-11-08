@@ -257,6 +257,7 @@
     <Compile Include="ClassDiagram1.cs" />
     <Compile Include="CommandType.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ApproveDevicesController.cs" />
     <Compile Include="Controllers\CommandsController.cs" />
     <Compile Include="Controllers\ContactsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -447,6 +448,7 @@
     <Content Include="Views\Error\Index.cshtml" />
     <Content Include="Views\Error\Unavailable.cshtml" />
     <Content Include="Views\Error\BadRequest.cshtml" />
+    <Content Include="Views\ApproveDevices\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

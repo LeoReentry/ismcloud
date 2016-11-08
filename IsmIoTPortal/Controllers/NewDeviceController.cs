@@ -117,6 +117,11 @@ namespace IsmIoTPortal.Controllers
             return new { Error = "An error occured." };
         }
 
+        /// <summary>
+        /// Adds device to IoT Hub.
+        /// </summary>
+        /// <param name="deviceId">Key for authentication.</param>
+        /// <returns></returns>
         private static async Task<string> AddDeviceAsync(string deviceId)
         {
             Device device = await registryManager.AddDeviceAsync(new Device(deviceId));
