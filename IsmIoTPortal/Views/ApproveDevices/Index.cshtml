@@ -1,0 +1,61 @@
+﻿@model IEnumerable<IsmIoTPortal.Models.NewDevice>
+@{
+    ViewBag.Title = "Approve Devices";
+}
+
+<h2>Approve Devices</h2>
+<p>Listed below are all devices that are waiting to be approved for this portal. Please only approve devices you have added yourself and check that the code displayed here is identical to the code in the device. Remove the device otherwise and try again.</p>
+<p>Once you approve a device it will be added to your active devices and be provisioned. It will appear in this list until it receives its secret key.</p>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Hardware.Board)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Location.City)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Software.SoftwareVersion)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.DeviceId)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Code)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Approved)
+        </th>
+    </tr>
+@foreach (var item in Model)
+{
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Hardware.Board)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Location.City)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.DeviceId)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Code)
+        </td>
+        <td>
+            @if (item.Approved)
+            {
+                <span>Approved.</span>
+            }
+            else
+            {
+                @Html.ActionLink("Approve", "Approve", new { id = item.IsmDeviceId }) <span> | </span>@Html.ActionLink("Remove", "Remove", new { id = item.IsmDeviceId })
+            }
+            
+        </td>
+    </tr>
+}
+</table>

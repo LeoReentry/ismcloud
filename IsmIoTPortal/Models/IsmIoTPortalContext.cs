@@ -9,6 +9,7 @@ namespace IsmIoTPortal.Models
     public class IsmIoTPortalContext : DbContext
     {
         public DbSet<IsmDevice> IsmDevices { get; set; }
+        public DbSet<NewDevice> NewDevices { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Contact> Contacts { get; set; }
         public DbSet<Software> Software { get; set; }

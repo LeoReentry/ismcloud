@@ -157,6 +157,10 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -253,6 +257,7 @@
     <Compile Include="ClassDiagram1.cs" />
     <Compile Include="CommandType.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ApproveDevicesController.cs" />
     <Compile Include="Controllers\CommandsController.cs" />
     <Compile Include="Controllers\ContactsController.cs" />
     <Compile Include="Controllers\ErrorController.cs" />
@@ -261,6 +266,7 @@
     <Compile Include="Controllers\HardwareController.cs" />
     <Compile Include="Controllers\IsmDevicesController.cs" />
     <Compile Include="Controllers\LocationsController.cs" />
+    <Compile Include="Controllers\NewDeviceController.cs" />
     <Compile Include="Controllers\SoftwareController.cs" />
     <Compile Include="DashboardHub.cs" />
     <Compile Include="Global.asax.cs">
@@ -282,6 +288,14 @@
     <Compile Include="Migrations\201512291519580_RollbackHistExperiments.Designer.cs">
       <DependentUpon>201512291519580_RollbackHistExperiments.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201611081038385_NewDevices.cs" />
+    <Compile Include="Migrations\201611081038385_NewDevices.Designer.cs">
+      <DependentUpon>201611081038385_NewDevices.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201611081056580_UpdateNewDevices.cs" />
+    <Compile Include="Migrations\201611081056580_UpdateNewDevices.Designer.cs">
+      <DependentUpon>201611081056580_UpdateNewDevices.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -290,6 +304,7 @@
     <Compile Include="Models\FilamentData.cs" />
     <Compile Include="Models\Hardware.cs" />
     <Compile Include="Models\ImagingProcessorWorkerInstance.cs" />
+    <Compile Include="Models\NewDevice.cs" />
     <Compile Include="Models\IsmDevice.cs" />
     <Compile Include="Models\IsmIoTPortalContext.cs" />
     <Compile Include="Models\Location.cs" />
@@ -433,6 +448,7 @@
     <Content Include="Views\Error\Index.cshtml" />
     <Content Include="Views\Error\Unavailable.cshtml" />
     <Content Include="Views\Error\BadRequest.cshtml" />
+    <Content Include="Views\ApproveDevices\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -457,6 +473,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512291519580_RollbackHistExperiments.resx">
       <DependentUpon>201512291519580_RollbackHistExperiments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611081038385_NewDevices.resx">
+      <DependentUpon>201611081038385_NewDevices.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611081056580_UpdateNewDevices.resx">
+      <DependentUpon>201611081056580_UpdateNewDevices.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
