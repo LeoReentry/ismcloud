@@ -85,37 +85,29 @@ namespace IsmIoTPortal.Controllers
         /// <returns></returns>
         public async Task<object> Get(string id, string code)
         {
-            var newDevice = db.NewDevices.First(d => d.DeviceId == id && d.Code == code);
-            if (newDevice == null)
-            {
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(id))
                 return new { Error = "An error occured." };
-            }
+            
+            // Check that device exists
+            if (!db.NewDevices.Any(d => d.DeviceId == id && d.Code == code))
+                return new { Error = "Device does not exist." };
+            // Get reference to device
+            var newDevice = db.NewDevices.First(d => d.DeviceId == id && d.Code == code);
+            // Only if device is approved
             if (newDevice.Approved)
             {
-                var device = new IsmDevice
-                {
-                    DeviceId = newDevice.DeviceId,
-                    HardwareId = newDevice.HardwareId,
-                    SoftwareId = newDevice.SoftwareId,
-                    LocationId = newDevice.LocationId
-                };
-                db.IsmDevices.Add(device);
+                // If device doesn't exist in IoT Hub, some error has occured
+                if (await registryManager.GetDeviceAsync(id) == null)
+                    return new { Error = "An error occured." };
+                // Get key from IoT Hub
+                Device device = await registryManager.GetDeviceAsync(id);
+                string key = device.Authentication.SymmetricKey.PrimaryKey;
+                // Remove device from database
+                db.NewDevices.Remove(newDevice);
                 db.SaveChanges();
-                string key;
-                try
-                {
-                    key = await AddDeviceAsync(device.DeviceId);
-                    db.NewDevices.Remove(newDevice);
-                    db.SaveChanges();
-                    return new { Key = key };
-                }
-                catch (Exception)
-                {
-                    // Anzeigen, dass etwas schief ging
-                    // Eintrag aus DB entfernen
-                    db.IsmDevices.Remove(device);
-                    db.SaveChanges();
-                }
+                // Return key
+                return new { Key = key };
             }
 
             return new { Error = "An error occured." };
