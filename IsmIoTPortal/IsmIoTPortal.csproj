@@ -287,6 +287,10 @@
     <Compile Include="Migrations\201512291519580_RollbackHistExperiments.Designer.cs">
       <DependentUpon>201512291519580_RollbackHistExperiments.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201611081038385_NewDevices.cs" />
+    <Compile Include="Migrations\201611081038385_NewDevices.Designer.cs">
+      <DependentUpon>201611081038385_NewDevices.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -463,6 +467,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201512291519580_RollbackHistExperiments.resx">
       <DependentUpon>201512291519580_RollbackHistExperiments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201611081038385_NewDevices.resx">
+      <DependentUpon>201611081038385_NewDevices.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
