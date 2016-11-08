@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
 using IsmIoTPortal.Models;
 using IsmIoTSettings;
+using Microsoft.Azure.Devices;
 using Newtonsoft.Json;
 
 namespace IsmIoTPortal.Controllers
@@ -14,6 +17,9 @@ namespace IsmIoTPortal.Controllers
     public class NewDeviceController : ApiController
     {
         private static Random generator = new Random();
+
+        private static readonly RegistryManager registryManager = RegistryManager.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
+        private static readonly ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
         private readonly IsmIoTPortalContext db = new IsmIoTPortalContext();
         /// <summary>
         /// The API call to /api/newdevice requests the possible location, hardware and software IDs.
@@ -42,7 +48,7 @@ namespace IsmIoTPortal.Controllers
         /// <param name="hw">Hardware ID</param>
         /// <param name="sw">Software ID</param>
         /// <returns>Device that was created.</returns>
-        public NewDevice Get(string id, int loc, int hw, int sw)
+        public object Get(string id, int loc, int hw, int sw)
         {
             var dev = new NewDevice
             {
@@ -55,13 +61,51 @@ namespace IsmIoTPortal.Controllers
             };
             db.NewDevices.Add(dev);
             db.SaveChanges();
-            return dev;
+            return new
+            {
+                Id = dev.DeviceId,
+                Code = dev.Code
+            };
         }
 
-        public object Get(string id, string code)
+        public async Task<object> Get(string id, string code)
         {
+            var newDevice = db.NewDevices.First(d => d.DeviceId == id && d.Code == code);
+            if (newDevice.Approved)
+            {
+                var device = new IsmDevice
+                {
+                    DeviceId = newDevice.DeviceId,
+                    HardwareId = newDevice.HardwareId,
+                    SoftwareId = newDevice.SoftwareId,
+                    LocationId = newDevice.LocationId
+                };
+                db.IsmDevices.Add(device);
+                db.SaveChanges();
+                string key;
+                try
+                {
+                    key = await AddDeviceAsync(device.DeviceId);
+                    db.NewDevices.Remove(newDevice);
+                    db.SaveChanges();
+                    return new { Key = key };
+                }
+                catch (Exception)
+                {
+                    // Anzeigen, dass etwas schief ging
+                    // Eintrag aus DB entfernen
+                    db.IsmDevices.Remove(device);
+                    db.SaveChanges();
+                }
+            }
 
-            return null;
+            return new { Error = "An error occured."};
+        }
+
+        private static async Task<string> AddDeviceAsync(string deviceId)
+        {
+            Device device = await registryManager.AddDeviceAsync(new Device(deviceId));
+            return device.Authentication.SymmetricKey.PrimaryKey;
         }
 
     }
