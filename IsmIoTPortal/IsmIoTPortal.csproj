@@ -157,6 +157,10 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Abstractions" />
+    <Reference Include="System.Web.Http.WebHost, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebApi.WebHost.5.2.3\lib\net45\System.Web.Http.WebHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -261,6 +265,7 @@
     <Compile Include="Controllers\HardwareController.cs" />
     <Compile Include="Controllers\IsmDevicesController.cs" />
     <Compile Include="Controllers\LocationsController.cs" />
+    <Compile Include="Controllers\NewDeviceController.cs" />
     <Compile Include="Controllers\SoftwareController.cs" />
     <Compile Include="DashboardHub.cs" />
     <Compile Include="Global.asax.cs">
@@ -290,6 +295,7 @@
     <Compile Include="Models\FilamentData.cs" />
     <Compile Include="Models\Hardware.cs" />
     <Compile Include="Models\ImagingProcessorWorkerInstance.cs" />
+    <Compile Include="Models\NewDevice.cs" />
     <Compile Include="Models\IsmDevice.cs" />
     <Compile Include="Models\IsmIoTPortalContext.cs" />
     <Compile Include="Models\Location.cs" />

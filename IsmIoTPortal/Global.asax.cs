@@ -4,6 +4,7 @@ using System.IdentityModel.Claims;
 using System.Linq;
 using System.Web;
 using System.Web.Helpers;
+using System.Web.Http;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
@@ -15,6 +16,11 @@ namespace IsmIoTPortal
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();
+            GlobalConfiguration.Configuration.Routes.MapHttpRoute(
+                  name: "DefaultApi",
+                  routeTemplate: "api/{controller}/{id}",
+                  defaults: new { id = System.Web.Http.RouteParameter.Optional }
+             );
             GlobalFilters.Filters.Add(new RequireHttpsAttribute());
             GlobalFilters.Filters.Add(new CustomAuthorizeAttribute());
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
