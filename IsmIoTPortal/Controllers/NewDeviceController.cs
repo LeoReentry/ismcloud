@@ -50,6 +50,15 @@ namespace IsmIoTPortal.Controllers
         /// <returns>Device that was created.</returns>
         public object Get(string id, int loc, int hw, int sw)
         {
+            var err = new { Error = "An error occured." };
+            // Check Device ID against a whitelist of values to prevent XSS
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(id))
+                return err;
+
+            // If device with same ID already exists, return error
+            if (db.IsmDevices.Any(d => d.DeviceId == id) || db.NewDevices.Any(d => d.DeviceId == id))
+                return err;
+
             var dev = new NewDevice
             {
                 DeviceId = id,
@@ -68,6 +77,12 @@ namespace IsmIoTPortal.Controllers
             };
         }
 
+        /// <summary>
+        /// API call to retrieve IoT Hub key once device is approved.
+        /// </summary>
+        /// <param name="id">Identifier of the device.</param>
+        /// <param name="code">6 digit code that identifies it as the same device.</param>
+        /// <returns></returns>
         public async Task<object> Get(string id, string code)
         {
             var newDevice = db.NewDevices.First(d => d.DeviceId == id && d.Code == code);
@@ -99,7 +114,7 @@ namespace IsmIoTPortal.Controllers
                 }
             }
 
-            return new { Error = "An error occured."};
+            return new { Error = "An error occured." };
         }
 
         private static async Task<string> AddDeviceAsync(string deviceId)
