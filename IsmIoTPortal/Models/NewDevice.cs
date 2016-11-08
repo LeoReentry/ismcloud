@@ -7,6 +7,9 @@ using System.Web;
 
 namespace IsmIoTPortal.Models
 {
+    /// <summary>
+    /// Model for devices that haven't been provisioned yet. This includes an identifier code for provisioning.
+    /// </summary>
     public class NewDevice
     {
         [Key]
@@ -22,5 +25,6 @@ namespace IsmIoTPortal.Models
         [ForeignKey("HardwareId")]
         public virtual Hardware Hardware { get; set; }
         public string Code { get; set; }
+        public bool Approved { get; set; }
     }
 }

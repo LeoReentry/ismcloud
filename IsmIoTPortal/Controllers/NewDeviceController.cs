@@ -35,7 +35,7 @@ namespace IsmIoTPortal.Controllers
             };
         }
         /// <summary>
-        /// API call to add new device to database
+        /// API call to add new device to database.
         /// </summary>
         /// <param name="id">Identifier of the device</param>
         /// <param name="loc">Location ID</param>
@@ -50,11 +50,18 @@ namespace IsmIoTPortal.Controllers
                 HardwareId = hw,
                 LocationId = loc,
                 SoftwareId = sw,
-                Code = generator.Next(0, 999999).ToString("D6")
+                Code = generator.Next(0, 999999).ToString("D6"),
+                Approved = false
             };
             db.NewDevices.Add(dev);
             db.SaveChanges();
             return dev;
+        }
+
+        public object Get(string id, string code)
+        {
+
+            return null;
         }
 
     }
