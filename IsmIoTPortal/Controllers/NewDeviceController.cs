@@ -13,7 +13,12 @@ namespace IsmIoTPortal.Controllers
     [AllowAnonymous]
     public class NewDeviceController : ApiController
     {
+        private static Random generator = new Random();
         private readonly IsmIoTPortalContext db = new IsmIoTPortalContext();
+        /// <summary>
+        /// The API call to /api/newdevice requests the possible location, hardware and software IDs.
+        /// </summary>
+        /// <returns>Returns JSON or XML formatted location, software and hardware IDs.</returns>
         public dynamic Get()
         {
             var locations = db.Locations.Select(i =>
@@ -29,24 +34,27 @@ namespace IsmIoTPortal.Controllers
                 Software = softwares
             };
         }
-
-        public object Get(string id)
+        /// <summary>
+        /// API call to add new device to database
+        /// </summary>
+        /// <param name="id">Identifier of the device</param>
+        /// <param name="loc">Location ID</param>
+        /// <param name="hw">Hardware ID</param>
+        /// <param name="sw">Software ID</param>
+        /// <returns>Device that was created.</returns>
+        public NewDevice Get(string id, int loc, int hw, int sw)
         {
-            if (RegexHelper.Text.IsMatch(id))
+            var dev = new NewDevice
             {
-                var response = new
-                {
-                    id = id,
-                    guid = System.Web.Security.Membership.GeneratePassword(20, 0),
-
-                };
-                return response;
-            }
-            return new string[]
-            {
-             "Hello",
-             "World"
+                DeviceId = id,
+                HardwareId = hw,
+                LocationId = loc,
+                SoftwareId = sw,
+                Code = generator.Next(0, 999999).ToString("D6")
             };
+            db.NewDevices.Add(dev);
+            db.SaveChanges();
+            return dev;
         }
 
     }
