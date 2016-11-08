@@ -57,7 +57,7 @@ namespace IsmIoTPortal.Controllers
 
             // If device with same ID already exists, return error
             if (db.IsmDevices.Any(d => d.DeviceId == id) || db.NewDevices.Any(d => d.DeviceId == id))
-                return err;
+                return new {Error = "This device ID is already taken."};
 
             var dev = new NewDevice
             {
@@ -86,6 +86,10 @@ namespace IsmIoTPortal.Controllers
         public async Task<object> Get(string id, string code)
         {
             var newDevice = db.NewDevices.First(d => d.DeviceId == id && d.Code == code);
+            if (newDevice == null)
+            {
+                return new { Error = "An error occured." };
+            }
             if (newDevice.Approved)
             {
                 var device = new IsmDevice
