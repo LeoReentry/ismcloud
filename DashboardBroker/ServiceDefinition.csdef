@@ -1,9 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <ServiceDefinition name="DashboardBroker" xmlns="http://schemas.microsoft.com/ServiceHosting/2008/10/ServiceDefinition" schemaVersion="2015-04.2.6">
   <WorkerRole name="DashboardBrokerWorker" vmsize="ExtraSmall">
     <ConfigurationSettings>
+      <Setting name="sbRootManage" />
+      <Setting name="dashboardqueue_name" />
+      <Setting name="storageConnection" />
+      <Setting name="containerPortal" />
+      <Setting name="ida-PortalResourceId" />
+      <Setting name="ida-AADInstance" />
+      <Setting name="ida-TenantId" />
+      <Setting name="ida-DashboardClientId" />
+      <Setting name="ida-DashboardAppKey" />
     </ConfigurationSettings>
-    <Imports>
-    </Imports>
+    <Imports />
   </WorkerRole>
 </ServiceDefinition>

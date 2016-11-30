@@ -32,14 +32,19 @@ namespace DashboardBrokerWorker
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
 
         //
-        static IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper("Dashboard");
+        private static readonly string AadInstance = CloudConfigurationManager.GetSetting("ida-AADInstance");
+        private static readonly string Tenant = CloudConfigurationManager.GetSetting("ida-TenantId");
+        private static readonly string PortalResourceId = CloudConfigurationManager.GetSetting("ida-PortalResourceId");
+        private static readonly string ClientId = CloudConfigurationManager.GetSetting("ida-DashboardClientId");
+        private static readonly string AppKey = CloudConfigurationManager.GetSetting("ida-DashboardAppKey");
+        private static readonly IsmIoTSettings.SignalRHelper signalRHelper = new IsmIoTSettings.SignalRHelper(AadInstance, Tenant, PortalResourceId, ClientId, AppKey);
 
         //
         // connection string for the queues listen rule
         //static string sbQueueConnectionString = "Endpoint=sb://filamentdataevents-ns.servicebus.windows.net/;SharedAccessKeyName=listen;SharedAccessKey=nTwzf8vN3PEglktcEuhqY5/bZLK7MI/Hv8A3uiU9IU4=";
-        static string sbQueueConnectionString = Settings.sbRootManage;//System.Configuration.ConfigurationSettings.AppSettings.Get("dashboardqueue_receive");
+        static string sbQueueConnectionString = CloudConfigurationManager.GetSetting("sbRootManage"); //System.Configuration.ConfigurationSettings.AppSettings.Get("dashboardqueue_receive");
         //QueueClient Client = QueueClient.CreateFromConnectionString(sbQueueConnectionString, "dashboardqueue", ReceiveMode.ReceiveAndDelete);
-        QueueClient Client = QueueClient.CreateFromConnectionString(sbQueueConnectionString, Settings.dashboardqueue_name, ReceiveMode.ReceiveAndDelete);
+        QueueClient Client = QueueClient.CreateFromConnectionString(sbQueueConnectionString, CloudConfigurationManager.GetSetting("dashboardqueue_name"), ReceiveMode.ReceiveAndDelete);
         //QueueClient Client = QueueClient.CreateFromConnectionString(sbQueueConnectionString, "dashboardqueue");
 
         public override void Run()
@@ -93,9 +98,9 @@ namespace DashboardBrokerWorker
         private string GetBlobSasUri(string blobName)
         {
             // Get access to container
-            var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.storageConnection);
+            var storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("storageConnection"));
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortal);
+            var blobContainer = blobClient.GetContainerReference(CloudConfigurationManager.GetSetting("containerPortal"));
             // Get BLOB (by filename, not full URI)
             var blob = blobContainer.GetBlockBlobReference(blobName);
             // Access Policy

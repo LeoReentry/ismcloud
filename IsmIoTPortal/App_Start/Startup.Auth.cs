@@ -19,13 +19,17 @@ namespace IsmIoTPortal
         private static string aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
         private static string tenantId = ConfigurationManager.AppSettings["ida:TenantId"];
         private static string postLogoutRedirectUri = ConfigurationManager.AppSettings["ida:PostLogoutRedirectUri"];
+        private static string redirectUri = ConfigurationManager.AppSettings["ida:RedirectUri"];
         private static string authority = aadInstance + tenantId;
 
         public void ConfigureAuth(IAppBuilder app)
         {
             app.SetDefaultSignInAsAuthenticationType(CookieAuthenticationDefaults.AuthenticationType);
 
-            app.UseCookieAuthentication(new CookieAuthenticationOptions());
+            app.UseCookieAuthentication(new CookieAuthenticationOptions()
+            {
+                CookieName = "WeAreSpecialToo"
+            });
 
             // Use Winodws Azure Active Directory Bearer Authentication
             // This allows access to SignalR using JSON Web Tokens (JWT)
@@ -46,7 +50,8 @@ namespace IsmIoTPortal
                 {
                     ClientId = clientId,
                     Authority = authority,
-                    PostLogoutRedirectUri = postLogoutRedirectUri
+                    PostLogoutRedirectUri = postLogoutRedirectUri,
+                    RedirectUri = redirectUri
                 });
         }
     }

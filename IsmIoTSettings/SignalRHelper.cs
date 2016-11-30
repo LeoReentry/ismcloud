@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Configuration;
-using System.Diagnostics;
-using System.Net.NetworkInformation;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNet.SignalR.Client;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Newtonsoft.Json.Bson;
 
 namespace IsmIoTSettings
 {
@@ -15,12 +12,23 @@ namespace IsmIoTSettings
     /// </summary>
     public class SignalRHelper
     {
-        // Constructor
+        /// <summary>
+        /// Basic constructor. Takes name of resource that is using it so settings can be loaded correctly from appsettings.config. Better choice for ASP.NET applications.
+        /// </summary>
+        /// <param name="name">Name of role that's calling the constructor: Dashboard, Feedback or DeviceController.</param>
         public SignalRHelper(string name)
         {
+            // Initialize private field
+            _portalResourceId = ConfigurationManager.AppSettings["ida:PortalResourceId"];
+
+            // The AAD Instance is the instance of Azure, for example public Azure or Azure China.
+            // The Tenant is the name of the Azure AD tenant in which this application is registered.
+            var aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+            var tenant = ConfigurationManager.AppSettings["ida:TenantId"];
+
             // Authentication
             // The Authority is the sign-in URL of the tenant.
-            var authority = _aadInstance + _tenant;
+            var authority = aadInstance + tenant;
             _authContext = new AuthenticationContext(authority);
             // The Client ID is used by the application to uniquely identify itself to Azure AD.
             // The App Key is a credential used by the application to authenticate to Azure AD.
@@ -39,17 +47,46 @@ namespace IsmIoTSettings
             });
         }
 
+        /// <summary>
+        /// Takes all authentication parameters rather than reading from config file. Better choice for Cloud Services using cscfg files.
+        /// </summary>
+        /// <param name="AadInstance">Instance of Azure, e.g. Azure or Azure China</param>
+        /// <param name="Tenant">Name of the Azure Tenant in which this app is registered.</param>
+        /// <param name="PortalResourceId">App ID URI of IoT portal.</param>
+        /// <param name="ClientId">This app's Client ID to identify to Azure AD.</param>
+        /// <param name="AppKey">This app's App Key to authenticate to Azure AD.</param>
+        public SignalRHelper(string AadInstance, string Tenant, string PortalResourceId, string ClientId, string AppKey)
+        {
+            // Initialize private field
+            _portalResourceId = PortalResourceId;
+
+            // Authentication
+            // The AAD Instance is the instance of Azure, for example public Azure or Azure China.
+            // The Tenant is the name of the Azure AD tenant in which this application is registered.
+            // The Authority is the sign-in URL of the tenant.
+            var authority = AadInstance + Tenant;
+            _authContext = new AuthenticationContext(authority);
+            // The Client ID is used by the application to uniquely identify itself to Azure AD.
+            // The App Key is a credential used by the application to authenticate to Azure AD.
+            _clientCredential = new ClientCredential(ClientId, AppKey);
+            // Initialize asynchronously so that no thread is blocked
+            Init().ContinueWith(t =>
+            {
+                t.Exception?.Handle(e =>
+                {
+                    Console.WriteLine(e.Message);
+                    return true;
+                });
+                Initialized = t.Result;
+            });
+
+        }
+
         #region fields and properties
-        //
-        // The AAD Instance is the instance of Azure, for example public Azure or Azure China.
-        // The Tenant is the name of the Azure AD tenant in which this application is registered.
-        //
-        private readonly string _aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
-        private readonly string _tenant = ConfigurationManager.AppSettings["ida:TenantId"];
         //
         // To authenticate for SignalR, the client needs to know the service's App ID URI.
         //
-        private readonly string _portalResourceId = ConfigurationManager.AppSettings["ida:PortalResourceId"];
+        private readonly string _portalResourceId;
         private readonly AuthenticationContext _authContext;
         private readonly ClientCredential _clientCredential;
         private AuthenticationResult _authResult;
@@ -57,9 +94,17 @@ namespace IsmIoTSettings
         // Variables for public access
         // Authentication result
         // Authentication complete
+        /// <summary>
+        /// True if SignalR connection is established
+        /// </summary>
         public bool Initialized { get; private set; } = false;
-        // SignalR 
+        /// <summary>
+        /// Reference to HubConnection object.
+        /// </summary>
         public HubConnection SignalRHubConnection { get; private set; }
+        /// <summary>
+        /// The SignalR proxy used to connect to the Hub.
+        /// </summary>
         public IHubProxy SignalRHubProxy { get; private set; }
 
         #endregion

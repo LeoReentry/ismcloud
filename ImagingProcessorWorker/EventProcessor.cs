@@ -17,6 +17,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure;
 
 namespace ImagingProcessorWorker
 {
@@ -102,8 +103,8 @@ namespace ImagingProcessorWorker
             this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > Processor Initializing for PartitionId '{1}' and Owner: {2}. <br>", DateTime.Now.ToString(), context.Lease.PartitionId, context.Lease.Owner ?? string.Empty)));
 
             // SB Queue
-            queueClient = QueueClient.CreateFromConnectionString(Settings.sbRootManage, Settings.dashboardqueue_name);
-            this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > EventProcessor Constructor: Initialize Queue Client for {1} <br>", DateTime.Now.ToString(), Settings.dashboardqueue_name)));
+            queueClient = QueueClient.CreateFromConnectionString(CloudConfigurationManager.GetSetting("sbRootManage"), CloudConfigurationManager.GetSetting("dashboardqueue_name"));
+            this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > EventProcessor Constructor: Initialize Queue Client for {1} <br>", DateTime.Now.ToString(), CloudConfigurationManager.GetSetting("dashboardqueue_name"))));
 
             // SignalR
             //InitializeSignalR();
@@ -112,7 +113,7 @@ namespace ImagingProcessorWorker
             this.checkpointStopWatch.Start();
 
             //eventHubClient = EventHubClient.CreateFromConnectionString(eventHubConnectionString, eventHubName);
-            eventHubClient = EventHubClient.CreateFromConnectionString(Settings.sbRootManage/*System.Configuration.ConfigurationSettings.AppSettings.Get("ismioteventhub_send")*/, Settings.eventHubName);
+            eventHubClient = EventHubClient.CreateFromConnectionString(CloudConfigurationManager.GetSetting("sbRootManage")/*System.Configuration.ConfigurationSettings.AppSettings.Get("ismioteventhub_send")*/, CloudConfigurationManager.GetSetting("eventHubName"));
 
             return Task.FromResult<object>(null);
         }
@@ -196,9 +197,9 @@ namespace ImagingProcessorWorker
         private string GetBlobSasUri(string blobName)
         {
             // Get access to container
-            var storageAccount = CloudStorageAccount.Parse(IsmIoTSettings.Settings.storageConnection);
+            var storageAccount = CloudStorageAccount.Parse(CloudConfigurationManager.GetSetting("storageConnection"));
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(IsmIoTSettings.Settings.containerPortal);
+            var blobContainer = blobClient.GetContainerReference(CloudConfigurationManager.GetSetting("containerPortal"));
             // Get BLOB (by filename, not full URI)
             var blob = blobContainer.GetBlockBlobReference(blobName);
             // Access Policy
@@ -338,10 +339,10 @@ namespace ImagingProcessorWorker
         {
             //var storageAccount = CloudStorageAccount.Parse("DefaultEndpointsProtocol=https;AccountName=picturesto;AccountKey=IxESdcVI3BxmL0SkoDsWx1+B5ZDArMHNrQlQERpcCo3e6eOCYptJTTKMin6KIbwbRO2CcmVpcn/hJ2/krrUltA==");
             // Connect to BLOB container
-            string conStr = Settings.storageConnection;
+            string conStr = CloudConfigurationManager.GetSetting("storageConnection");
             var storageAccount = CloudStorageAccount.Parse(conStr);
             var blobClient = storageAccount.CreateCloudBlobClient();
-            var blobContainer = blobClient.GetContainerReference(Settings.containerPortal);
+            var blobContainer = blobClient.GetContainerReference(CloudConfigurationManager.GetSetting("containerPortal"));
             // Generate new BLOB
             var blobName = String.Format("coloredImage_{0}", Guid.NewGuid().ToString());
             return blobContainer.GetBlockBlobReference(blobName);
