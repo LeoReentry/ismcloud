@@ -10,6 +10,7 @@ using IsmIoTPortal.Models;
 using IsmIoTSettings;
 using Microsoft.Azure.Devices;
 using Newtonsoft.Json;
+using Scrypt;
 
 namespace IsmIoTPortal.Controllers
 {
@@ -58,7 +59,11 @@ namespace IsmIoTPortal.Controllers
             // If device with same ID already exists, return error
             if (db.IsmDevices.Any(d => d.DeviceId == id) || db.NewDevices.Any(d => d.DeviceId == id))
                 return new {Error = "This device ID is already taken."};
-
+            // Generate random password of length 32 with at least 1 non-alphanumerical character
+            string password = System.Web.Security.Membership.GeneratePassword(32, 1);
+            // We create a hash of the password to store it in Database
+            // No need for salt since this scrypt implementation adds salt automatically (scrypt requires salt)
+            string hash = new ScryptEncoder().Encode(password);
             var dev = new NewDevice
             {
                 DeviceId = id,
@@ -66,14 +71,16 @@ namespace IsmIoTPortal.Controllers
                 LocationId = loc,
                 SoftwareId = sw,
                 Code = generator.Next(0, 999999).ToString("D6"),
-                Approved = false
+                Approved = false,
+                Password = hash
             };
             db.NewDevices.Add(dev);
             db.SaveChanges();
             return new
             {
                 Id = dev.DeviceId,
-                Code = dev.Code
+                Code = dev.Code,
+                Password = password
             };
         }
 
@@ -81,9 +88,10 @@ namespace IsmIoTPortal.Controllers
         /// API call to retrieve IoT Hub key once device is approved.
         /// </summary>
         /// <param name="id">Identifier of the device.</param>
-        /// <param name="code">6 digit code that identifies it as the same device.</param>
+        /// <param name="code">6 digit verification code that identifies it as the same device.</param>
+        /// <param name="pw">Secret password that makes sure no one just stole the verification code from the device's web interface.</param>
         /// <returns></returns>
-        public async Task<object> Get(string id, string code)
+        public async Task<object> Get(string id, string code, string password)
         {
             // Check Device ID against a whitelist of values to prevent XSS
             if (!IsmIoTSettings.RegexHelper.Text.IsMatch(id))
@@ -94,6 +102,11 @@ namespace IsmIoTPortal.Controllers
                 return new { Error = "Device does not exist." };
             // Get reference to device
             var newDevice = db.NewDevices.First(d => d.DeviceId == id && d.Code == code);
+            // Compare password and hashed password in database
+            if (!new ScryptEncoder().Compare(password, newDevice.Password))
+            {
+                return new {Error = "Password is incorrect."};
+            }
             // Only if device is approved
             if (newDevice.Approved)
             {
@@ -106,8 +119,18 @@ namespace IsmIoTPortal.Controllers
                 // Remove device from database
                 db.NewDevices.Remove(newDevice);
                 db.SaveChanges();
+
+                string storageConnStr = ConfigurationManager.ConnectionStrings["storageConnection"].ConnectionString;
+                string storageAccountStr = ConfigurationManager.ConnectionStrings["storageAccount"].ConnectionString;
+                string storageContainerStr = ConfigurationManager.ConnectionStrings["containerPortal"].ConnectionString;
                 // Return key
-                return new { Key = key };
+                return new
+                {
+                    ConnectionString = key,
+                    StorageConnectionString = storageConnStr,
+                    StorageAccount = storageAccountStr,
+                    storageContainer = storageContainerStr
+                };
             }
 
             return new { Error = "An error occured." };
