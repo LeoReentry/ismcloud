@@ -296,6 +296,10 @@
     <Compile Include="Migrations\201611081056580_UpdateNewDevices.Designer.cs">
       <DependentUpon>201611081056580_UpdateNewDevices.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201612130914059_Add password for device used during provisioning..cs" />
+    <Compile Include="Migrations\201612130914059_Add password for device used during provisioning..Designer.cs">
+      <DependentUpon>201612130914059_Add password for device used during provisioning..cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -479,6 +483,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201611081056580_UpdateNewDevices.resx">
       <DependentUpon>201611081056580_UpdateNewDevices.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201612130914059_Add password for device used during provisioning..resx">
+      <DependentUpon>201612130914059_Add password for device used during provisioning..cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -26,5 +26,6 @@ namespace IsmIoTPortal.Models
         public virtual Hardware Hardware { get; set; }
         public string Code { get; set; }
         public bool Approved { get; set; }
+        public string Password { get; set; }
     }
 }
