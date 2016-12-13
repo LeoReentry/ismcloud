@@ -232,6 +232,12 @@ namespace IsmIoTSettings
         /// <returns>True for success.</returns>
         public async Task<bool> CheckClientTask()
         {
+            // If not initialized or not connected, try to initialize again
+            if (!Initialized || SignalRHubConnection == null)
+            {
+                Initialized = await Init();
+                return Initialized;
+            }
             // If disconnected, reconnect
             if (SignalRHubConnection.State == ConnectionState.Disconnected)
             {
@@ -239,8 +245,6 @@ namespace IsmIoTSettings
                 ConnectSignalR();
                 return SignalRHubConnection.State == ConnectionState.Connected;
             }
-            // If not initialized or not connected, try to initialize again
-            if (!Initialized) return await Init();
             // Update Token if necessary
             if (!IsTokenValid()) return await UpdateToken();
             // If everything is fine, return true
