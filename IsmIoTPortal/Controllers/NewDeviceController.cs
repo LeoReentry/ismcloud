@@ -106,8 +106,18 @@ namespace IsmIoTPortal.Controllers
                 // Remove device from database
                 db.NewDevices.Remove(newDevice);
                 db.SaveChanges();
+
+                string storageConnStr = ConfigurationManager.ConnectionStrings["storageConnection"].ConnectionString;
+                string storageAccountStr = ConfigurationManager.ConnectionStrings["storageAccount"].ConnectionString;
+                string storageContainerStr = ConfigurationManager.ConnectionStrings["containerPortal"].ConnectionString;
                 // Return key
-                return new { Key = key };
+                return new
+                {
+                    ConnectionString = key,
+                    StorageConnectionString = storageConnStr,
+                    StorageAccount = storageAccountStr,
+                    storageContainer = storageContainerStr
+                };
             }
 
             return new { Error = "An error occured." };
