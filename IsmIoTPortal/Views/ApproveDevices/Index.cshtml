@@ -48,7 +48,7 @@
         <td>
             @if (item.Approved)
             {
-                <span>Approved.</span>
+                <span>Approved. | </span>@Html.ActionLink("Remove", "Delete", new {id = item.IsmDeviceId});
             }
             else
             {
