@@ -332,6 +332,9 @@ namespace IsmIoTPortal.Controllers
             // Vermeidet Device Leak
             IsmDevice ismDevice = db.IsmDevices.Find(id);
             
+            // Look for device in NewDevices database, since it might still be around.
+            NewDevice newDevice = db.NewDevices.First(d => d.DeviceId.Equals(ismDevice.DeviceId));
+
             // Check that id was correct
             if (ismDevice == null)
                 return HttpNotFound();
@@ -347,11 +350,12 @@ namespace IsmIoTPortal.Controllers
 
             return await deleteFromIoTHubTask
             .ContinueWith<ActionResult>((ant) =>
-            {
-                db.IsmDevices.Remove(ismDevice);
-                db.SaveChanges();
-                cts.Cancel();
-                return RedirectToAction("Index");
+                {
+                    db.NewDevices.Remove(newDevice);
+                    db.IsmDevices.Remove(ismDevice);
+                    db.SaveChanges();
+                    cts.Cancel();
+                    return RedirectToAction("Index");
             }, TaskContinuationOptions.OnlyOnRanToCompletion)
             .ContinueWith((ant, ct) =>
             {

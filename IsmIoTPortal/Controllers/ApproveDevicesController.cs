@@ -24,6 +24,23 @@ namespace IsmIoTPortal.Controllers
             return View(ismDevices.ToList());
         }
 
+        public ActionResult Delete(int? id)
+        {
+            // Check that an ID has been passed
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var newDevice = db.NewDevices.Find(id);
+            // Check that device exists
+            if (newDevice == null)
+            {
+                return HttpNotFound();
+            }
+            var device = db.IsmDevices.First(d => d.DeviceId.Equals(newDevice.DeviceId));
+            return RedirectToAction("Delete", "IsmDevices", new {id = device.IsmDeviceId});
+        }
+
         public async Task<ActionResult> Approve(int? id)
         {
             // Check that an ID has been passed
