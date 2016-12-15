@@ -331,9 +331,17 @@ namespace IsmIoTPortal.Controllers
             // Nur wenn erster Schritt gut ging weitermachen und aus DB löschen
             // Vermeidet Device Leak
             IsmDevice ismDevice = db.IsmDevices.Find(id);
-            
-            // Look for device in NewDevices database, since it might still be around.
-            NewDevice newDevice = db.NewDevices.First(d => d.DeviceId.Equals(ismDevice.DeviceId));
+            NewDevice newDevice;
+            try
+            {
+                // Look for device in NewDevices database, since it might still be around.
+                newDevice = db.NewDevices.First(d => d.DeviceId.Equals(ismDevice.DeviceId));
+            }
+            // If database is empty, we'll receive InvalidOperationException
+            catch (InvalidOperationException e)
+            {
+                newDevice = null;
+            }
 
             // Check that id was correct
             if (ismDevice == null)
@@ -351,7 +359,8 @@ namespace IsmIoTPortal.Controllers
             return await deleteFromIoTHubTask
             .ContinueWith<ActionResult>((ant) =>
                 {
-                    db.NewDevices.Remove(newDevice);
+                    if (newDevice != null)
+                        db.NewDevices.Remove(newDevice);
                     db.IsmDevices.Remove(ismDevice);
                     db.SaveChanges();
                     cts.Cancel();
