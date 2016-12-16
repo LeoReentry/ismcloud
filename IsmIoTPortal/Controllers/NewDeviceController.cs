@@ -115,7 +115,8 @@ namespace IsmIoTPortal.Controllers
                     return new { Error = "An error occured." };
                 // Get key from IoT Hub
                 Device device = await registryManager.GetDeviceAsync(id);
-                string key = device.Authentication.SymmetricKey.PrimaryKey;
+                var iotHubUri = ConfigurationManager.ConnectionStrings["iotHubUri"].ConnectionString;
+                string key = $"HostName={iotHubUri};DeviceId={device.Id};SharedAccessKey={device.Authentication.SymmetricKey.PrimaryKey}";
                 // Remove device from database
                 db.NewDevices.Remove(newDevice);
                 db.SaveChanges();
