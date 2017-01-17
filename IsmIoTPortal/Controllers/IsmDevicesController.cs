@@ -43,7 +43,7 @@ namespace IsmIoTPortal.Controllers
                         --> Http Device empfängt die Nachrichtmit Ack Flag erst garnicht soweit Beobachtet?
             */
 
-            commandMessage.Properties["command"] = cmd;
+            commandMessage.Properties["C2D_Command"] = cmd;
             commandMessage.Ack = DeliveryAcknowledgement.Full;
             commandMessage.MessageId = MessageIdPrefix.CMD + " " + commandId.ToString();
             await serviceClient.SendAsync(deviceId, commandMessage); 
@@ -57,7 +57,7 @@ namespace IsmIoTPortal.Controllers
             string serializedDeviceState = JsonConvert.SerializeObject(deviceState);
             var commandMessage = new Message(Encoding.ASCII.GetBytes(serializedDeviceState));
 
-            commandMessage.Properties["command"] = CommandType.SET_DEVICE_STATE;
+            commandMessage.Properties["C2D_Command"] = CommandType.SET_DEVICE_STATE;
 
             //commandMessage.Ack = DeliveryAcknowledgement.Full;
             commandMessage.MessageId = Guid.NewGuid().ToString();
