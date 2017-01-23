@@ -126,7 +126,7 @@ namespace ImagingProcessorWorker
                 foreach (EventData eventData in messages)
                 {
                     // PRV || DAT
-                    if (eventData.Properties.ContainsKey("messageType") && eventData.Properties.ContainsKey("DeviceId") && ((string)eventData.Properties["messageType"] == IsmIoTPortal.CommandType.PRV) || (string)eventData.Properties["messageType"] == IsmIoTPortal.CommandType.DAT)
+                    if (eventData.Properties.ContainsKey("messageType") && eventData.Properties.ContainsKey("DeviceId") && ((string)eventData.Properties["messageType"] == IsmIoTPortal.CommandType.D2C_COMMAND))
                     {
                         string serializedDeviceState = Encoding.UTF8.GetString(eventData.GetBytes());
                         DeviceState DeviceState = JsonConvert.DeserializeObject<DeviceState>(serializedDeviceState);

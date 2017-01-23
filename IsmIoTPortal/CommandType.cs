@@ -21,6 +21,7 @@ namespace IsmIoTPortal
         public const string UPDATE_DASHBOARD_CONTROLS = "UpdateDashboardControls";
 
         // D2C Commands
+        public const string D2C_COMMAND = "D2C_Command";
         public const string DAT = "DAT";
         public const string PRV = "PRV";
     }
