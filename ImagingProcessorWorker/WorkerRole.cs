@@ -30,11 +30,11 @@ namespace ImagingProcessorWorker
         //static string startuplog = "E:\\approot\\startupLog.txt"; 
 
         //static string mcrlog = "C:\\MCRDownload\\InstallMcr.log";
-        static string mcrlog = string.Format("{0}\\MCRDownload\\InstallMcr.log", System.Environment.GetEnvironmentVariable("LocalRoot").TrimEnd('\\'));
-        static string logfile = RoleEnvironment.CurrentRoleInstance.Id + ".html";
+        private static string mcrlog = "";//string.Format("{0}\\MCRDownload\\InstallMcr.log", System.Environment.GetEnvironmentVariable("LocalRoot").TrimEnd('\\'));
+        //static string logfile = RoleEnvironment.CurrentRoleInstance.Id + ".html";
 
         // *************DEBUG*****************
-        //static string logfile = "debug.html"; // DEBUG
+        static string logfile = "debug.html"; // DEBUG
 
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly ManualResetEvent runCompleteEvent = new ManualResetEvent(false);
@@ -223,7 +223,7 @@ namespace ImagingProcessorWorker
             }
 
             // *************DEBUG*****************
-            //mcrAlreadyInstalled = true; // DEBUG
+            mcrAlreadyInstalled = true; // DEBUG
 
 
             // 2. Poll the MCR Installation Log if mcrAlreadyInstalled == false

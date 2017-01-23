@@ -133,7 +133,7 @@ namespace ImagingProcessorWorker
                         Task.Factory.StartNew(() => ProcessImage(DeviceState));
                     }
                     // UPDATE_DASHBOARD_CONTROLS
-                    else if (eventData.Properties.ContainsKey("messageType") && eventData.Properties.ContainsKey("DeviceId") && (string)eventData.Properties["messageType"] == IsmIoTPortal.CommandType.UPDATE_DASHBOARD_CONTROLS)
+                    else if (eventData.Properties.ContainsKey(IsmIoTPortal.CommandType.D2C_COMMAND) && (string)eventData.Properties[IsmIoTPortal.CommandType.D2C_COMMAND] == IsmIoTPortal.CommandType.UPDATE_DASHBOARD_CONTROLS)
                     {
                         string serializedDeviceState = Encoding.UTF8.GetString(eventData.GetBytes());
                         DeviceState DeviceState = JsonConvert.DeserializeObject<DeviceState>(serializedDeviceState);
