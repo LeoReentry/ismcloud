@@ -16,8 +16,8 @@ namespace IsmIoTPortal
         public const string STOP_PREVIEW = "StopPreview";
 
         // C2D Dashboard Commands
-        public const string GET_DEVICE_STATE = "GetDeviceState";
-        public const string SET_DEVICE_STATE = "SetDeviceState";
+        public const string GET_DEVICE_STATE = "GetDeviceSettings";
+        public const string SET_DEVICE_STATE = "SetDevicesettings";
         public const string UPDATE_DASHBOARD_CONTROLS = "UpdateDashboardControls";
 
         // D2C Commands

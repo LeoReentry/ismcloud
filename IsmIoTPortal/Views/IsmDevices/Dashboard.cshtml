@@ -229,7 +229,7 @@
             @{
                 //var commandMessage = new Microsoft.Azure.Devices.Message();
                 var commandMessage = new Microsoft.Azure.Devices.Message(System.Text.Encoding.UTF8.GetBytes(CommandType.GET_DEVICE_STATE));
-                commandMessage.Properties["command"] = CommandType.GET_DEVICE_STATE;
+                commandMessage.Properties["C2D_Command"] = CommandType.GET_DEVICE_STATE;
                 commandMessage.MessageId = Guid.NewGuid().ToString();
                 //commandMessage.Ack = Microsoft.Azure.Devices.DeliveryAcknowledgement.Full;
                 //Microsoft.Azure.Devices.ServiceClient serviceClient = Microsoft.Azure.Devices.ServiceClient.CreateFromConnectionString("HostName=iothubism.azure-devices.net;SharedAccessKeyName=iothubowner;SharedAccessKey=nhhwSNpr3p68FcTZfvPEfU7xvJRH/jOpTcWQbQMoKAg=");
