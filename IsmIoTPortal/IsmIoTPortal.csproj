@@ -323,7 +323,6 @@
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\PbiDashboardInfo.cs" />
     <Compile Include="Models\Software.cs" />
-    <Compile Include="CustomAuthorizeAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>

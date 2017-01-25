@@ -7,7 +7,6 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using IsmIoTPortal.Models;
-using IsmIotPortal;
 
 namespace IsmIoTPortal.Controllers
 {
