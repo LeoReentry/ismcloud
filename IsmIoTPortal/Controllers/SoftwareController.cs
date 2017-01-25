@@ -49,7 +49,7 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "SoftwareId,SoftwareVersion")] Software software, HttpPostedFileBase upload)
+        public ActionResult Create([Bind(Include = "SoftwareId,SoftwareVersion,Changelog")] Software software, HttpPostedFileBase upload)
         {
             if (ModelState.IsValid)
             {
@@ -79,6 +79,7 @@ namespace IsmIoTPortal.Controllers
                         string checksumPath = Path.Combine(location, "sha256");
                         System.IO.File.WriteAllText(checksumPath, checksum.ToLower());
 
+                        software.Author = "SWT";
                         // Add to database
                         db.Software.Add(software);
                         db.SaveChanges();

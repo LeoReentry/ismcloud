@@ -13,6 +13,7 @@ namespace IsmIoTPortal.Models
         public string SoftwareVersion { get; set; }
         public string Url { get; set; }
         public string Author { get; set; }
+        [DataType(DataType.MultilineText)]
         public string Changelog { get; set; }
         public virtual List<IsmDevice> IsmDevices { get; set; }
     }

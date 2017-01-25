@@ -313,6 +313,10 @@
     <Compile Include="Migrations\201701251412393_Software Model aktualisieren.Designer.cs">
       <DependentUpon>201701251412393_Software Model aktualisieren.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201701251542147_Changelog is multiline.cs" />
+    <Compile Include="Migrations\201701251542147_Changelog is multiline.Designer.cs">
+      <DependentUpon>201701251542147_Changelog is multiline.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -504,6 +508,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201701251412393_Software Model aktualisieren.resx">
       <DependentUpon>201701251412393_Software Model aktualisieren.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701251542147_Changelog is multiline.resx">
+      <DependentUpon>201701251542147_Changelog is multiline.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
