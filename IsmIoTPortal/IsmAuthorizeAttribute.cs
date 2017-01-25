@@ -16,7 +16,6 @@ namespace IsmIotPortal
     public class IsmAuthorizeAttribute : AuthorizeAttribute
     {
         private readonly string _clientId = null;
-        private readonly string _resourceId = null;
         private readonly string _appKey = null;
         private readonly string _graphResourceID = "https://graph.windows.net";
 
@@ -27,7 +26,6 @@ namespace IsmIotPortal
         public IsmAuthorizeAttribute()
         {
             this._clientId = ConfigurationManager.AppSettings["ida:PortalClientId"];
-            this._resourceId = ConfigurationManager.AppSettings["ida:PortalResourceId"];
             this._appKey = ConfigurationManager.AppSettings["ida:PortalAppKey"];
         }
 
@@ -49,43 +47,46 @@ namespace IsmIotPortal
                 string tenantId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/tenantid").Value;
                 string userObjectId = ClaimsPrincipal.Current.FindFirst("http://schemas.microsoft.com/identity/claims/objectidentifier").Value;
 
-
-                // Get AuthenticationResult for access token
-                var clientCred = new ClientCredential(_clientId, _appKey);
-                var authContext = new AuthenticationContext(string.Format("https://login.microsoftonline.com/{0}", tenantId));
-                var authResult = authContext.AcquireToken(_resourceId, clientCred);
-
-                // Create graph connection with our access token and API version
+                // Create graph connection
                 ActiveDirectoryClient activeDirectoryClient = new ActiveDirectoryClient(
                     new Uri("https://graph.windows.net/" + tenantId),//this._resourceId),
                     async () => { return await this.GetToken(tenantId); }
                 );
 
-                // If we don't have a group id, we can quiery the graph API to find it
+                // If we don't have a group id, we can query the graph API to find it
                 if (this.AdGroupObjectId == null)
                 {
+                    // Get all groups
                     var groups = activeDirectoryClient.Groups.ExecuteAsync().Result;
-                    // Get our group
+                    // Find our group
                     var group = activeDirectoryClient.Groups.Where(g => g.DisplayName.Equals(this.AdGroup)).ExecuteSingleAsync().Result;
+                    // If the group exists, assign the ID
                     if (group != null)
-                    {
                         this.AdGroupObjectId = group.ObjectId;
-                    }                    
                 }
 
+                // If we have a group ID, check if the user is member of that group
                 if (this.AdGroupObjectId != null)
                 {
-                    var user = activeDirectoryClient.Users.Where(u => u.ObjectId.Equals(userObjectId)).ExecuteSingleAsync().Result;//graphConnection.IsMemberOf(this.AdGroupObjectId, userObjectId);
+                    // Get the user
+                    var user = activeDirectoryClient.Users.Where(u => u.ObjectId.Equals(userObjectId)).
+                        ExecuteSingleAsync().Result;
+                    // User Fetcher to get group information
                     IUserFetcher retrievedUserFetcher = (User)user;
-                    var groups = retrievedUserFetcher.MemberOf.ExecuteAsync().Result;
+                    // Get all objects that user is member of
+                    var pagedCollection = retrievedUserFetcher.MemberOf.ExecuteAsync().Result;
+                    // Iterate over collection
                     do
                     {
-                        List<IDirectoryObject> directoryObjects = groups.CurrentPage.ToList();
+                        List<IDirectoryObject> directoryObjects = pagedCollection.CurrentPage.ToList();
                         foreach (IDirectoryObject directoryObject in directoryObjects)
                         {
+                            // If the object is a group
                             if (directoryObject is Group)
                             {
                                 Group group = directoryObject as Group;
+                                // Check if that group is the group we're trying to authenticate against
+                                // If so, set inGroup to true and exit loop
                                 if (group.ObjectId.Equals(this.AdGroupObjectId))
                                 {
                                     inGroup = true;
@@ -93,10 +94,8 @@ namespace IsmIotPortal
                                 }
                             }
                         }
-                    } while (groups != null && groups.MorePagesAvailable && !inGroup);
+                    } while (pagedCollection != null && pagedCollection.MorePagesAvailable && !inGroup);
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -112,8 +111,9 @@ namespace IsmIotPortal
         {
             // Get AuthenticationResult for access token
             var clientCred = new ClientCredential(_clientId, _appKey);
-            var authContext = new AuthenticationContext(string.Format("https://login.windows.net/{0}", tenantId));
-            var authResult = authContext.AcquireToken(_graphResourceID, clientCred);
+            var aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
+            var authContext = new AuthenticationContext(aadInstance + tenantId);
+            var authResult = await authContext.AcquireTokenAsync(_graphResourceID, clientCred);
             return authResult.AccessToken;
         }
     }
