@@ -11,7 +11,7 @@ using IsmIotPortal;
 
 namespace IsmIoTPortal.Controllers
 {
-    [IsmAuthorize(AdGroup = "DeviceAdmins")]
+    [IsmAuthorize(Group = "DeviceAdmins")]
     public class CommandsController : Controller
     {
         private IsmIoTPortalContext db = new IsmIoTPortalContext();

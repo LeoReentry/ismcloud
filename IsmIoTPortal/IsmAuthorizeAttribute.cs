@@ -20,8 +20,8 @@ namespace IsmIotPortal
         private readonly string _graphResourceID = "https://graph.windows.net";
 
 
-        public string AdGroup { get; set; }
-        public string AdGroupObjectId { get; set; }
+        public string Group { get; set; }
+        public string GroupObjectId { get; set; }
 
         public IsmAuthorizeAttribute()
         {
@@ -34,7 +34,7 @@ namespace IsmIotPortal
             // First check if user is authenticated
             if (!ClaimsPrincipal.Current.Identity.IsAuthenticated)
                 return false;
-            else if (this.AdGroup == null && this.AdGroupObjectId == null) // If there are no groups return here
+            else if (this.Group == null && this.GroupObjectId == null) // If there are no groups return here
                 return base.AuthorizeCore(httpContext);
 
             // Now check if user is in group by querying Azure AD Graph API using client
@@ -54,19 +54,19 @@ namespace IsmIotPortal
                 );
 
                 // If we don't have a group id, we can query the graph API to find it
-                if (this.AdGroupObjectId == null)
+                if (this.GroupObjectId == null)
                 {
                     // Get all groups
                     var groups = activeDirectoryClient.Groups.ExecuteAsync().Result;
                     // Find our group
-                    var group = activeDirectoryClient.Groups.Where(g => g.DisplayName.Equals(this.AdGroup)).ExecuteSingleAsync().Result;
+                    var group = activeDirectoryClient.Groups.Where(g => g.DisplayName.Equals(this.Group)).ExecuteSingleAsync().Result;
                     // If the group exists, assign the ID
                     if (group != null)
-                        this.AdGroupObjectId = group.ObjectId;
+                        this.GroupObjectId = group.ObjectId;
                 }
 
                 // If we have a group ID, check if the user is member of that group
-                if (this.AdGroupObjectId != null)
+                if (this.GroupObjectId != null)
                 {
                     // Get the user
                     var user = activeDirectoryClient.Users.Where(u => u.ObjectId.Equals(userObjectId)).
@@ -87,7 +87,7 @@ namespace IsmIotPortal
                                 Group group = directoryObject as Group;
                                 // Check if that group is the group we're trying to authenticate against
                                 // If so, set inGroup to true and exit loop
-                                if (group.ObjectId.Equals(this.AdGroupObjectId))
+                                if (group.ObjectId.Equals(this.GroupObjectId))
                                 {
                                     inGroup = true;
                                     break;
