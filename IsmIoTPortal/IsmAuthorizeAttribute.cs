@@ -19,9 +19,8 @@ namespace IsmIoTPortal
         private readonly string _appKey = null;
         private readonly string _graphResourceID = "https://graph.windows.net";
 
-
-        public string Group { get; set; }
-        public string GroupObjectId { get; set; }
+        public string Groups { get; set; }
+        public string GroupObjectIds { get; set; }
 
         public IsmAuthorizeAttribute()
         {
@@ -34,8 +33,27 @@ namespace IsmIoTPortal
             // First check if user is authenticated
             if (!ClaimsPrincipal.Current.Identity.IsAuthenticated)
                 return false;
-            else if (this.Group == null && this.GroupObjectId == null) // If there are no groups return here
+            else if (this.Groups == null && this.GroupObjectIds == null) // If there are no groups return here
                 return base.AuthorizeCore(httpContext);
+
+            List<string> groupsList = null;
+            List<string> groupsObjectIdsList = new List<string>();
+
+            // Split groups and group object ids into lists
+            if (Groups != null)
+            {
+                // Remove spaces
+                Groups = System.Text.RegularExpressions.Regex.Replace(Groups, " ", "");
+                // Split by ,
+                groupsList = Groups.Split(',').ToList();
+            }
+            if (GroupObjectIds != null)
+            {
+                // Remove spaces
+                GroupObjectIds = System.Text.RegularExpressions.Regex.Replace(GroupObjectIds, " ", "");
+                // Split by ,
+                groupsObjectIdsList = GroupObjectIds.Split(',').ToList();
+            }
 
             // Now check if user is in group by querying Azure AD Graph API using client
             bool inGroup = false;
@@ -53,24 +71,32 @@ namespace IsmIoTPortal
                     async () => { return await this.GetToken(tenantId); }
                 );
 
-                // If we don't have a group id, we can query the graph API to find it
-                if (this.GroupObjectId == null)
+                // If we have groups we need to convert to group IDs, enter here
+                if (groupsList != null)
                 {
-                    // Get all groups
+                    // Query the Graph API to get all groups
                     var groups = activeDirectoryClient.Groups.ExecuteAsync().Result;
-                    // Find our group
-                    var group = activeDirectoryClient.Groups.Where(g => g.DisplayName.Equals(this.Group)).ExecuteSingleAsync().Result;
-                    // If the group exists, assign the ID
-                    if (group != null)
-                        this.GroupObjectId = group.ObjectId;
+                    // Iterate over collection
+                    do
+                    {
+                        // Get current page as list
+                        List<IGroup> groupObjects = groups.CurrentPage.ToList();
+                        // Select all object IDs that have a matching display name to our groups list
+                        var idList = groupObjects
+                            .Where(g => groupsList.Contains(g.DisplayName))
+                            .Select(g => g.ObjectId);
+                        // Add these IDs to our ID list
+                        groupsObjectIdsList.AddRange(idList);
+                    } while (groups != null && groups.MorePagesAvailable && !inGroup);
                 }
 
                 // If we have a group ID, check if the user is member of that group
-                if (this.GroupObjectId != null)
+                if (groupsObjectIdsList.Count > 0)
                 {
                     // Get the user
-                    var user = activeDirectoryClient.Users.Where(u => u.ObjectId.Equals(userObjectId)).
-                        ExecuteSingleAsync().Result;
+                    var user = activeDirectoryClient.Users
+                        .Where(u => u.ObjectId.Equals(userObjectId))
+                        .ExecuteSingleAsync().Result;
                     // User Fetcher to get group information
                     IUserFetcher retrievedUserFetcher = (User)user;
                     // Get all objects that user is member of
@@ -87,7 +113,7 @@ namespace IsmIoTPortal
                                 Group group = directoryObject as Group;
                                 // Check if that group is the group we're trying to authenticate against
                                 // If so, set inGroup to true and exit loop
-                                if (group.ObjectId.Equals(this.GroupObjectId))
+                                if (groupsObjectIdsList.Contains(group.ObjectId))
                                 {
                                     inGroup = true;
                                     break;
@@ -99,7 +125,7 @@ namespace IsmIoTPortal
             }
             catch (Exception ex)
             {
-                string message = string.Format("Unable to authorize AD user: {0} against group: {1}", ClaimsPrincipal.Current.Identity.Name, this.Group);
+                string message = string.Format("Unable to authorize AD user: {0} against group: {1}", ClaimsPrincipal.Current.Identity.Name, this.Groups);
 
                 throw new Exception(message, ex);
             }
