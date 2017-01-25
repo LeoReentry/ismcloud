@@ -99,12 +99,32 @@ namespace IsmIotPortal
             }
             catch (Exception ex)
             {
-                string message = string.Format("Unable to authorize AD user: {0} against group: {1}", ClaimsPrincipal.Current.Identity.Name, this.AdGroup);
+                string message = string.Format("Unable to authorize AD user: {0} against group: {1}", ClaimsPrincipal.Current.Identity.Name, this.Group);
 
                 throw new Exception(message, ex);
             }
 
             return inGroup;
+        }
+
+        protected override void HandleUnauthorizedRequest(System.Web.Mvc.AuthorizationContext filterContext)
+        {
+            if (filterContext.HttpContext.Request.IsAuthenticated)
+            {
+                var viewResult = new ViewResult
+                {
+                    ViewName = "~/Views/Account/Unauthorized.cshtml"
+                };
+                filterContext.Result = viewResult;
+            }
+            else
+            {
+                var viewResult = new ViewResult
+                {
+                    ViewName = "~/Views/Account/Login.cshtml"
+                };
+                filterContext.Result = viewResult;
+            }
         }
 
         private async Task<string> GetToken(string tenantId)
