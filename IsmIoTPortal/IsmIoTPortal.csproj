@@ -62,6 +62,10 @@
       <HintPath>..\packages\Microsoft.AspNet.SignalR.SystemWeb.2.2.0\lib\net45\Microsoft.AspNet.SignalR.SystemWeb.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Azure.ActiveDirectory.GraphClient, Version=2.1.10.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Azure.ActiveDirectory.GraphClient.2.1.1\lib\portable-net4+sl5+win+wpa+wp8\Microsoft.Azure.ActiveDirectory.GraphClient.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Azure.Amqp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Azure.Amqp.1.0.0-preview-003\lib\net451\Microsoft.Azure.Amqp.dll</HintPath>
       <Private>True</Private>
@@ -276,6 +280,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="IsmAuthorizeAttribute.cs" />
     <Compile Include="Migrations\201512231554536_IntegerHisto.cs" />
     <Compile Include="Migrations\201512231554536_IntegerHisto.Designer.cs">
       <DependentUpon>201512231554536_IntegerHisto.cs</DependentUpon>
