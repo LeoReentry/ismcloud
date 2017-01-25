@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using IsmIoTPortal.Models;
+using System.IO;
 
 namespace IsmIoTPortal.Controllers
 {
@@ -47,13 +48,30 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "SoftwareId,SoftwareVersion")] Software software)
+        public ActionResult Create([Bind(Include = "SoftwareId,SoftwareVersion")] Software software, HttpPostedFileBase upload)
         {
             if (ModelState.IsValid)
             {
-                db.Software.Add(software);
-                db.SaveChanges();
-                return RedirectToAction("Index");
+                if (upload != null && upload.ContentLength > 0)
+                {
+                    try
+                    {
+                        var location = Server.MapPath("~/sw-updates");
+                        // Create path if it doesn't exist
+                        Directory.CreateDirectory(location);
+                        // Get full path
+                        string path = Path.Combine(location, Path.GetFileName(upload.FileName));
+                        // Save file
+                        upload.SaveAs(path);
+                        db.Software.Add(software);
+                        db.SaveChanges();
+                        return RedirectToAction("Index");
+                    }
+                    catch (Exception e)
+                    {
+
+                    }
+                }
             }
 
             return View(software);
