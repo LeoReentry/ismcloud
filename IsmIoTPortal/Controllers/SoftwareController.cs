@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using IsmIoTPortal.Models;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace IsmIoTPortal.Controllers
 {
@@ -56,13 +57,29 @@ namespace IsmIoTPortal.Controllers
                 {
                     try
                     {
-                        var location = Server.MapPath("~/sw-updates");
+                        var location = Server.MapPath("~/sw-updates/" + software.SoftwareVersion);
                         // Create path if it doesn't exist
                         Directory.CreateDirectory(location);
                         // Get full path
                         string path = Path.Combine(location, Path.GetFileName(upload.FileName));
                         // Save file
                         upload.SaveAs(path);
+                        // Calculate SHA256
+                        // Read file
+                        var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
+                        string checksum = "";
+                        // Buffered calculation
+                        using(var bufferedStream = new BufferedStream(fileStream, 1024 * 32))
+                        {
+                            var sha = new SHA256Managed();
+                            byte[] checksum_b = sha.ComputeHash(bufferedStream);
+                            checksum =  BitConverter.ToString(checksum_b).Replace("-", String.Empty);
+                        }
+                        // Save as sha256
+                        string checksumPath = Path.Combine(location, "sha256");
+                        System.IO.File.WriteAllText(checksumPath, checksum.ToLower());
+
+                        // Add to database
                         db.Software.Add(software);
                         db.SaveChanges();
                         return RedirectToAction("Index");
