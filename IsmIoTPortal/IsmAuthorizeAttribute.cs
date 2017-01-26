@@ -9,6 +9,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using IsmIoTSettings;
 
 namespace IsmIoTPortal
 {
@@ -68,7 +69,14 @@ namespace IsmIoTPortal
                 // Create graph connection
                 ActiveDirectoryClient activeDirectoryClient = new ActiveDirectoryClient(
                     new Uri("https://graph.windows.net/" + tenantId),//this._resourceId),
-                    async () => { return await this.GetToken(tenantId); }
+                    async () =>
+                    {
+                        return await IsmUtils.GetAccessToken(
+                            authority: ConfigurationManager.AppSettings["ida:AADInstance"] + tenantId,
+                            resourceId: _graphResourceID,
+                            clientId: _clientId,
+                            clientSecret: _appKey);
+                    }
                 );
 
                 // If we have groups we need to convert to group IDs, enter here
@@ -153,14 +161,5 @@ namespace IsmIoTPortal
             }
         }
 
-        private async Task<string> GetToken(string tenantId)
-        {
-            // Get AuthenticationResult for access token
-            var clientCred = new ClientCredential(_clientId, _appKey);
-            var aadInstance = ConfigurationManager.AppSettings["ida:AADInstance"];
-            var authContext = new AuthenticationContext(aadInstance + tenantId);
-            var authResult = await authContext.AcquireTokenAsync(_graphResourceID, clientCred);
-            return authResult.AccessToken;
-        }
     }
 }

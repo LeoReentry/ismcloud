@@ -66,6 +66,7 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SignalRHelper.cs" />
+    <Compile Include="IsmUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="appsettings.config">
