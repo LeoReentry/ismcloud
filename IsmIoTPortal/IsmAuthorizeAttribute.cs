@@ -24,8 +24,8 @@ namespace IsmIoTPortal
 
         public IsmAuthorizeAttribute()
         {
-            this._clientId = ConfigurationManager.AppSettings["ida:PortalClientId"];
-            this._appKey = ConfigurationManager.AppSettings["ida:PortalAppKey"];
+            this._clientId = ConfigurationManager.AppSettings["ida:ClientId"];
+            this._appKey = ConfigurationManager.AppSettings["ida:AppKey"];
         }
 
         protected override bool AuthorizeCore(HttpContextBase httpContext)
