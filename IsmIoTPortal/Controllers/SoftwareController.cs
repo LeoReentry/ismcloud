@@ -80,12 +80,24 @@ namespace IsmIoTPortal.Controllers
 
                         // Get access to key vault to encrypt checksum
                         var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
+                        var key = kv.GetKeyAsync(ConfigurationManager.AppSettings["kv:fw-signing-key"]).Result;
+                        var publicKey = Convert.ToBase64String(key.Key.N);
 
                         // Sign checksum
                         var sha256sig = kv.SignAsync(
                             keyIdentifier: ConfigurationManager.AppSettings["kv:fw-signing-key"],
                             algorithm: Microsoft.Azure.KeyVault.WebKey.JsonWebKeySignatureAlgorithm.RS256,
                             digest: checksum_b).Result.Result;
+                        // Save public key to disc
+                        string keyPath = Path.Combine(location, "key.pub");
+                        TextWriter outputStream = new StringWriter();
+                        outputStream.WriteLine("-----BEGIN PUBLIC KEY-----");
+                        for(Int32 i = 0; i < publicKey.Length; i+= 64)
+                        {
+                            outputStream.WriteLine(publicKey.ToCharArray(), i, (Int32) Math.Min(64, publicKey.Length - i));
+                        }
+                        outputStream.WriteLine("-----END PUBLIC KEY-----");
+                        System.IO.File.WriteAllText(keyPath, outputStream.ToString());
 
                         // Save byte data as sig
                         string checksumPath = Path.Combine(location, "sig");
