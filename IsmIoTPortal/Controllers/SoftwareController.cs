@@ -9,6 +9,9 @@ using System.Web.Mvc;
 using IsmIoTPortal.Models;
 using System.IO;
 using System.Security.Cryptography;
+using Microsoft.Azure.KeyVault;
+using System.Threading.Tasks;
+using System.Configuration;
 
 namespace IsmIoTPortal.Controllers
 {
@@ -67,18 +70,27 @@ namespace IsmIoTPortal.Controllers
                         // Calculate SHA256
                         // Read file
                         var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
-                        string checksum = "";
+                        byte[] checksum_b;
                         // Buffered calculation
                         using(var bufferedStream = new BufferedStream(fileStream, 1024 * 32))
                         {
                             var sha = new SHA256Managed();
-                            byte[] checksum_b = sha.ComputeHash(bufferedStream);
-                            checksum =  BitConverter.ToString(checksum_b).Replace("-", String.Empty);
+                            checksum_b = sha.ComputeHash(bufferedStream);
                         }
-                        // Save as sha256
-                        string checksumPath = Path.Combine(location, "sha256");
-                        System.IO.File.WriteAllText(checksumPath, checksum.ToLower());
 
+                        // Get access to key vault to encrypt checksum
+                        var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
+
+                        // Sign checksum
+                        var sha256sig = kv.SignAsync(
+                            keyIdentifier: ConfigurationManager.AppSettings["kv:fw-signing-key"],
+                            algorithm: Microsoft.Azure.KeyVault.WebKey.JsonWebKeySignatureAlgorithm.RS256,
+                            digest: checksum_b).Result.Result;
+
+                        // Save byte data as sig
+                        string checksumPath = Path.Combine(location, "sig");
+                        System.IO.File.WriteAllBytes(checksumPath, sha256sig);
+                        
                         software.Author = "SWT";
                         // Add to database
                         db.Software.Add(software);
@@ -159,6 +171,13 @@ namespace IsmIoTPortal.Controllers
                 db.Dispose();
             }
             base.Dispose(disposing);
+        }
+
+        private async Task<string> GetToken(string authority, string resource, string scope)
+        {
+            var id = ConfigurationManager.AppSettings["hsma-ida:PortalClientId"];
+            var secret = ConfigurationManager.AppSettings["hsma-ida:PortalAppKey"];
+            return await IsmIoTSettings.IsmUtils.GetAccessToken(authority, resource, id, secret);
         }
     }
 }
