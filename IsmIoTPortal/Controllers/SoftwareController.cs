@@ -12,6 +12,7 @@ using System.Security.Cryptography;
 using Microsoft.Azure.KeyVault;
 using System.Threading.Tasks;
 using System.Configuration;
+using IsmIoTSettings;
 
 namespace IsmIoTPortal.Controllers
 {
@@ -92,9 +93,10 @@ namespace IsmIoTPortal.Controllers
                         string keyPath = Path.Combine(location, "key.pub");
                         TextWriter outputStream = new StringWriter();
                         outputStream.WriteLine("-----BEGIN PUBLIC KEY-----");
-                        for(Int32 i = 0; i < publicKey.Length; i+= 64)
+                        var pkcs8Key = IsmUtils.ConvertJwkToPkcs8(key.Key);
+                        for(Int32 i = 0; i < pkcs8Key.Length; i+= 64)
                         {
-                            outputStream.WriteLine(publicKey.ToCharArray(), i, (Int32) Math.Min(64, publicKey.Length - i));
+                            outputStream.WriteLine(pkcs8Key.ToCharArray(), i, (Int32) Math.Min(64, pkcs8Key.Length - i));
                         }
                         outputStream.WriteLine("-----END PUBLIC KEY-----");
                         System.IO.File.WriteAllText(keyPath, outputStream.ToString());

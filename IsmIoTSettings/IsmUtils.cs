@@ -154,7 +154,7 @@ namespace IsmIoTSettings
                             // Write length of keyValues
                             WriteLengthDer(publicKeyWriter, (ulong)keyValuesStream.Length);
                             // Write keyValues SEQUENCE
-                            publicKeyWriter.Write(keyValuesStream.GetBuffer());
+                            publicKeyWriter.Write(keyValuesStream.GetBuffer(), 0, (int)keyValuesStream.Length);
                         }
                         #endregion
                         // keyValues SEQUENCE is done
@@ -163,16 +163,16 @@ namespace IsmIoTSettings
                         // Length of keyValues SEQUENCE into PublicKey BIT STRING
                         WriteLengthDer(publicKeyDataWriter, (ulong)publicKeyStream.Length);
                         // Write content keyValues SEQUENCE into PublicKey BIT STRING
-                        publicKeyDataWriter.Write(publicKeyStream.GetBuffer());
+                        publicKeyDataWriter.Write(publicKeyStream.GetBuffer(), 0, (int)publicKeyStream.Length);
                     }
                     #endregion
 
                     WriteLengthDer(DERWriter, (ulong)publicKeyDataStream.Length);
-                    DERWriter.Write(publicKeyDataStream.GetBuffer());
+                    DERWriter.Write(publicKeyDataStream.GetBuffer(), 0, (int)publicKeyDataStream.Length);
                 }
                 #endregion
 
-                var base64String = Convert.ToBase64String(s.GetBuffer());
+                var base64String = Convert.ToBase64String(s.GetBuffer(), 0, (int)s.Length);
                 return base64String;
             }
         }
@@ -231,7 +231,7 @@ namespace IsmIoTSettings
                 int l = 1;
                 for (int i = 7; i >= 0; i--)
                 {
-                    if ((length >> i*4) != 0)
+                    if ((length >> i * 8) != 0)
                     {
                         l = i + 1;
                         break;
@@ -240,8 +240,8 @@ namespace IsmIoTSettings
                 // Write long form and number of bytes
                 w.Write((byte)(0x80 + l));
                 // Write all bytes
-                while (l >= 0)
-                    w.Write((byte)(length >> (l-- - 1) & 0xFF));
+                while (l > 0)
+                    w.Write((byte)(length >> ((--l) * 8) & 0xFF));
             }
         }
     }
