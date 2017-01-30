@@ -11,6 +11,8 @@ using System.Threading.Tasks;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Web;
+using SharpCompress.Writers;
+using SharpCompress.Common;
 
 namespace IsmIoTPortal
 {
@@ -42,24 +44,22 @@ namespace IsmIoTPortal
 
                 // Get access to key vault
                 var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
-                // Get key
-                var key = await kv.GetKeyAsync(ConfigurationManager.AppSettings["kv:fw-signing-key"]);
                 // Sign Checksum
                 var sig = await kv.SignAsync(
                     keyIdentifier: ConfigurationManager.AppSettings["kv:fw-signing-key"],
                     algorithm: Microsoft.Azure.KeyVault.WebKey.JsonWebKeySignatureAlgorithm.RS256,
                     digest: checksum);
-                software.Status = "Signed";
-                db.SaveChanges();
-
-                //// Save public key to disk
-                //var keyPath = Path.Combine(location, "public.pem");
-                //var publicKey = GetPublicKey(key.Key);
-                //File.WriteAllText(keyPath, publicKey);
 
                 // Save byte data as sig
                 string checksumPath = Path.Combine(location, "sig");
                 File.WriteAllBytes(checksumPath, sig.Result);
+                software.Status = "Signed";
+                db.SaveChanges();
+
+                // Create tarball
+                var tarball = CreateTarBall(location);
+                software.Status = "Compressed";
+                db.SaveChanges();
             }
             catch(Exception e)
             {
@@ -109,6 +109,27 @@ namespace IsmIoTPortal
             var blobContainer = blobClient.GetContainerReference(ConfigurationManager.ConnectionStrings["containerFirmware"].ConnectionString);
             await blobContainer.CreateIfNotExistsAsync();
 
+        }
+
+        private static string CreateTarBall(string dir)
+        {
+            string tarPath = dir + ".tar";
+            string targzPath = dir + ".tar.gz";
+            using (Stream stream = File.OpenWrite(tarPath))
+            using (var writer = WriterFactory.Open(stream, ArchiveType.Tar, new WriterOptions(CompressionType.None)))//Open(ArchiveType.Tar, stream))
+            {
+                writer.WriteAll(dir, "*", SearchOption.AllDirectories);
+            }
+            using (Stream stream = File.OpenWrite(targzPath))
+            using (var writer = WriterFactory.Open(stream, ArchiveType.GZip, new WriterOptions(CompressionType.GZip)))
+            {
+                writer.Write("Tar.tar", tarPath);
+            }
+            // Delete tarfile
+            File.Delete(tarPath);
+            // Delete directory
+            Directory.Delete(dir, true);
+            return targzPath;
         }
     }
 }
