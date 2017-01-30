@@ -63,7 +63,7 @@ namespace IsmIoTPortal.Controllers
                     try
                     {
                         var location = Server.MapPath("~/sw-updates/" + software.SoftwareVersion);
-                        IsmUtils.SoftwareUtils.CreateNewFirmwareUpdateTask(upload, location);
+                        PortalUtils.CreateNewFirmwareUpdateTask(upload, location);
                                           
                         software.Author = "SWT";
                         // Add to database
@@ -145,7 +145,7 @@ namespace IsmIoTPortal.Controllers
             // Get key
             var key = kv.GetKeyAsync(ConfigurationManager.AppSettings["kv:fw-signing-key"]).Result;
             // Get pem formatted public key string
-            var pubKey = IsmUtils.SoftwareUtils.GetPublicKey(key.Key);
+            var pubKey = PortalUtils.GetPublicKey(key.Key);
             // Convert string to stream
             var stream = new MemoryStream(Encoding.ASCII.GetBytes(pubKey));
             // Send stream to file download
