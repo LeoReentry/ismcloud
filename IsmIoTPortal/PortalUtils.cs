@@ -14,33 +14,56 @@ namespace IsmIoTPortal
 {
     public class PortalUtils
     {
-        public static async Task CreateNewFirmwareUpdateTask(HttpPostedFileBase file, string location)
+        public static async Task CreateNewFirmwareUpdateTask(HttpPostedFileBase file, string location, int id)
         {
-            IsmIoTPortalContext db = new IsmIoTPortalContext();                
-            // Creates all directories in path that do not exist
-            Directory.CreateDirectory(location);
-            // Full path of file
-            string filePath = Path.Combine(location, Path.GetFileName(file.FileName));
-            // Save file to disk
-            file.SaveAs(filePath);
-            // Calculate SHA 256 hash
-            var checksum = await Sha256Sum(filePath);
-            // Get access to key vault
-            var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
-            // Get key
-            var key = await kv.GetKeyAsync(ConfigurationManager.AppSettings["kv:fw-signing-key"]);
-            // Sign Checksum
-            var sig = await kv.SignAsync(
-                keyIdentifier: ConfigurationManager.AppSettings["kv:fw-signing-key"],
-                algorithm: Microsoft.Azure.KeyVault.WebKey.JsonWebKeySignatureAlgorithm.RS256,
-                digest: checksum);
-            // Save public key to disk
-            var keyPath = Path.Combine(location, "public.pem");
-            var publicKey = GetPublicKey(key.Key);
-            File.WriteAllText(keyPath, publicKey);
-            // Save byte data as sig
-            string checksumPath = Path.Combine(location, "sig");
-            File.WriteAllBytes(checksumPath, sig.Result);
+            IsmIoTPortalContext db = new IsmIoTPortalContext();
+            var software = db.Software.Find(id);
+            try
+            {
+                // Creates all directories in path that do not exist
+                Directory.CreateDirectory(location);
+                // Full path of file
+                string filePath = Path.Combine(location, Path.GetFileName(file.FileName));
+                // Save file to disk
+                file.SaveAs(filePath);
+                // Update software status
+                software.Status = "Saved";
+                db.SaveChanges();
+
+                // Calculate SHA 256 hash
+                var checksum = await Sha256Sum(filePath);
+                // Get checksum string
+                var checksum_string = BitConverter.ToString(checksum).Replace("-", String.Empty).ToLower();
+                // Add checksum string to database
+                software.Checksum = checksum_string;
+                db.SaveChanges();
+
+                // Get access to key vault
+                var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
+                // Get key
+                var key = await kv.GetKeyAsync(ConfigurationManager.AppSettings["kv:fw-signing-key"]);
+                // Sign Checksum
+                var sig = await kv.SignAsync(
+                    keyIdentifier: ConfigurationManager.AppSettings["kv:fw-signing-key"],
+                    algorithm: Microsoft.Azure.KeyVault.WebKey.JsonWebKeySignatureAlgorithm.RS256,
+                    digest: checksum);
+                software.Status = "Signed";
+                db.SaveChanges();
+
+                //// Save public key to disk
+                //var keyPath = Path.Combine(location, "public.pem");
+                //var publicKey = GetPublicKey(key.Key);
+                //File.WriteAllText(keyPath, publicKey);
+
+                // Save byte data as sig
+                string checksumPath = Path.Combine(location, "sig");
+                File.WriteAllBytes(checksumPath, sig.Result);
+            }
+            catch(Exception e)
+            {
+                software.Status = "Error.";
+                db.SaveChanges();
+            }
         }
 
         public static async Task<byte[]> Sha256Sum(string filePath)

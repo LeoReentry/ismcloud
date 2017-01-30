@@ -62,13 +62,15 @@ namespace IsmIoTPortal.Controllers
                 {
                     try
                     {
-                        var location = Server.MapPath("~/sw-updates/" + software.SoftwareVersion);
-                        PortalUtils.CreateNewFirmwareUpdateTask(upload, location);
-                                          
+                        software.Status = "Uploaded";
                         software.Author = "SWT";
                         // Add to database
                         db.Software.Add(software);
                         db.SaveChanges();
+
+                        var location = Server.MapPath("~/sw-updates/" + software.SoftwareVersion);
+                        PortalUtils.CreateNewFirmwareUpdateTask(upload, location, software.SoftwareId);
+
                         return RedirectToAction("Index");
                     }
                     catch (Exception e)
