@@ -8,6 +8,8 @@ using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage;
+using Microsoft.WindowsAzure.Storage.Blob;
 using System.Web;
 
 namespace IsmIoTPortal
@@ -61,7 +63,7 @@ namespace IsmIoTPortal
             }
             catch(Exception e)
             {
-                software.Status = "Error.";
+                software.Status = "Error";
                 db.SaveChanges();
             }
         }
@@ -97,6 +99,16 @@ namespace IsmIoTPortal
             }
             outputStream.WriteLine("-----END PUBLIC KEY-----");
             return outputStream.ToString();
+        }
+
+        private static async Task UploadToBlobStorage()
+        {
+            // Get reference to storage account
+            var storageAccount = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["storageConnection"].ConnectionString);
+            var blobClient = storageAccount.CreateCloudBlobClient();
+            var blobContainer = blobClient.GetContainerReference(ConfigurationManager.ConnectionStrings["containerFirmware"].ConnectionString);
+            await blobContainer.CreateIfNotExistsAsync();
+
         }
     }
 }
