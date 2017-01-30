@@ -272,15 +272,8 @@ namespace IsmIoTSettings
                     digest: checksum);
                 // Save public key to disk
                 var keyPath = Path.Combine(location, "public.pem");
-                TextWriter outputStream = new StringWriter();
-                outputStream.WriteLine("-----BEGIN PUBLIC KEY-----");
-                var pkcs8Key = ConvertJwkToPkcs8(key.Key);
-                for (Int32 i = 0; i < pkcs8Key.Length; i += 64)
-                {
-                    outputStream.WriteLine(pkcs8Key.ToCharArray(), i, (Int32)Math.Min(64, pkcs8Key.Length - i));
-                }
-                outputStream.WriteLine("-----END PUBLIC KEY-----");
-                File.WriteAllText(keyPath, outputStream.ToString());
+                var publicKey = GetPublicKey(key.Key);
+                File.WriteAllText(keyPath, publicKey);
                 // Save byte data as sig
                 string checksumPath = Path.Combine(location, "sig");
                 File.WriteAllBytes(checksumPath, sig.Result);                
@@ -304,6 +297,19 @@ namespace IsmIoTSettings
                 var id = ConfigurationManager.AppSettings["hsma-ida:PortalClientId"];
                 var secret = ConfigurationManager.AppSettings["hsma-ida:PortalAppKey"];
                 return await IsmUtils.GetAccessToken(authority, resource, id, secret);
+            }
+
+            public static string GetPublicKey(Microsoft.Azure.KeyVault.WebKey.JsonWebKey key)
+            {
+                TextWriter outputStream = new StringWriter();
+                outputStream.WriteLine("-----BEGIN PUBLIC KEY-----");
+                var pkcs8Key = ConvertJwkToPkcs8(key);
+                for (Int32 i = 0; i < pkcs8Key.Length; i += 64)
+                {
+                    outputStream.WriteLine(pkcs8Key.ToCharArray(), i, (Int32)Math.Min(64, pkcs8Key.Length - i));
+                }
+                outputStream.WriteLine("-----END PUBLIC KEY-----");
+                return outputStream.ToString();
             }
 
 

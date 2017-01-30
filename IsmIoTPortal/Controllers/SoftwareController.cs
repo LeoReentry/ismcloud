@@ -137,6 +137,12 @@ namespace IsmIoTPortal.Controllers
             return RedirectToAction("Index");
         }
 
+        public ActionResult GetKey()
+        {
+            var loc = Server.MapPath("~/sw-updates/public.pem");
+            return File(loc, MimeMapping.GetMimeMapping("public.pem"), "public.pem");
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
