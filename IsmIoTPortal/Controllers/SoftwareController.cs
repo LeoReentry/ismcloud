@@ -62,49 +62,8 @@ namespace IsmIoTPortal.Controllers
                     try
                     {
                         var location = Server.MapPath("~/sw-updates/" + software.SoftwareVersion);
-                        // Create path if it doesn't exist
-                        Directory.CreateDirectory(location);
-                        // Get full path
-                        string path = Path.Combine(location, Path.GetFileName(upload.FileName));
-                        // Save file
-                        upload.SaveAs(path);
-                        // Calculate SHA256
-                        // Read file
-                        var fileStream = new FileStream(path, FileMode.Open, FileAccess.Read);
-                        byte[] checksum_b;
-                        // Buffered calculation
-                        using(var bufferedStream = new BufferedStream(fileStream, 1024 * 32))
-                        {
-                            var sha = new SHA256Managed();
-                            checksum_b = sha.ComputeHash(bufferedStream);
-                        }
-
-                        // Get access to key vault to encrypt checksum
-                        var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
-                        var key = kv.GetKeyAsync(ConfigurationManager.AppSettings["kv:fw-signing-key"]).Result;
-                        var publicKey = Convert.ToBase64String(key.Key.N);
-
-                        // Sign checksum
-                        var sha256sig = kv.SignAsync(
-                            keyIdentifier: ConfigurationManager.AppSettings["kv:fw-signing-key"],
-                            algorithm: Microsoft.Azure.KeyVault.WebKey.JsonWebKeySignatureAlgorithm.RS256,
-                            digest: checksum_b).Result.Result;
-                        // Save public key to disc
-                        string keyPath = Path.Combine(location, "key.pub");
-                        TextWriter outputStream = new StringWriter();
-                        outputStream.WriteLine("-----BEGIN PUBLIC KEY-----");
-                        var pkcs8Key = IsmUtils.ConvertJwkToPkcs8(key.Key);
-                        for(Int32 i = 0; i < pkcs8Key.Length; i+= 64)
-                        {
-                            outputStream.WriteLine(pkcs8Key.ToCharArray(), i, (Int32) Math.Min(64, pkcs8Key.Length - i));
-                        }
-                        outputStream.WriteLine("-----END PUBLIC KEY-----");
-                        System.IO.File.WriteAllText(keyPath, outputStream.ToString());
-
-                        // Save byte data as sig
-                        string checksumPath = Path.Combine(location, "sig");
-                        System.IO.File.WriteAllBytes(checksumPath, sha256sig);
-                        
+                        IsmUtils.SoftwareUtils.CreateNewFirmwareUpdateTask(upload, location);
+                                          
                         software.Author = "SWT";
                         // Add to database
                         db.Software.Add(software);
