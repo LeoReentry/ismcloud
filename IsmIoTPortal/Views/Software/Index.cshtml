@@ -17,6 +17,12 @@
         <th>
             @Html.DisplayNameFor(model => model.Author)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Checksum)
+        </th>
         <th></th>
     </tr>
 
@@ -27,6 +33,12 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Author)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Checksum)
         </td>
         <td>
             @Html.ActionLink("Edit", "Edit", new { id=item.SoftwareId }) |
