@@ -35,7 +35,7 @@ namespace IsmIoTPortal
                 db.SaveChanges();
 
                 // Calculate SHA 256 hash
-                var checksum = await Sha256Sum(filePath);
+                var checksum = await Sha256Sum(filePath).ConfigureAwait(false);
                 // Get checksum string
                 var checksum_string = BitConverter.ToString(checksum).Replace("-", String.Empty).ToLower();
                 // Add checksum string to database
@@ -48,7 +48,7 @@ namespace IsmIoTPortal
                 var sig = await kv.SignAsync(
                     keyIdentifier: ConfigurationManager.AppSettings["kv:fw-signing-key"],
                     algorithm: Microsoft.Azure.KeyVault.WebKey.JsonWebKeySignatureAlgorithm.RS256,
-                    digest: checksum);
+                    digest: checksum).ConfigureAwait(false);
 
                 // Save byte data as sig
                 string checksumPath = Path.Combine(location, "sig");
@@ -60,6 +60,21 @@ namespace IsmIoTPortal
                 var tarball = CreateTarBall(location);
                 software.Status = "Compressed";
                 db.SaveChanges();
+
+                // Upload
+                var uri = await UploadToBlobStorage(Path.GetFileName(tarball), tarball).ConfigureAwait(false);
+                if (uri.Equals("Error"))
+                {
+                    software.Status = "Error during upload.";
+                    db.SaveChanges();
+                }
+                else
+                {
+                    software.Status = "Ready";
+                    software.Url = uri;
+                    db.SaveChanges();
+                }
+
             }
             catch(Exception e)
             {
@@ -101,14 +116,25 @@ namespace IsmIoTPortal
             return outputStream.ToString();
         }
 
-        private static async Task UploadToBlobStorage()
+        private static async Task<string> UploadToBlobStorage(string fileName, string filePath)
         {
             // Get reference to storage account
             var storageAccount = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["storageConnection"].ConnectionString);
             var blobClient = storageAccount.CreateCloudBlobClient();
             var blobContainer = blobClient.GetContainerReference(ConfigurationManager.ConnectionStrings["containerFirmware"].ConnectionString);
             await blobContainer.CreateIfNotExistsAsync();
-
+            // Get reference to blob
+            var blob = blobContainer.GetBlockBlobReference(fileName);
+            // Upload BLOB (we don't need a SAS here since we're already authenticated)
+            try
+            {
+                await blob.UploadFromFileAsync(filePath).ConfigureAwait(false);
+            }
+            catch (Exception e)
+            {
+                return "Error";
+            }
+            return blob.Uri.ToString();
         }
 
         private static string CreateTarBall(string dir)
