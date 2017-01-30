@@ -13,6 +13,7 @@ using Microsoft.Azure.KeyVault;
 using System.Threading.Tasks;
 using System.Configuration;
 using IsmIoTSettings;
+using System.Text;
 
 namespace IsmIoTPortal.Controllers
 {
@@ -139,8 +140,16 @@ namespace IsmIoTPortal.Controllers
 
         public ActionResult GetKey()
         {
-            var loc = Server.MapPath("~/sw-updates/public.pem");
-            return File(loc, MimeMapping.GetMimeMapping("public.pem"), "public.pem");
+            // Get access to key vault
+            var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
+            // Get key
+            var key = kv.GetKeyAsync(ConfigurationManager.AppSettings["kv:fw-signing-key"]).Result;
+            // Get pem formatted public key string
+            var pubKey = IsmUtils.SoftwareUtils.GetPublicKey(key.Key);
+            // Convert string to stream
+            var stream = new MemoryStream(Encoding.ASCII.GetBytes(pubKey));
+            // Send stream to file download
+            return File(stream, MimeMapping.GetMimeMapping("public.pem"), "public.pem");
         }
 
         protected override void Dispose(bool disposing)
