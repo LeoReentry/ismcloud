@@ -334,6 +334,10 @@
     <Compile Include="Migrations\201701251542147_Changelog is multiline.Designer.cs">
       <DependentUpon>201701251542147_Changelog is multiline.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201701301034584_Add fields to software model.cs" />
+    <Compile Include="Migrations\201701301034584_Add fields to software model.Designer.cs">
+      <DependentUpon>201701301034584_Add fields to software model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -528,6 +532,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201701251542147_Changelog is multiline.resx">
       <DependentUpon>201701251542147_Changelog is multiline.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701301034584_Add fields to software model.resx">
+      <DependentUpon>201701301034584_Add fields to software model.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
