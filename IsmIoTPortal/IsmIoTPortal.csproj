@@ -346,6 +346,10 @@
     <Compile Include="Migrations\201701301034584_Add fields to software model.Designer.cs">
       <DependentUpon>201701301034584_Add fields to software model.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201701311028233_Add date to software update.cs" />
+    <Compile Include="Migrations\201701311028233_Add date to software update.Designer.cs">
+      <DependentUpon>201701311028233_Add date to software update.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -546,6 +550,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201701301034584_Add fields to software model.resx">
       <DependentUpon>201701301034584_Add fields to software model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201701311028233_Add date to software update.resx">
+      <DependentUpon>201701311028233_Add date to software update.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

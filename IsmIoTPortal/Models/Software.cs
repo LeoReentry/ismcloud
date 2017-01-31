@@ -17,6 +17,7 @@ namespace IsmIoTPortal.Models
         public string Author { get; set; }
         [DataType(DataType.MultilineText)]
         public string Changelog { get; set; }
+        public DateTime Date { get; set; }
         public virtual List<IsmDevice> IsmDevices { get; set; }
     }
 }
