@@ -5,7 +5,20 @@
 
 <h2>Rollout</h2>
 <h2>Software Version&emsp;<b>@Model.Software.SoftwareVersion</b></h2>
+<table class="table">
+    <tr>
+        <th bgcolor="#FFFFFF">
+            Devices that can be updated
+        </th>
+        <th bgcolor="#BBBBBB">
+            Devices already on this version
+        </th>
+        <th bgcolor="#999999">
+            Devices with newer firmware
+        </th>
+    </tr>
 
+</table>
 
 <table class="table">
     <tr>
@@ -19,7 +32,21 @@
 
     @foreach (var item in Model.Devices)
     {
-        <tr>
+        if (item.Software.Date < Model.Software.Date)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DeviceId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
+                </td>
+            </tr>
+        }
+    }
+    @foreach (var item in Model.Software.IsmDevices)
+    {
+        <tr bgcolor="#BBBBBB">
             <td>
                 @Html.DisplayFor(modelItem => item.DeviceId)
             </td>
@@ -28,24 +55,19 @@
             </td>
         </tr>
     }
-    <tr>
-        <th>
-            Updated Devices
-        </th>
-        <th>
-            
-        </th>
-    </tr>
-    @foreach (var item in Model.Software.IsmDevices)
+    @foreach (var item in Model.Devices)
     {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.DeviceId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
-            </td>
-        </tr>
+        if (item.Software.Date > Model.Software.Date)
+        {
+            <tr bgcolor="#999999">
+                <td>
+                    @Html.DisplayFor(modelItem => item.DeviceId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
+                </td>
+            </tr>
+        }
     }
 </table>
 
