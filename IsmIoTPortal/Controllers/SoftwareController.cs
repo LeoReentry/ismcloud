@@ -64,6 +64,7 @@ namespace IsmIoTPortal.Controllers
                     {
                         software.Status = "Uploaded";
                         software.Author = "SWT";
+                        software.Date = DateTime.Now;
                         // Add to database
                         db.Software.Add(software);
                         db.SaveChanges();

@@ -255,13 +255,14 @@ namespace IsmIoTPortal.Controllers
             // Check that POST device ID is the same as ID parameter
             if (id == null || id != ismDevice.IsmDeviceId)
                 return HttpNotFound();
-            // Return error if device doesn't exist
-            if (db.IsmDevices.Find(ismDevice.IsmDeviceId) == null)
+            //// Return error if device doesn't exist
+            if (!db.IsmDevices.Any(d => d.IsmDeviceId == ismDevice.IsmDeviceId))
+            //if (db.IsmDevices.Find(ismDevice.IsmDeviceId) == null)
                 return HttpNotFound();
 
             if (ModelState.IsValid)
             {
-                db.Entry(ismDevice).State = EntityState.Modified;
+                db.Entry(ismDevice).State = EntityState.Modified;                
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
