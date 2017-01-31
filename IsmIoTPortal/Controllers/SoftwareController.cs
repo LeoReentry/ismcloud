@@ -14,6 +14,8 @@ using System.Threading.Tasks;
 using System.Configuration;
 using IsmIoTSettings;
 using System.Text;
+using Microsoft.Azure.Devices;
+using Microsoft.WindowsAzure;
 
 namespace IsmIoTPortal.Controllers
 {
@@ -179,6 +181,41 @@ namespace IsmIoTPortal.Controllers
                 Software = software,
                 Devices = devices.ToList()
             });
+        }
+
+        // POST: Software/Rollout/5
+        // Aktivieren Sie zum Schutz vor übermäßigem Senden von Angriffen die spezifischen Eigenschaften, mit denen eine Bindung erfolgen soll. Weitere Informationen 
+        // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Rollout(int? id, int[] selectedDevices)
+        {
+            if (id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            Software software = db.Software.Find(id);
+            if (software == null)
+                return HttpNotFound();
+            //software.Status = "Rolling out";
+
+            foreach(var deviceId in selectedDevices)
+            {
+                var device = db.IsmDevices.Find(deviceId);
+                if (device == null)
+                    continue;
+                // If the device's software version is newer than the one we'll be updating to, skip this device
+                if (device.Software.Date > software.Date)
+                    continue;
+
+                //var methodInvokation = new CloudToDeviceMethod("test");
+                var client =  ServiceClient.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
+                var methodInvokation = new CloudToDeviceMethod("firmwareUpdate");
+                methodInvokation.SetPayloadJson("'This is the payload'");
+
+                var response = client.InvokeDeviceMethodAsync("bbb2", methodInvokation).Result;
+
+            }
+
+            return RedirectToAction("Index");
         }
 
         protected override void Dispose(bool disposing)
