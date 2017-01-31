@@ -41,6 +41,7 @@
             @Html.DisplayFor(modelItem => item.Checksum)
         </td>
         <td>
+            @Html.ActionLink("Roll out", "Rollout", new { id = item.SoftwareId }) |
             @Html.ActionLink("Edit", "Edit", new { id=item.SoftwareId }) |
             @Html.ActionLink("Details", "Details", new { id=item.SoftwareId }) |
             @Html.ActionLink("Delete", "Delete", new { id=item.SoftwareId })

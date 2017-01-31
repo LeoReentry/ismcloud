@@ -1,0 +1,53 @@
+﻿@model IsmIoTPortal.Models.SoftwareView
+@{
+    ViewBag.Title = "Rollout";
+}
+
+<h2>Rollout</h2>
+<h2>Software Version&emsp;<b>@Model.Software.SoftwareVersion</b></h2>
+
+
+<table class="table">
+    <tr>
+        <th>
+            Device
+        </th>
+        <th>
+            Current Software Version
+        </th>
+    </tr>
+
+    @foreach (var item in Model.Devices)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeviceId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
+            </td>
+        </tr>
+    }
+    <tr>
+        <th>
+            Updated Devices
+        </th>
+        <th>
+            
+        </th>
+    </tr>
+    @foreach (var item in Model.Software.IsmDevices)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeviceId)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
+            </td>
+        </tr>
+    }
+</table>
+
+
+

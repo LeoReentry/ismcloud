@@ -154,6 +154,32 @@ namespace IsmIoTPortal.Controllers
             return File(stream, MimeMapping.GetMimeMapping("public.pem"), "public.pem");
         }
 
+        public ActionResult Rollout(int? id)
+        {
+            if (id == null)
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            Software software = db.Software.Find(id);
+            if (software == null)
+                return HttpNotFound();
+
+            // Get all devices that already have this software version
+            var updatedDevices = software.IsmDevices;
+            // We create a separate ID collection because Entity Framework doesn't support
+            // Conversion from LINQ to Entity Queries with Objects, since there is no SQL 
+            // Equality comparator for <IsmDevice>
+            var updatedDevicesIds = updatedDevices.Select(d => d.IsmDeviceId);
+            // Get all the devices that don't have this software version
+            var devices = db.IsmDevices.Where(
+                d => !updatedDevicesIds.Contains(d.IsmDeviceId)
+                );
+
+            return View(new SoftwareView
+            {
+                Software = software,
+                Devices = devices.ToList()
+            });
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)

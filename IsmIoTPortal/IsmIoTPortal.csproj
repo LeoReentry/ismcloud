@@ -360,6 +360,7 @@
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\PbiDashboardInfo.cs" />
     <Compile Include="Models\Software.cs" />
+    <Compile Include="Models\SoftwareView.cs" />
     <Compile Include="PortalUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -501,6 +502,7 @@
     <Content Include="Views\Error\BadRequest.cshtml" />
     <Content Include="Views\ApproveDevices\Index.cshtml" />
     <Content Include="Views\Account\Unauthorized.cshtml" />
+    <Content Include="Views\Software\Rollout.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
