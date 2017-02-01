@@ -22,6 +22,7 @@ namespace IsmIoTPortal.Controllers
     [IsmAuthorize(Groups ="Admins, DeviceAdmins")]
     public class SoftwareController : Controller
     {
+        private static readonly ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
         private IsmIoTPortalContext db = new IsmIoTPortalContext();
 
         // GET: Software
@@ -196,7 +197,6 @@ namespace IsmIoTPortal.Controllers
             if (software == null)
                 return HttpNotFound();
 
-            var client = ServiceClient.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
             foreach (var deviceId in selectedDevices)
             {
                 var device = db.IsmDevices.Find(deviceId);
@@ -206,7 +206,7 @@ namespace IsmIoTPortal.Controllers
                 if (device.Software.Date > software.Date)
                     continue;
                 // Roll out update async
-                PortalUtils.RolloutFwUpdate(device.DeviceId, client);
+                PortalUtils.RolloutFwUpdateAsync(device.DeviceId, serviceClient, software.Url);
 
             }
 

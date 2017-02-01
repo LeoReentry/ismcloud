@@ -14,15 +14,24 @@ using System.Web;
 using SharpCompress.Writers;
 using SharpCompress.Common;
 using Microsoft.Azure.Devices;
+using Newtonsoft.Json;
 
 namespace IsmIoTPortal
 {
     public class PortalUtils
     {
-        public static async Task RolloutFwUpdate(string device, ServiceClient serviceClient)
+        public static async Task RolloutFwUpdateAsync(string device, ServiceClient serviceClient, string blobUrl)
         {
+            // Method to invoke
             var methodInvokation = new CloudToDeviceMethod("firmwareUpdate");
-            methodInvokation.SetPayloadJson("'This is the payload'");
+            // Method payload
+            var payload = JsonConvert.SerializeObject(new
+            {
+                blobUrl = blobUrl,
+                fileName = blobUrl.Split('/').Last()
+            });
+            methodInvokation.SetPayloadJson(payload);
+            // Invoke method on device
             var response = await serviceClient.InvokeDeviceMethodAsync(device, methodInvokation).ConfigureAwait(false);
         }
 
