@@ -13,11 +13,19 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using System.Web;
 using SharpCompress.Writers;
 using SharpCompress.Common;
+using Microsoft.Azure.Devices;
 
 namespace IsmIoTPortal
 {
     public class PortalUtils
     {
+        public static async Task RolloutFwUpdate(string device, ServiceClient serviceClient)
+        {
+            var methodInvokation = new CloudToDeviceMethod("firmwareUpdate");
+            methodInvokation.SetPayloadJson("'This is the payload'");
+            var response = await serviceClient.InvokeDeviceMethodAsync(device, methodInvokation).ConfigureAwait(false);
+        }
+
         public static async Task CreateNewFirmwareUpdateTask(HttpPostedFileBase file, string location, int id)
         {
             IsmIoTPortalContext db = new IsmIoTPortalContext();

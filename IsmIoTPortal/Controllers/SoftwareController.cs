@@ -195,9 +195,9 @@ namespace IsmIoTPortal.Controllers
             Software software = db.Software.Find(id);
             if (software == null)
                 return HttpNotFound();
-            //software.Status = "Rolling out";
 
-            foreach(var deviceId in selectedDevices)
+            var client = ServiceClient.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
+            foreach (var deviceId in selectedDevices)
             {
                 var device = db.IsmDevices.Find(deviceId);
                 if (device == null)
@@ -205,13 +205,8 @@ namespace IsmIoTPortal.Controllers
                 // If the device's software version is newer than the one we'll be updating to, skip this device
                 if (device.Software.Date > software.Date)
                     continue;
-
-                //var methodInvokation = new CloudToDeviceMethod("test");
-                var client =  ServiceClient.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
-                var methodInvokation = new CloudToDeviceMethod("firmwareUpdate");
-                methodInvokation.SetPayloadJson("'This is the payload'");
-
-                var response = client.InvokeDeviceMethodAsync("bbb2", methodInvokation).Result;
+                // Roll out update async
+                PortalUtils.RolloutFwUpdate(device.DeviceId, client);
 
             }
 
