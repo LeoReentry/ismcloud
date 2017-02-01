@@ -124,13 +124,18 @@ namespace IsmIoTPortal.Controllers
                 string storageConnStr = ConfigurationManager.ConnectionStrings["storageConnection"].ConnectionString;
                 string storageAccountStr = ConfigurationManager.ConnectionStrings["storageAccount"].ConnectionString;
                 string storageContainerStr = ConfigurationManager.ConnectionStrings["containerPortal"].ConnectionString;
+                // Firmware Update information
+                string fwUpdateContainerStr = ConfigurationManager.ConnectionStrings["containerFirmware"].ConnectionString;
+                string publicSigningKeyUrl = IsmIoTSettings.Settings.webCompleteAddress + "/software/getkey";
                 // Return key
                 return new
                 {
                     ConnectionString = key,
                     StorageConnectionString = storageConnStr,
                     StorageAccount = storageAccountStr,
-                    storageContainer = storageContainerStr
+                    StorageContainer = storageContainerStr,
+                    FwUpdateContainer = fwUpdateContainerStr,
+                    PublicKeyUrl = publicSigningKeyUrl
                 };
             }
 
