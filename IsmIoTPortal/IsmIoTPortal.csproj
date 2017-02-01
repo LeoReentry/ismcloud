@@ -449,8 +449,8 @@
       <Link>connections.Public.config</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Properties\PublishProfiles\ismiotportal - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\ismportal - Web Deploy.pubxml" />
+    <None Include="Properties\PublishProfiles\ismportal - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\ismportal.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\Chart.js" />
     <Content Include="Scripts\Chart.min.js" />
