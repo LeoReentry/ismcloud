@@ -144,6 +144,7 @@ namespace IsmIoTPortal.Controllers
             return RedirectToAction("Index");
         }
 
+        [AllowAnonymous]
         public ActionResult GetKey()
         {
             // Get access to key vault
