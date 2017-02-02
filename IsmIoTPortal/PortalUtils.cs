@@ -41,10 +41,11 @@ namespace IsmIoTPortal
             var software = db.Software.Find(id);
             try
             {
+                var fileName = "update.tar";
                 // Creates all directories in path that do not exist
                 Directory.CreateDirectory(location);
                 // Full path of file
-                string filePath = Path.Combine(location, Path.GetFileName(file.FileName));
+                string filePath = Path.Combine(location, fileName);
                 // Save file to disk
                 file.SaveAs(filePath);
                 // Update software status
