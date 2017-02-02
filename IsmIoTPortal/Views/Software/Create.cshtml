@@ -15,31 +15,28 @@
         <h4>Firmware Update</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        <div class="form-group">
-            @Html.LabelFor(model => model.SoftwareVersion, htmlAttributes: new { @class = "control-label col-md-4" })
+        <div class="form-group @(ViewBag.NameError != null?"has-error":"")">
+            <label class="control-label col-md-4">
+                @(ViewBag.NameError == null ? 
+                    "Software Version" : 
+                    ViewBag.NameError)
+            </label> 
+            @*@Html.LabelFor(model => model.SoftwareVersion, htmlAttributes: new { @class = "control-label col-md-4" })*@
             <div class="col-md-6">
                 @Html.EditorFor(model => model.SoftwareVersion, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.SoftwareVersion, "", new { @class = "text-danger" })
             </div>
         </div>
-        @if (ViewBag.Error == null)
-        {
-            <div class="form-group">
-                <label class="control-label col-md-4">Select File: Must be tarfile and contain a script called 'apply.sh'.</label>
-                <div class="col-md-6">
-                    <input type="file" id="tarfile" name="upload" class="form-control" />
-                </div>
+        <div class="form-group @(ViewBag.FileError != null?"has-error":"")">
+            <label class="control-label col-md-4">
+                @(ViewBag.FileError == null ? 
+                    "Select File: Must be tarfile and contain a script called 'apply.sh'." : 
+                    ViewBag.FileError)
+            </label>
+            <div class="col-md-6">
+                <input type="file" id="tarfile" name="upload" class="form-control" />
             </div>
-        }
-        else
-        {
-            <div class="form-group has-error">
-                <label class="control-label col-md-4">@ViewBag.Error</label>
-                <div class="col-md-6">
-                    <input type="file" id="tarfile" name="upload" class="form-control" />
-                </div>
-            </div>
-        }
+        </div>
         <div class="form-group">
             @Html.LabelFor(model => model.Changelog, htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-6">

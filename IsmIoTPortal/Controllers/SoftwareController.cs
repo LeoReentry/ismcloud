@@ -63,12 +63,21 @@ namespace IsmIoTPortal.Controllers
             {
                 if (upload != null && upload.ContentLength > 0)
                 {
+                    bool error = false;
                     // If the uploaded file is not a tarfile, return with error
-                    if (!Path.GetExtension(upload.FileName).Equals("tar"))
+                    if (!Path.GetExtension(upload.FileName).Equals(".tar"))
                     {
-                        ViewBag.Error = "Uploaded file must be tarfile packed with update data and a script named 'apply.sh'";
-                        return View("Create");
+                        ViewBag.FileError = "Uploaded file must be tarfile packed with update data and a script named 'apply.sh'";
+                        error = true;
                     }
+                    // If the software version already exists
+                    if (db.Software.Any(s => s.SoftwareVersion.ToLower().Equals(software.SoftwareVersion.ToLower())))
+                    {
+                        ViewBag.NameError = "This software version already exists.";
+                        error = true;
+                    }
+                    if (error)
+                        return View("Create");
                     try
                     {
                         software.Status = "Uploaded";
