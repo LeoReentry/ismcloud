@@ -63,6 +63,12 @@ namespace IsmIoTPortal.Controllers
             {
                 if (upload != null && upload.ContentLength > 0)
                 {
+                    // If the uploaded file is not a tarfile, return with error
+                    if (!Path.GetExtension(upload.FileName).Equals("tar"))
+                    {
+                        ViewBag.Error = "Uploaded file must be tarfile packed with update data and a script named 'apply.sh'";
+                        return View("Create");
+                    }
                     try
                     {
                         software.Status = "Uploaded";
