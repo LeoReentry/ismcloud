@@ -20,6 +20,13 @@ namespace IsmIoTPortal
 {
     public class PortalUtils
     {
+        /// <summary>
+        /// This function rolls out a firmware update to a specified device asynchronously. Call without using await.
+        /// </summary>
+        /// <param name="device">Device ID.</param>
+        /// <param name="serviceClient">Service Client used to call direct methods.</param>
+        /// <param name="blobUrl">Url to blob where firmware update is located. Must be in container fwupdates</param>
+        /// <returns></returns>
         public static async Task RolloutFwUpdateAsync(string device, ServiceClient serviceClient, string blobUrl)
         {
             // Method to invoke
@@ -35,12 +42,21 @@ namespace IsmIoTPortal
             var response = await serviceClient.InvokeDeviceMethodAsync(device, methodInvokation).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// Creates a new firmware update ready to be rolled out. Call asynchronously because it can take some time. Don't use await.
+        /// </summary>
+        /// <param name="file">File of firmware update. Must be a tar.</param>
+        /// <param name="location">Directory of where file will be stored on server.</param>
+        /// <param name="id">Key of software version in databse.</param>
+        /// <returns></returns>
         public static async Task CreateNewFirmwareUpdateTask(HttpPostedFileBase file, string location, int id)
         {
             IsmIoTPortalContext db = new IsmIoTPortalContext();
+            // Get reference to software
             var software = db.Software.Find(id);
             try
             {
+                // Filename is always the same
                 var fileName = "update.tar";
                 // Creates all directories in path that do not exist
                 Directory.CreateDirectory(location);
@@ -64,8 +80,11 @@ namespace IsmIoTPortal
                 var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
                 // Sign Checksum
                 var sig = await kv.SignAsync(
+                    // Key ID is in appsettings
                     keyIdentifier: ConfigurationManager.AppSettings["kv:fw-signing-key"],
+                    // Sign with RS256
                     algorithm: Microsoft.Azure.KeyVault.WebKey.JsonWebKeySignatureAlgorithm.RS256,
+                    // We want to sign the checksum
                     digest: checksum).ConfigureAwait(false);
 
                 // Save byte data as sig
@@ -74,7 +93,7 @@ namespace IsmIoTPortal
                 software.Status = "Signed";
                 db.SaveChanges();
 
-                // Create tarball
+                // Create tarball (.tar.gz file containing signed checksum and tarfile with update)
                 var tarball = CreateTarBall(location);
                 software.Status = "Compressed";
                 db.SaveChanges();
@@ -101,6 +120,11 @@ namespace IsmIoTPortal
             }
         }
 
+        /// <summary>
+        /// Calculates SHA256 sum of a file.
+        /// </summary>
+        /// <param name="filePath">Path to file.</param>
+        /// <returns>Byte array of checksum.</returns>
         public static async Task<byte[]> Sha256Sum(string filePath)
         {
             var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
@@ -114,6 +138,13 @@ namespace IsmIoTPortal
             return sha256sum;
         }
 
+        /// <summary>
+        /// GetToken function used to authenticate against Key Vault
+        /// </summary>
+        /// <param name="authority"></param>
+        /// <param name="resource"></param>
+        /// <param name="scope"></param>
+        /// <returns></returns>
         private static async Task<string> GetToken(string authority, string resource, string scope)
         {
             var id = ConfigurationManager.AppSettings["hsma-ida:PortalClientId"];
@@ -121,6 +152,11 @@ namespace IsmIoTPortal
             return await IsmUtils.GetAccessToken(authority, resource, id, secret);
         }
 
+        /// <summary>
+        /// Get public key as a PEM formatted base64 encoded string.
+        /// </summary>
+        /// <param name="key">Key object to be formatted.</param>
+        /// <returns>PEM formatted string.</returns>
         public static string GetPublicKey(Microsoft.Azure.KeyVault.WebKey.JsonWebKey key)
         {
             TextWriter outputStream = new StringWriter();
@@ -134,6 +170,12 @@ namespace IsmIoTPortal
             return outputStream.ToString();
         }
 
+        /// <summary>
+        /// Uploads a file to the BLOB storage.
+        /// </summary>
+        /// <param name="fileName">Name of the file.</param>
+        /// <param name="filePath">Path where it is located.</param>
+        /// <returns></returns>
         private static async Task<string> UploadToBlobStorage(string fileName, string filePath)
         {
             // Get reference to storage account
@@ -155,6 +197,11 @@ namespace IsmIoTPortal
             return blob.Uri.ToString();
         }
 
+        /// <summary>
+        /// Creates .tar.gz file of a directory.
+        /// </summary>
+        /// <param name="dir">Path of directory.</param>
+        /// <returns>Path of tarball.</returns>
         private static string CreateTarBall(string dir)
         {
             string tarPath = dir + ".tar";
