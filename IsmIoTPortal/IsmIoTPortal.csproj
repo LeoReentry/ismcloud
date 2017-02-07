@@ -378,6 +378,10 @@
     <Compile Include="Migrations\201701311028233_Add date to software update.Designer.cs">
       <DependentUpon>201701311028233_Add date to software update.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702070913291_Fix Exposure.cs" />
+    <Compile Include="Migrations\201702070913291_Fix Exposure.Designer.cs">
+      <DependentUpon>201702070913291_Fix Exposure.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -581,6 +585,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201701311028233_Add date to software update.resx">
       <DependentUpon>201701311028233_Add date to software update.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702070913291_Fix Exposure.resx">
+      <DependentUpon>201702070913291_Fix Exposure.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

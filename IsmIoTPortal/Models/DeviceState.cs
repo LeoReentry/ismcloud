@@ -38,7 +38,7 @@ namespace IsmIoTPortal.Models
         [DataMember]
         public int Brightness { get; set; }
         [DataMember]
-        public int Exposure { get; set; }
+        public double Exposure { get; set; }
 
         // Pulser Settings
         [DataMember]
