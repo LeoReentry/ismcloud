@@ -161,10 +161,10 @@ namespace IsmIoTPortal.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult GetKey()
+        public async Task<ActionResult> GetKey()
         {
             // Get key
-            var key = kv.GetKeyAsync(ConfigurationManager.AppSettings["kv:fw-signing-key"]).Result;
+            var key = await kv.GetKeyAsync(ConfigurationManager.AppSettings["kv:fw-signing-key"]);
             // Get pem formatted public key string
             var pubKey = PortalUtils.GetPublicKey(key.Key);
             // Convert string to stream
