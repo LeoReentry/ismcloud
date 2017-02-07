@@ -23,6 +23,7 @@ namespace IsmIoTPortal.Controllers
     public class SoftwareController : Controller
     {
         private static readonly ServiceClient serviceClient = ServiceClient.CreateFromConnectionString(ConfigurationManager.ConnectionStrings["ismiothub"].ConnectionString);
+        private static KeyVaultClient kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
         private IsmIoTPortalContext db = new IsmIoTPortalContext();
 
         // GET: Software
@@ -162,8 +163,6 @@ namespace IsmIoTPortal.Controllers
         [AllowAnonymous]
         public ActionResult GetKey()
         {
-            // Get access to key vault
-            var kv = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(GetToken));
             // Get key
             var key = kv.GetKeyAsync(ConfigurationManager.AppSettings["kv:fw-signing-key"]).Result;
             // Get pem formatted public key string
@@ -238,7 +237,7 @@ namespace IsmIoTPortal.Controllers
             base.Dispose(disposing);
         }
 
-        private async Task<string> GetToken(string authority, string resource, string scope)
+        private static async Task<string> GetToken(string authority, string resource, string scope)
         {
             var id = ConfigurationManager.AppSettings["hsma-ida:PortalClientId"];
             var secret = ConfigurationManager.AppSettings["hsma-ida:PortalAppKey"];
