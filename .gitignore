@@ -9,5 +9,9 @@ ipch/
 IsmIoTPorta/sw-updates/
 *.user
 appsettings.config
+apsettings.Secret.config
 connections.config
+connections.Public.config
 connections.Secret.config
+*.cscfg
+*.csdef
