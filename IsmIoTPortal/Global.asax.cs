@@ -22,7 +22,7 @@ namespace IsmIoTPortal
                   defaults: new { id = System.Web.Http.RouteParameter.Optional }
              );
             GlobalFilters.Filters.Add(new RequireHttpsAttribute());
-            GlobalFilters.Filters.Add(new CustomAuthorizeAttribute());
+            GlobalFilters.Filters.Add(new IsmAuthorizeAttribute());
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);

@@ -22,7 +22,7 @@ namespace IsmIoTPortal.Controllers
         public ActionResult Index(string DeviceId)
         {
             // Check Device ID against a whitelist of values to prevent XSS
-            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(DeviceId))
+            if (DeviceId == null || !IsmIoTSettings.RegexHelper.Text.IsMatch(DeviceId))
                 return HttpNotFound();
 
             // default interval when you visit Index of FilamentDataHistoryController

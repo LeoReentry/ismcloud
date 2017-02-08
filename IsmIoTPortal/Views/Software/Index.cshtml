@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<IsmIoTPortal.Models.Software>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Device Management";
 }
 
 <h2>Index</h2>
@@ -14,6 +14,18 @@
         <th>
             @Html.DisplayNameFor(model => model.SoftwareVersion)
         </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Author)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Checksum)
+        </th>
         <th></th>
     </tr>
 
@@ -23,6 +35,19 @@
             @Html.DisplayFor(modelItem => item.SoftwareVersion)
         </td>
         <td>
+            @Html.DisplayFor(modelItem => item.Author)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Date)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Checksum)
+        </td>
+        <td>
+            @Html.ActionLink("Roll out", "Rollout", new { id = item.SoftwareId }) |
             @Html.ActionLink("Edit", "Edit", new { id=item.SoftwareId }) |
             @Html.ActionLink("Details", "Details", new { id=item.SoftwareId }) |
             @Html.ActionLink("Delete", "Delete", new { id=item.SoftwareId })

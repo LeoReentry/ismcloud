@@ -1,0 +1,95 @@
+﻿@model IsmIoTPortal.Models.SoftwareView
+@{
+    ViewBag.Title = "Rollout";
+}
+
+<h2>Rollout</h2>
+<h2>Software Version&emsp;<b>@Model.Software.SoftwareVersion</b></h2>
+<table class="table">
+    <tr>
+        <th bgcolor="#FFFFFF">
+            Devices that can be updated
+        </th>
+        <th bgcolor="#BBBBBB">
+            Devices already on this version
+        </th>
+        <th bgcolor="#999999">
+            Devices with newer firmware
+        </th>
+    </tr>
+
+</table>
+
+@using (Html.BeginForm())
+{
+    <input type="submit" value="Roll out @Model.Software.SoftwareVersion" class="btn btn-success" />
+    <br /><br />
+    @Html.AntiForgeryToken()
+    <table class="table">
+        <tr>
+            <th>
+                Device
+            </th>
+            <th>
+                Current Software Version
+            </th>
+            <th>
+                Update
+            </th>
+        </tr>
+        @* Items that have older software versions *@
+        @foreach (var item in Model.Devices)
+        {
+            if (item.Software.Date < Model.Software.Date)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DeviceId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
+                    </td>
+                    <td>
+                        <input type="checkbox" class="checkbox" name="selectedDevices" value="@item.IsmDeviceId" checked="" />                        
+                    </td>
+                </tr>
+            }
+        }
+        @* Items with the same software version *@
+        @foreach (var item in Model.Software.IsmDevices)
+        {
+            <tr bgcolor="#BBBBBB">
+                <td>
+                    @Html.DisplayFor(modelItem => item.DeviceId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
+                </td>
+                <td>
+                    <input type="checkbox" class="checkbox" disabled=""/>
+                </td>
+            </tr>
+        }
+        @* Items with newer software versions *@
+        @foreach (var item in Model.Devices)
+        {
+            if (item.Software.Date > Model.Software.Date)
+            {
+                <tr bgcolor="#999999">
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DeviceId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
+                    </td>
+                    <td>
+                        <input type="checkbox" class="checkbox" disabled="" />
+                    </td>
+                </tr>
+            }
+        }
+    </table>
+}
+
+
+
