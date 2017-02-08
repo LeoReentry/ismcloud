@@ -1,0 +1,13 @@
+csx/
+ecf/
+rcf/
+obj/
+bin/
+packages/
+config/
+ipch/
+IsmIoTPorta/sw-updates/
+*.user
+appsettings.config
+connections.config
+connections.Secret.config
