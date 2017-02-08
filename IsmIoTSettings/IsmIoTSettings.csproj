@@ -88,11 +88,6 @@
     <Compile Include="IsmUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="appsettings.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="connections.config" />
     <None Include="connections.Public.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
