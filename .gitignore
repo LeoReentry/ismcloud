@@ -6,7 +6,7 @@ bin/
 packages/
 config/
 ipch/
-IsmIoTPorta/sw-updates/
+IsmIoTPortal/sw-updates/
 *.user
 appsettings.config
 apsettings.Secret.config
