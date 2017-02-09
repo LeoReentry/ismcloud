@@ -6,6 +6,7 @@ bin/
 packages/
 config/
 ipch/
+.vs/
 IsmIoTPortal/sw-updates/
 *.user
 appsettings.config
