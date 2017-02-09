@@ -12,7 +12,7 @@ namespace IsmIoTPortal.Models
         public DbSet<NewDevice> NewDevices { get; set; }
         public DbSet<Location> Locations { get; set; }
         public DbSet<Contact> Contacts { get; set; }
-        public DbSet<Software> Software { get; set; }
+        public DbSet<Release> Software { get; set; }
         public DbSet<Hardware> Hardware { get; set; }
         public DbSet<Command> Commands { get; set; }
         public DbSet<FilamentData> FilamentData { get; set; }

@@ -39,7 +39,7 @@ namespace IsmIoTPortal.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Software software = db.Software.Find(id);
+            Release software = db.Software.Find(id);
             if (software == null)
             {
                 return HttpNotFound();
@@ -58,7 +58,7 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public Task<ActionResult> Create([Bind(Include = "SoftwareId,SoftwareVersion,Changelog")] Software software, string blobUrl)
+        public Task<ActionResult> Create([Bind(Include = "SoftwareId,SoftwareVersion,Changelog")] Release software, string blobUrl)
         {
             if (ModelState.IsValid)
             {
@@ -119,7 +119,7 @@ namespace IsmIoTPortal.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Software software = db.Software.Find(id);
+            Release software = db.Software.Find(id);
             if (software == null)
             {
                 return HttpNotFound();
@@ -132,7 +132,7 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "SoftwareId,SoftwareVersion")] Software software)
+        public ActionResult Edit([Bind(Include = "SoftwareId,SoftwareVersion")] Release software)
         {
             if (ModelState.IsValid)
             {
@@ -150,7 +150,7 @@ namespace IsmIoTPortal.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Software software = db.Software.Find(id);
+            Release software = db.Software.Find(id);
             if (software == null)
             {
                 return HttpNotFound();
@@ -163,7 +163,7 @@ namespace IsmIoTPortal.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Software software = db.Software.Find(id);
+            Release software = db.Software.Find(id);
             db.Software.Remove(software);
             db.SaveChanges();
             return RedirectToAction("Index");
@@ -186,7 +186,7 @@ namespace IsmIoTPortal.Controllers
         {
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            Software software = db.Software.Find(id);
+            Release software = db.Software.Find(id);
             if (software == null)
                 return HttpNotFound();
 
@@ -217,7 +217,7 @@ namespace IsmIoTPortal.Controllers
         {
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            Software software = db.Software.Find(id);
+            Release software = db.Software.Find(id);
             if (software == null)
                 return HttpNotFound();
 

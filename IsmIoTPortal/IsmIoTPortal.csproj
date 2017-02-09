@@ -382,6 +382,10 @@
     <Compile Include="Migrations\201702070913291_Fix Exposure.Designer.cs">
       <DependentUpon>201702070913291_Fix Exposure.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702091257035_Rename Software to Release.cs" />
+    <Compile Include="Migrations\201702091257035_Rename Software to Release.Designer.cs">
+      <DependentUpon>201702091257035_Rename Software to Release.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -395,7 +399,8 @@
     <Compile Include="Models\IsmIoTPortalContext.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\PbiDashboardInfo.cs" />
-    <Compile Include="Models\Software.cs" />
+    <Compile Include="Models\Software - Copy.cs" />
+    <Compile Include="Models\Release.cs" />
     <Compile Include="Models\SoftwareView.cs" />
     <Compile Include="PortalUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -588,6 +593,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702070913291_Fix Exposure.resx">
       <DependentUpon>201702070913291_Fix Exposure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702091257035_Rename Software to Release.resx">
+      <DependentUpon>201702091257035_Rename Software to Release.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

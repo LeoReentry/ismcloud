@@ -7,7 +7,7 @@ namespace IsmIoTPortal.Models
 {
     public class SoftwareView
     {
-        public Software Software { get; set; }
+        public Release Software { get; set; }
         public IEnumerable<Models.IsmDevice> Devices { get; set; }
 
     }
