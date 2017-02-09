@@ -58,17 +58,17 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public Task<ActionResult> Create([Bind(Include = "SoftwareId,SoftwareVersion,Changelog")] Software software, HttpPostedFileBase upload)
+        public Task<ActionResult> Create([Bind(Include = "SoftwareId,SoftwareVersion,Changelog")] Software software, string blobUrl)
         {
             if (ModelState.IsValid)
             {
-                if (upload != null && upload.ContentLength > 0)
+                if (blobUrl != null && blobUrl.Length > 0)
                 {
                     bool error = false;
                     // If the uploaded file is not a tarfile, return with error
-                    if (!Path.GetExtension(upload.FileName).Equals(".tar"))
+                    if (!RegexHelper.FwBlobUrl.IsMatch(blobUrl))
                     {
-                        ViewBag.FileError = "Uploaded file must be tarfile packed with update data and a script named 'apply.sh'";
+                        ViewBag.FileError = "URL must link to tarfile in an Azure BLOB storage container named 'fwupdates' packed with update data and a script named 'apply.sh'";
                         error = true;
                     }
                     // If the software version already exists
@@ -92,7 +92,7 @@ namespace IsmIoTPortal.Controllers
                         db.SaveChanges();
 
                         var location = Server.MapPath("~/sw-updates/" + software.SoftwareVersion);
-                        PortalUtils.CreateNewFirmwareUpdateTask(upload, location, software.SoftwareId);
+                        PortalUtils.CreateNewFirmwareUpdateTask(blobUrl, location, software.SoftwareId);
                         return Task.Factory.StartNew<ActionResult>(
                           () => {
                               return RedirectToAction("Index");

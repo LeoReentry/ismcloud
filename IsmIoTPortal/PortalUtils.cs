@@ -49,7 +49,7 @@ namespace IsmIoTPortal
         /// <param name="location">Directory of where file will be stored on server.</param>
         /// <param name="id">Key of software version in databse.</param>
         /// <returns></returns>
-        public static async Task CreateNewFirmwareUpdateTask(HttpPostedFileBase file, string location, int id)
+        public static async Task CreateNewFirmwareUpdateTask(string fileUrl, string location, int id)
         {
             IsmIoTPortalContext db = new IsmIoTPortalContext();
             // Get reference to software
@@ -63,7 +63,14 @@ namespace IsmIoTPortal
                 // Full path of file
                 string filePath = Path.Combine(location, fileName);
                 // Save file to disk
-                file.SaveAs(filePath);
+                var retval = await DownloadFromBlobStorage(fileUrl, filePath).ConfigureAwait(false);
+                if (retval.Equals("Error"))
+                {
+                    // Update software status
+                    software.Status = "Error during download of file.";
+                    db.SaveChanges();
+                    return;
+                }
                 // Update software status
                 software.Status = "Saved";
                 db.SaveChanges();
@@ -104,13 +111,20 @@ namespace IsmIoTPortal
                 {
                     software.Status = "Error during upload.";
                     db.SaveChanges();
+                    return;
                 }
-                else
+                // Remove old file from BLOB storage
+                var retVal = RemoveFromBlobStorage(fileUrl);
+                if (retval.Equals("Error"))
                 {
-                    software.Status = "Ready";
-                    software.Url = uri;
+                    software.Status = "Error during removal of old file from BLOB storage.";
                     db.SaveChanges();
+                    return;
                 }
+                // Everything is ok
+                software.Status = "Ready";
+                software.Url = uri;
+                db.SaveChanges();
 
             }
             catch(Exception e)
@@ -171,7 +185,7 @@ namespace IsmIoTPortal
         }
 
         /// <summary>
-        /// Uploads a file to the BLOB storage.
+        /// Uploads a file to the BLOB storage to container 'fwupdates'.
         /// </summary>
         /// <param name="fileName">Name of the file.</param>
         /// <param name="filePath">Path where it is located.</param>
@@ -195,6 +209,55 @@ namespace IsmIoTPortal
                 return "Error";
             }
             return blob.Uri.ToString();
+        }
+
+        /// <summary>
+        /// Downloads a file from the BLOB storage from container 'fwupdates'.
+        /// </summary>
+        /// <param name="blobUri">BLOB Uri of file to be downloaded.</param>
+        /// <param name="filePath">Path where it is located.</param>
+        /// <returns>Filepath when successful, "Error" when not.</returns>
+        private static async Task<string> DownloadFromBlobStorage(string blobUri, string filePath)
+        {
+            try
+            {
+                // Get reference to storage account
+                var storageAccount = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["storageConnection"].ConnectionString);
+                var blobClient = storageAccount.CreateCloudBlobClient();
+                // Get reference to blob
+                var blob = await blobClient.GetBlobReferenceFromServerAsync(new Uri(blobUri));
+                // Download BLOB (we don't need a SAS here since we're already authenticated)
+                blob.DownloadToFile(filePath, FileMode.Create);
+            }
+            catch (Exception e)
+            {
+                return "Error";
+            }
+            return filePath;
+        }
+
+        /// <summary>
+        /// Removes a file from the BLOB storage container 'fwupdates'.
+        /// </summary>
+        /// <param name="blobUri">BLOB Uri of file to be removed.</param>
+        /// <returns>Empy string when successful, "Error" when not.</returns>
+        private static async Task<string> RemoveFromBlobStorage(string blobUri)
+        {
+            try
+            {
+                // Get reference to storage account
+                var storageAccount = CloudStorageAccount.Parse(ConfigurationManager.ConnectionStrings["storageConnection"].ConnectionString);
+                var blobClient = storageAccount.CreateCloudBlobClient();
+                // Get reference to blob
+                var blob = await blobClient.GetBlobReferenceFromServerAsync(new Uri(blobUri));
+                // Delete BLOB
+                await blob.DeleteAsync();
+            }
+            catch (Exception e)
+            {
+                return "Error";
+            }
+            return "";
         }
 
         /// <summary>
