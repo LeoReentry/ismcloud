@@ -58,7 +58,7 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "SoftwareId,SoftwareVersion,Changelog")] Software software, HttpPostedFileBase upload)
+        public Task<ActionResult> Create([Bind(Include = "SoftwareId,SoftwareVersion,Changelog")] Software software, HttpPostedFileBase upload)
         {
             if (ModelState.IsValid)
             {
@@ -78,7 +78,10 @@ namespace IsmIoTPortal.Controllers
                         error = true;
                     }
                     if (error)
-                        return View("Create");
+                        return Task.Factory.StartNew<ActionResult>(
+                          () => {
+                              return View("Create");
+                          });
                     try
                     {
                         software.Status = "Uploaded";
@@ -90,8 +93,11 @@ namespace IsmIoTPortal.Controllers
 
                         var location = Server.MapPath("~/sw-updates/" + software.SoftwareVersion);
                         PortalUtils.CreateNewFirmwareUpdateTask(upload, location, software.SoftwareId);
-
-                        return RedirectToAction("Index");
+                        return Task.Factory.StartNew<ActionResult>(
+                          () => {
+                              return RedirectToAction("Index");
+                          });
+                        //return RedirectToAction("Index");
                     }
                     catch (Exception e)
                     {
@@ -99,8 +105,11 @@ namespace IsmIoTPortal.Controllers
                     }
                 }
             }
-
-            return View(software);
+            
+            return Task.Factory.StartNew<ActionResult>(
+              () => {
+                  return View(software);
+              });
         }
 
         // GET: Software/Edit/5
