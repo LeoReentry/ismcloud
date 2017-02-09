@@ -15,9 +15,9 @@
     <div class="form-group col-md-2">
         <label for="sw-release">Release Type</label>
         <select class="form-control" id="sw-release">
-            <option>Major release bump</option>
-            <option>Minor release bump</option>
-            <option>Patch</option>
+            <option>Major release</option>
+            <option>Minor release</option>
+            <option selected="selected">Patch</option>
         </select>
     </div>
     <div class="form-group col-md-2">
@@ -87,7 +87,7 @@
             var release = $('#sw-release').prop('selectedIndex')
             var suffix = $('#sw-suffix').val()
             var s = prefix ? prefix + '-' : '';
-            s += 'r0-0-' + release
+            s += 'r0.0.' + release
             s += suffix ? '-' + suffix : '';
             $('#SoftwareVersion').val(s)
         }
