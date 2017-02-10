@@ -35,12 +35,13 @@
         <div class="form-group @(ViewBag.NameError != null?"has-error":"")">
             <label class="control-label col-md-4">
                 @(ViewBag.NameError == null ? 
-                    "Software Version" : 
+                    "Release Name" : 
                     ViewBag.NameError)
             </label> 
             @*@Html.LabelFor(model => model.SoftwareVersion, htmlAttributes: new { @class = "control-label col-md-4" })*@
             <div class="col-md-6">
-                <input class="form-control text-box single-line" id="SoftwareVersion" name="SoftwareVersion" type="text" value="" disabled/>
+                <input class="form-control text-box single-line" id="Name" name="Name" type="text" value=""  readonly="true" />
+                @*@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })*@
                 @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -89,7 +90,7 @@
             var s = prefix ? prefix + '-' : '';
             s += 'r0.0.' + release
             s += suffix ? '-' + suffix : '';
-            $('#SoftwareVersion').val(s)
+            $('#Name').val(s)
         }
     </script>
 }

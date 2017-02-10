@@ -24,5 +24,12 @@ namespace IsmIoTSettings
         /// e.g. https://ismportalstorage.blob.core.windows.net/fwupdates/v0.0.1-alpha.tar
         /// </summary>
         public static Regex FwBlobUrl = new Regex(@"https:\/\/\w+\.blob\.core\.windows\.net\/fwupdates/.+\.tar");
+        /// <summary>
+        /// This regex tests a software name for validity.
+        /// (.+)- Checks the prefix
+        /// (r\d\.\d\.\d) Checks the release number
+        /// -(.+) Checks the suffix
+        /// </summary>
+        public static Regex SoftwareName = new Regex(@"(.+)-(r\d\.\d\.\d)-(.+)");
     }
 }

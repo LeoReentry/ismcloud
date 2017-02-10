@@ -58,13 +58,21 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public Task<ActionResult> Create([Bind(Include = "SoftwareId,SoftwareVersion,Changelog")] Release software, string blobUrl)
+        public Task<ActionResult> Create([Bind(Include = "SoftwareId,Name,Changelog")] Release release, string blobUrl)
         {
             if (ModelState.IsValid)
             {
                 if (blobUrl != null && blobUrl.Length > 0)
                 {
                     bool error = false;
+
+                    // Check Software Version
+                    var m = RegexHelper.SoftwareName.Match(release.Name);
+                    if (!m.Success)
+                    {
+                        ViewBag.NameError = "Your prefix and suffix aren't valid values.";
+                        error = true;
+                    }
                     // If the uploaded file is not a tarfile, return with error
                     if (!RegexHelper.FwBlobUrl.IsMatch(blobUrl))
                     {
@@ -72,7 +80,7 @@ namespace IsmIoTPortal.Controllers
                         error = true;
                     }
                     // If the software version already exists
-                    if (db.Releases.Any(s => s.Name.ToLower().Equals(software.Name.ToLower())))
+                    if (db.Releases.Any(s => s.Name.ToLower().Equals(release.Name.ToLower())))
                     {
                         ViewBag.NameError = "This software version already exists.";
                         error = true;
@@ -82,17 +90,40 @@ namespace IsmIoTPortal.Controllers
                           () => {
                               return View("Create");
                           });
+
+                    // Ok, form is valid
+                    // Read associated SoftwareVersion
+                    // Get the group 
+                    var prefix = m.Groups[1].Value;
+                    var suffix = m.Groups[3].Value;
+                    var releaseNum = m.Groups[2].Value;
+                    var softwareVersion = db.SoftwareVersions.First(sv => sv.Prefix.Equals(prefix) && sv.Suffix.Equals(suffix));
+                    // If we don't find a SoftwareVersion in database, create a new one
+                    if (softwareVersion == null)
+                    {
+                        softwareVersion = new SoftwareVersion
+                        {
+                            Prefix = prefix,
+                            Suffix = suffix,
+                            // First release
+                            CurrentReleaseNum = new int[] { 0, 0, 1 }
+                        };
+                        db.SoftwareVersions.Add(softwareVersion);
+                    }
+                    // Add reference to SoftwareVersion to Release
+                    release.SoftwareVersionId = softwareVersion.SoftwareVersionId;
+
                     try
                     {
-                        software.Status = "Uploaded";
-                        software.Author = "SWT";
-                        software.Date = DateTime.Now;
+                        release.Status = "Uploaded";
+                        release.Author = "SWT";
+                        release.Date = DateTime.Now;
                         // Add to database
-                        db.Releases.Add(software);
+                        db.Releases.Add(release);
                         db.SaveChanges();
 
-                        var location = Server.MapPath("~/sw-updates/" + software.Name);
-                        PortalUtils.CreateNewFirmwareUpdateTask(blobUrl, location, software.SoftwareId);
+                        var location = Server.MapPath("~/sw-updates/" + release.Name);
+                        PortalUtils.CreateNewFirmwareUpdateTask(blobUrl, location, release.SoftwareId);
                         return Task.Factory.StartNew<ActionResult>(
                           () => {
                               return RedirectToAction("Index");
@@ -108,7 +139,7 @@ namespace IsmIoTPortal.Controllers
             
             return Task.Factory.StartNew<ActionResult>(
               () => {
-                  return View(software);
+                  return View(release);
               });
         }
 
