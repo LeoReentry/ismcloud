@@ -402,6 +402,10 @@
     <Compile Include="Migrations\201702100850132_Rename Release.Designer.cs">
       <DependentUpon>201702100850132_Rename Release.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702100852555_Rename Release Field.cs" />
+    <Compile Include="Migrations\201702100852555_Rename Release Field.Designer.cs">
+      <DependentUpon>201702100852555_Rename Release Field.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -624,6 +628,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702100850132_Rename Release.resx">
       <DependentUpon>201702100850132_Rename Release.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100852555_Rename Release Field.resx">
+      <DependentUpon>201702100852555_Rename Release Field.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

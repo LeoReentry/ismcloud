@@ -10,7 +10,7 @@ namespace IsmIoTPortal.Models
     {
         [Key]
         public int SoftwareId { get; set; }
-        public string SoftwareVersion { get; set; }
+        public string Name { get; set; }
         public int[] ReleaseNum { get; set; }
         public string Url { get; set; }
         public string Status { get; set; }

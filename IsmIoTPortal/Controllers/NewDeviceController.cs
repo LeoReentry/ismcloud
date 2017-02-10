@@ -33,7 +33,7 @@ namespace IsmIoTPortal.Controllers
             var hardwares = db.Hardware.Select(i =>
                     new {i.HardwareId, i.Board, i.Camera});
             var softwares = db.Releases.Select(i =>
-                    new { i.SoftwareId, i.SoftwareVersion });
+                    new { i.SoftwareId, i.Name });
             return new 
             {
                 Locations = locations,

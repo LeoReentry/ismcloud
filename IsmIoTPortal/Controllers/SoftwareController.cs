@@ -72,7 +72,7 @@ namespace IsmIoTPortal.Controllers
                         error = true;
                     }
                     // If the software version already exists
-                    if (db.Releases.Any(s => s.SoftwareVersion.ToLower().Equals(software.SoftwareVersion.ToLower())))
+                    if (db.Releases.Any(s => s.Name.ToLower().Equals(software.Name.ToLower())))
                     {
                         ViewBag.NameError = "This software version already exists.";
                         error = true;
@@ -91,7 +91,7 @@ namespace IsmIoTPortal.Controllers
                         db.Releases.Add(software);
                         db.SaveChanges();
 
-                        var location = Server.MapPath("~/sw-updates/" + software.SoftwareVersion);
+                        var location = Server.MapPath("~/sw-updates/" + software.Name);
                         PortalUtils.CreateNewFirmwareUpdateTask(blobUrl, location, software.SoftwareId);
                         return Task.Factory.StartNew<ActionResult>(
                           () => {
