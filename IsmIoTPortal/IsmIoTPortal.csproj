@@ -398,6 +398,10 @@
     <Compile Include="Migrations\201702100834316_Update SoftwareVersion Model.Designer.cs">
       <DependentUpon>201702100834316_Update SoftwareVersion Model.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702100850132_Rename Release.cs" />
+    <Compile Include="Migrations\201702100850132_Rename Release.Designer.cs">
+      <DependentUpon>201702100850132_Rename Release.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -617,6 +621,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702100834316_Update SoftwareVersion Model.resx">
       <DependentUpon>201702100834316_Update SoftwareVersion Model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100850132_Rename Release.resx">
+      <DependentUpon>201702100850132_Rename Release.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

@@ -69,7 +69,7 @@ namespace IsmIoTPortal.Controllers
                 DeviceId = id,
                 HardwareId = hw,
                 LocationId = loc,
-                SoftwareId = sw,
+                ReleaseId = sw,
                 Code = generator.Next(0, 999999).ToString("D6"),
                 Approved = false,
                 Password = hash
