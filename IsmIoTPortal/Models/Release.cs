@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 
@@ -11,6 +12,9 @@ namespace IsmIoTPortal.Models
         [Key]
         public int SoftwareId { get; set; }
         public string Name { get; set; }
+        public int SoftwareVersionId { get; set; }
+        [ForeignKey("SoftwareVersionId")]
+        public virtual SoftwareVersion SoftwareVersion { get; set; }
         public int[] ReleaseNum { get; set; }
         public string Url { get; set; }
         public string Status { get; set; }

@@ -406,6 +406,14 @@
     <Compile Include="Migrations\201702100852555_Rename Release Field.Designer.cs">
       <DependentUpon>201702100852555_Rename Release Field.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702100916271_Add reference to softwareversion in release.cs" />
+    <Compile Include="Migrations\201702100916271_Add reference to softwareversion in release.Designer.cs">
+      <DependentUpon>201702100916271_Add reference to softwareversion in release.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702100917263_Change SoftwareVersion Model.cs" />
+    <Compile Include="Migrations\201702100917263_Change SoftwareVersion Model.Designer.cs">
+      <DependentUpon>201702100917263_Change SoftwareVersion Model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -631,6 +639,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702100852555_Rename Release Field.resx">
       <DependentUpon>201702100852555_Rename Release Field.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100916271_Add reference to softwareversion in release.resx">
+      <DependentUpon>201702100916271_Add reference to softwareversion in release.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100917263_Change SoftwareVersion Model.resx">
+      <DependentUpon>201702100917263_Change SoftwareVersion Model.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
