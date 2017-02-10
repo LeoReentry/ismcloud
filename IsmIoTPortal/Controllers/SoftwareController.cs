@@ -100,7 +100,7 @@ namespace IsmIoTPortal.Controllers
                     // Read associated SoftwareVersion
                     // Get the group 
                     var prefix = m.Groups[1].Value;
-                    var suffix = m.Groups[3].Value;
+                    var suffix = m.Groups[4].Value;
                     var releaseNum = m.Groups[2].Value;
                     var softwareVersion = db.SoftwareVersions.FirstOrDefault(sv => sv.Prefix.Equals(prefix) && sv.Suffix.Equals(suffix));
                     // If we don't find a SoftwareVersion in database, create a new one
@@ -114,6 +114,9 @@ namespace IsmIoTPortal.Controllers
                             CurrentReleaseNum = new int[] { 0, 0, 1 }
                         };
                         db.SoftwareVersions.Add(softwareVersion);
+                    } else
+                    {
+                        softwareVersion.CurrentReleaseNum = Array.ConvertAll(releaseNum.Split('.'), Int32.Parse);
                     }
                     // Add reference to SoftwareVersion to Release
                     release.SoftwareVersionId = softwareVersion.SoftwareVersionId;
@@ -201,8 +204,14 @@ namespace IsmIoTPortal.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Release software = db.Releases.Find(id);
+            SoftwareVersion softwareVersion = software.SoftwareVersion;
             db.Releases.Remove(software);
             db.SaveChanges();
+            if (!db.Releases.Any(r => r.SoftwareVersion.SoftwareVersionId == softwareVersion.SoftwareVersionId))
+            {
+                db.SoftwareVersions.Remove(softwareVersion);
+                db.SaveChanges();
+            }
             return RedirectToAction("Index");
         }
 
