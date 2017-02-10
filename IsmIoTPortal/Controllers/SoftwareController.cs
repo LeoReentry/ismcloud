@@ -50,6 +50,7 @@ namespace IsmIoTPortal.Controllers
         // GET: Software/Create
         public ActionResult Create()
         {
+            var softwareVersions = db.SoftwareVersions.ToList();
             return View();
         }
 

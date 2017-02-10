@@ -414,6 +414,10 @@
     <Compile Include="Migrations\201702100917263_Change SoftwareVersion Model.Designer.cs">
       <DependentUpon>201702100917263_Change SoftwareVersion Model.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702101013147_New View Model.cs" />
+    <Compile Include="Migrations\201702101013147_New View Model.Designer.cs">
+      <DependentUpon>201702101013147_New View Model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -429,6 +433,7 @@
     <Compile Include="Models\PbiDashboardInfo.cs" />
     <Compile Include="Models\SoftwareVersion.cs" />
     <Compile Include="Models\Release.cs" />
+    <Compile Include="Models\SoftwareViewCreate.cs" />
     <Compile Include="Models\SoftwareView.cs" />
     <Compile Include="PortalUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -645,6 +650,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702100917263_Change SoftwareVersion Model.resx">
       <DependentUpon>201702100917263_Change SoftwareVersion Model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702101013147_New View Model.resx">
+      <DependentUpon>201702101013147_New View Model.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
