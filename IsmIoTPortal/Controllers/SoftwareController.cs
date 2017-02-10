@@ -221,7 +221,7 @@ namespace IsmIoTPortal.Controllers
                 if (device.Software.Date > software.Date)
                     continue;
                 // Roll out update async
-                PortalUtils.RolloutFwUpdateAsync(device.DeviceId, serviceClient, software.Url);
+                PortalUtils.RolloutFwUpdateAsync(device.DeviceId, serviceClient, software);
 
             }
 
