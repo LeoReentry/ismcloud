@@ -6,10 +6,10 @@ using System.Web;
 
 namespace IsmIoTPortal.Models
 {
-    public class SoftwareName
+    public class SoftwareVersion
     {
         [Key]
-        public int SoftwareNameId { get; set; }
+        public int SoftwareVersionId { get; set; }
         public string Prefix { get; set; }
         public string Suffix { get; set; }
 

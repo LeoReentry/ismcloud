@@ -390,6 +390,10 @@
     <Compile Include="Migrations\201702100824106_test.Designer.cs">
       <DependentUpon>201702100824106_test.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702100830477_Add SoftwareVersion Model to database.cs" />
+    <Compile Include="Migrations\201702100830477_Add SoftwareVersion Model to database.Designer.cs">
+      <DependentUpon>201702100830477_Add SoftwareVersion Model to database.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -403,7 +407,7 @@
     <Compile Include="Models\IsmIoTPortalContext.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\PbiDashboardInfo.cs" />
-    <Compile Include="Models\Software - Copy.cs" />
+    <Compile Include="Models\SoftwareVersion.cs" />
     <Compile Include="Models\Release.cs" />
     <Compile Include="Models\SoftwareView.cs" />
     <Compile Include="PortalUtils.cs" />
@@ -603,6 +607,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702100824106_test.resx">
       <DependentUpon>201702100824106_test.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100830477_Add SoftwareVersion Model to database.resx">
+      <DependentUpon>201702100830477_Add SoftwareVersion Model to database.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
