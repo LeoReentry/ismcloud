@@ -1,4 +1,4 @@
-﻿@model IsmIoTPortal.Models.Release
+﻿@model IsmIoTPortal.Models.SoftwareViewCreate
 
 @{
     ViewBag.Title = "Create";
@@ -40,9 +40,9 @@
             </label> 
             @*@Html.LabelFor(model => model.SoftwareVersion, htmlAttributes: new { @class = "control-label col-md-4" })*@
             <div class="col-md-6">
-                <input class="form-control text-box single-line" id="Name" name="Name" type="text" value=""  readonly="true" />
-                @*@Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })*@
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                <input class="form-control text-box single-line" id="Release_Name" name="Release.Name" type="text" value=""  readonly="true" />
+                @*@Html.EditorFor(model => model.Release.Name, new { htmlAttributes = new { @class = "form-control" } })*@
+                @Html.ValidationMessageFor(model => model.Release.Name, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group @(ViewBag.FileError != null?"has-error":"")">
@@ -56,10 +56,10 @@
             </div>
         </div>
         <div class="form-group">
-            @Html.LabelFor(model => model.Changelog, htmlAttributes: new { @class = "control-label col-md-4" })
+            @Html.LabelFor(model => model.Release.Changelog, htmlAttributes: new { @class = "control-label col-md-4" })
             <div class="col-md-6">
-                @Html.EditorFor(model => model.Changelog, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Changelog, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Release.Changelog, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Release.Changelog, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group">
@@ -83,14 +83,35 @@
             $('#sw-suffix').on('input', changeInput)
             changeInput()
         });
+
         function changeInput() {
-            var prefix = $('#sw-prefix').val()
-            var release = $('#sw-release').prop('selectedIndex')
-            var suffix = $('#sw-suffix').val()
+            var prefix = $('#sw-prefix').val();
+            var release = $('#sw-release').prop('selectedIndex');
+            var suffix = $('#sw-suffix').val();
+
+            var softwareVersion = findSoftwareVersion(prefix, suffix);
             var s = prefix ? prefix + '-' : '';
-            s += 'r0.0.' + release
+            var releaseNum = [0,0,0];
+            if(softwareVersion) {s
+                releaseNum = softwareVersion.CurrentReleaseNum;
+            }
+            releaseNum[release]++;
+            for (var i = release; i < 2; i++)
+                releaseNum[i+1] = 0
+            s += 'r' + releaseNum.join('.');
             s += suffix ? '-' + suffix : '';
-            $('#Name').val(s)
+
+            $('#Release_Name').val(s);
+        }
+
+        function findSoftwareVersion(prefix, suffix) {
+            var softwareVersions = @Html.Raw(Json.Encode(Model.SoftwareVersions));
+            console.log(softwareVersions)
+            for(var i = 0; i<softwareVersions.length; i++) {
+                if (prefix == softwareVersions[i].Prefix && suffix == softwareVersions[i].Suffix)
+                    return softwareVersions[i]
+            }
+            return null;
         }
     </script>
 }

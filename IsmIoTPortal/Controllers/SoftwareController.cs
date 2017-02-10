@@ -50,7 +50,12 @@ namespace IsmIoTPortal.Controllers
         // GET: Software/Create
         public ActionResult Create()
         {
-            return View();
+            var softwareVersions = db.SoftwareVersions.ToList();
+            return View(new SoftwareViewCreate
+            {
+                Release = null,
+                SoftwareVersions = softwareVersions
+            });
         }
 
         // POST: Software/Create
@@ -97,7 +102,7 @@ namespace IsmIoTPortal.Controllers
                     var prefix = m.Groups[1].Value;
                     var suffix = m.Groups[3].Value;
                     var releaseNum = m.Groups[2].Value;
-                    var softwareVersion = db.SoftwareVersions.First(sv => sv.Prefix.Equals(prefix) && sv.Suffix.Equals(suffix));
+                    var softwareVersion = db.SoftwareVersions.FirstOrDefault(sv => sv.Prefix.Equals(prefix) && sv.Suffix.Equals(suffix));
                     // If we don't find a SoftwareVersion in database, create a new one
                     if (softwareVersion == null)
                     {
@@ -112,6 +117,7 @@ namespace IsmIoTPortal.Controllers
                     }
                     // Add reference to SoftwareVersion to Release
                     release.SoftwareVersionId = softwareVersion.SoftwareVersionId;
+                    // TODO: release releasenum
 
                     try
                     {
