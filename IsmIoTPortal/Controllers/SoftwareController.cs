@@ -152,69 +152,6 @@ namespace IsmIoTPortal.Controllers
               });
         }
 
-        // GET: Software/Edit/5
-        public ActionResult Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Release software = db.Releases.Find(id);
-            if (software == null)
-            {
-                return HttpNotFound();
-            }
-            return View(software);
-        }
-
-        // POST: Software/Edit/5
-        // Aktivieren Sie zum Schutz vor übermäßigem Senden von Angriffen die spezifischen Eigenschaften, mit denen eine Bindung erfolgen soll. Weitere Informationen 
-        // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "SoftwareId,SoftwareVersion")] Release software)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(software).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(software);
-        }
-
-        // GET: Software/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Release software = db.Releases.Find(id);
-            if (software == null)
-            {
-                return HttpNotFound();
-            }
-            return View(software);
-        }
-
-        // POST: Software/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Release software = db.Releases.Find(id);
-            SoftwareVersion softwareVersion = software.SoftwareVersion;
-            db.Releases.Remove(software);
-            db.SaveChanges();
-            if (!db.Releases.Any(r => r.SoftwareVersion.SoftwareVersionId == softwareVersion.SoftwareVersionId))
-            {
-                db.SoftwareVersions.Remove(softwareVersion);
-                db.SaveChanges();
-            }
-            return RedirectToAction("Index");
-        }
-
         [AllowAnonymous]
         public async Task<ActionResult> GetKey()
         {
