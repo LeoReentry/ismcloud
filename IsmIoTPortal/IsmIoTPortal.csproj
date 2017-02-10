@@ -386,6 +386,10 @@
     <Compile Include="Migrations\201702091257035_Rename Software to Release.Designer.cs">
       <DependentUpon>201702091257035_Rename Software to Release.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702100824106_test.cs" />
+    <Compile Include="Migrations\201702100824106_test.Designer.cs">
+      <DependentUpon>201702100824106_test.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -596,6 +600,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702091257035_Rename Software to Release.resx">
       <DependentUpon>201702091257035_Rename Software to Release.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100824106_test.resx">
+      <DependentUpon>201702100824106_test.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

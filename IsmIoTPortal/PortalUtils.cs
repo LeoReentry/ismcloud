@@ -53,7 +53,7 @@ namespace IsmIoTPortal
         {
             IsmIoTPortalContext db = new IsmIoTPortalContext();
             // Get reference to software
-            var software = db.Software.Find(id);
+            var software = db.Releases.Find(id);
             try
             {
                 // Filename is always the same

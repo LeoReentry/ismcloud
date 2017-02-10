@@ -29,7 +29,7 @@ namespace IsmIoTPortal.Controllers
         // GET: Software
         public ActionResult Index()
         {
-            return View(db.Software.ToList());
+            return View(db.Releases.ToList());
         }
 
         // GET: Software/Details/5
@@ -39,7 +39,7 @@ namespace IsmIoTPortal.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Release software = db.Software.Find(id);
+            Release software = db.Releases.Find(id);
             if (software == null)
             {
                 return HttpNotFound();
@@ -72,7 +72,7 @@ namespace IsmIoTPortal.Controllers
                         error = true;
                     }
                     // If the software version already exists
-                    if (db.Software.Any(s => s.SoftwareVersion.ToLower().Equals(software.SoftwareVersion.ToLower())))
+                    if (db.Releases.Any(s => s.SoftwareVersion.ToLower().Equals(software.SoftwareVersion.ToLower())))
                     {
                         ViewBag.NameError = "This software version already exists.";
                         error = true;
@@ -88,7 +88,7 @@ namespace IsmIoTPortal.Controllers
                         software.Author = "SWT";
                         software.Date = DateTime.Now;
                         // Add to database
-                        db.Software.Add(software);
+                        db.Releases.Add(software);
                         db.SaveChanges();
 
                         var location = Server.MapPath("~/sw-updates/" + software.SoftwareVersion);
@@ -119,7 +119,7 @@ namespace IsmIoTPortal.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Release software = db.Software.Find(id);
+            Release software = db.Releases.Find(id);
             if (software == null)
             {
                 return HttpNotFound();
@@ -150,7 +150,7 @@ namespace IsmIoTPortal.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Release software = db.Software.Find(id);
+            Release software = db.Releases.Find(id);
             if (software == null)
             {
                 return HttpNotFound();
@@ -163,8 +163,8 @@ namespace IsmIoTPortal.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Release software = db.Software.Find(id);
-            db.Software.Remove(software);
+            Release software = db.Releases.Find(id);
+            db.Releases.Remove(software);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -186,7 +186,7 @@ namespace IsmIoTPortal.Controllers
         {
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            Release software = db.Software.Find(id);
+            Release software = db.Releases.Find(id);
             if (software == null)
                 return HttpNotFound();
 
@@ -217,7 +217,7 @@ namespace IsmIoTPortal.Controllers
         {
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            Release software = db.Software.Find(id);
+            Release software = db.Releases.Find(id);
             if (software == null)
                 return HttpNotFound();
 
