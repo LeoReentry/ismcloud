@@ -123,22 +123,6 @@ namespace IsmIoTPortal.Controllers
             return View(deviceState);
         }
 
-
-        public async Task<ActionResult> ShowKey(string deviceId)
-        {
-            // Check Device ID against a whitelist of values to prevent XSS
-            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(deviceId))
-                return HttpNotFound();
-
-            // If device doesn't exist, redirect to index
-            if (await registryManager.GetDeviceAsync(deviceId) == null)
-                return RedirectToAction("Index");
-
-            Device device = await registryManager.GetDeviceAsync(deviceId);
-            string key = device.Authentication.SymmetricKey.PrimaryKey;
-            return View(model:key);
-        }
-
         private static async Task<string> AddDeviceAsync(string deviceId)
         {
             Device device = await registryManager.AddDeviceAsync(new Device(deviceId));
@@ -158,68 +142,6 @@ namespace IsmIoTPortal.Controllers
             {
                 return HttpNotFound();
             }
-            return View(ismDevice);
-        }
-
-        // GET: IsmDevices/Create
-        public ActionResult Create()
-        {
-            ViewBag.HardwareId = new SelectList(db.Hardware, "HardwareId", "Board");
-            ViewBag.LocationId = new SelectList(db.Locations, "LocationId", "Country");
-            ViewBag.SoftwareId = new SelectList(db.Releases, "SoftwareId", "SoftwareVersion");
-            return View();
-        }
-
-        // POST: IsmDevices/Create
-        // Aktivieren Sie zum Schutz vor übermäßigem Senden von Angriffen die spezifischen Eigenschaften, mit denen eine Bindung erfolgen soll. Weitere Informationen 
-        // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create([Bind(Include = "IsmDeviceId,DeviceId,LocationId,SoftwareId,HardwareId")] IsmDevice ismDevice)
-        {
-            // Check Device ID against a whitelist of values to prevent XSS
-            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(ismDevice.DeviceId))
-                return HttpNotFound();
-
-            if (ModelState.IsValid)
-            {
-                // Zuerst einmal in DB anlegen
-                // Es darf nicht passieren, dass man einen eintrag in der Identity Registry anlegt
-                // und diesen nicht in der DB registriert (= Device Leak)
-                db.IsmDevices.Add(ismDevice);
-                db.SaveChanges();
-
-                try
-                {
-                    await AddDeviceAsync(ismDevice.DeviceId);
-                }
-                catch (Exception)
-                {
-                    // Anzeigen, dass etwas schief ging
-                    // Eintrag aus DB entfernen
-                }
-
-                /*
-                // Create Dashboard Queue for the new Device
-                // http://stackoverflow.com/questions/30749945/create-azure-service-bus-queue-shared-access-policy-programmatically
-                // http://www.cloudcasts.net/devguide/Default.aspx?id=12018
-                //
-                // Create a token provider with the relevant credentials.
-                TokenProvider credentials = TokenProvider.CreateSharedAccessSignatureTokenProvider(IsmIoTSettings.Settings.sbRootSasName, IsmIoTSettings.Settings.sbRootSasKey);
-                // Create a URI for the service bus.
-                Uri serviceBusUri = ServiceBusEnvironment.CreateServiceUri("sb", IsmIoTSettings.Settings.sbNamespace, string.Empty);
-                // Create a NamespaceManager for the specified namespace using the specified credentials.
-                NamespaceManager namespaceManager = new NamespaceManager(serviceBusUri, credentials);
-                string queueName = ismDevice.DeviceId; // Queue name equals DeviceId
-                QueueDescription queueDescription = await namespaceManager.CreateQueueAsync(queueName);
-                */
-
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.HardwareId = new SelectList(db.Hardware, "HardwareId", "Board", ismDevice.HardwareId);
-            ViewBag.LocationId = new SelectList(db.Locations, "LocationId", "Country", ismDevice.LocationId);
-            ViewBag.SoftwareId = new SelectList(db.Releases, "SoftwareId", "SoftwareVersion", ismDevice.SoftwareId);
             return View(ismDevice);
         }
 

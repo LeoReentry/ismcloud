@@ -552,7 +552,6 @@
     <Content Include="Views\Software\Details.cshtml" />
     <Content Include="Views\Software\Edit.cshtml" />
     <Content Include="Views\Software\Index.cshtml" />
-    <Content Include="Views\IsmDevices\Create.cshtml" />
     <Content Include="Views\IsmDevices\Delete.cshtml" />
     <Content Include="Views\IsmDevices\Details.cshtml" />
     <Content Include="Views\IsmDevices\Edit.cshtml" />
