@@ -110,6 +110,9 @@ namespace IsmIoTPortal.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Contact contact = db.Contacts.Find(id);
+            // Don't remove if it is referenced by some other stuff
+            if (db.Locations.Any(d => d.ContactId == contact.ContactId))
+                return RedirectToAction("Index");
             db.Contacts.Remove(contact);
             db.SaveChanges();
             return RedirectToAction("Index");

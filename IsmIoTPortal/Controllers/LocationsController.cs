@@ -115,6 +115,9 @@ namespace IsmIoTPortal.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Location location = db.Locations.Find(id);
+            // Don't remove if it is referenced by a device
+            if (db.IsmDevices.Any(d => d.LocationId == location.LocationId))
+                return RedirectToAction("Index");
             db.Locations.Remove(location);
             db.SaveChanges();
             return RedirectToAction("Index");

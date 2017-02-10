@@ -110,6 +110,9 @@ namespace IsmIoTPortal.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Hardware hardware = db.Hardware.Find(id);
+            // Don't remove if it is referenced by a device
+            if (db.IsmDevices.Any(d => d.HardwareId == hardware.HardwareId))
+                return RedirectToAction("Index");
             db.Hardware.Remove(hardware);
             db.SaveChanges();
             return RedirectToAction("Index");
