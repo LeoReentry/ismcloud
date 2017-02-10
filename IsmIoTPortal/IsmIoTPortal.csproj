@@ -418,6 +418,10 @@
     <Compile Include="Migrations\201702101013147_New View Model.Designer.cs">
       <DependentUpon>201702101013147_New View Model.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702101117107_Change internal data mapping for SoftwareVersion.cs" />
+    <Compile Include="Migrations\201702101117107_Change internal data mapping for SoftwareVersion.Designer.cs">
+      <DependentUpon>201702101117107_Change internal data mapping for SoftwareVersion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -653,6 +657,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702101013147_New View Model.resx">
       <DependentUpon>201702101013147_New View Model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702101117107_Change internal data mapping for SoftwareVersion.resx">
+      <DependentUpon>201702101117107_Change internal data mapping for SoftwareVersion.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
