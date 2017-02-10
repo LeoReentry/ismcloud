@@ -166,7 +166,7 @@ namespace IsmIoTPortal.Controllers
         {
             ViewBag.HardwareId = new SelectList(db.Hardware, "HardwareId", "Board");
             ViewBag.LocationId = new SelectList(db.Locations, "LocationId", "Country");
-            ViewBag.SoftwareId = new SelectList(db.Software, "SoftwareId", "SoftwareVersion");
+            ViewBag.SoftwareId = new SelectList(db.Releases, "SoftwareId", "SoftwareVersion");
             return View();
         }
 
@@ -219,7 +219,7 @@ namespace IsmIoTPortal.Controllers
 
             ViewBag.HardwareId = new SelectList(db.Hardware, "HardwareId", "Board", ismDevice.HardwareId);
             ViewBag.LocationId = new SelectList(db.Locations, "LocationId", "Country", ismDevice.LocationId);
-            ViewBag.SoftwareId = new SelectList(db.Software, "SoftwareId", "SoftwareVersion", ismDevice.SoftwareId);
+            ViewBag.SoftwareId = new SelectList(db.Releases, "SoftwareId", "SoftwareVersion", ismDevice.SoftwareId);
             return View(ismDevice);
         }
 
@@ -238,7 +238,7 @@ namespace IsmIoTPortal.Controllers
             }
             ViewBag.HardwareId = new SelectList(db.Hardware, "HardwareId", "Board", ismDevice.HardwareId);
             ViewBag.LocationId = new SelectList(db.Locations, "LocationId", "Country", ismDevice.LocationId);
-            ViewBag.SoftwareId = new SelectList(db.Software, "SoftwareId", "SoftwareVersion", ismDevice.SoftwareId);
+            ViewBag.SoftwareId = new SelectList(db.Releases, "SoftwareId", "SoftwareVersion", ismDevice.SoftwareId);
             return View(ismDevice);
         }
 
@@ -268,7 +268,7 @@ namespace IsmIoTPortal.Controllers
             }
             ViewBag.HardwareId = new SelectList(db.Hardware, "HardwareId", "Board", ismDevice.HardwareId);
             ViewBag.LocationId = new SelectList(db.Locations, "LocationId", "Country", ismDevice.LocationId);
-            ViewBag.SoftwareId = new SelectList(db.Software, "SoftwareId", "SoftwareVersion", ismDevice.SoftwareId);
+            ViewBag.SoftwareId = new SelectList(db.Releases, "SoftwareId", "SoftwareVersion", ismDevice.SoftwareId);
             return View(ismDevice);
         }
 

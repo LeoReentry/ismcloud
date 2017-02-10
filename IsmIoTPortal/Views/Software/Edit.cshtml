@@ -1,4 +1,4 @@
-﻿@model IsmIoTPortal.Models.Software
+﻿@model IsmIoTPortal.Models.Release
 
 @{
     ViewBag.Title = "Edit";
@@ -18,10 +18,10 @@
         @Html.HiddenFor(model => model.SoftwareId)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.SoftwareVersion, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.SoftwareVersion, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.SoftwareVersion, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
             </div>
         </div>
 

@@ -382,6 +382,38 @@
     <Compile Include="Migrations\201702070913291_Fix Exposure.Designer.cs">
       <DependentUpon>201702070913291_Fix Exposure.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702091257035_Rename Software to Release.cs" />
+    <Compile Include="Migrations\201702091257035_Rename Software to Release.Designer.cs">
+      <DependentUpon>201702091257035_Rename Software to Release.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702100824106_test.cs" />
+    <Compile Include="Migrations\201702100824106_test.Designer.cs">
+      <DependentUpon>201702100824106_test.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702100830477_Add SoftwareVersion Model to database.cs" />
+    <Compile Include="Migrations\201702100830477_Add SoftwareVersion Model to database.Designer.cs">
+      <DependentUpon>201702100830477_Add SoftwareVersion Model to database.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702100834316_Update SoftwareVersion Model.cs" />
+    <Compile Include="Migrations\201702100834316_Update SoftwareVersion Model.Designer.cs">
+      <DependentUpon>201702100834316_Update SoftwareVersion Model.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702100850132_Rename Release.cs" />
+    <Compile Include="Migrations\201702100850132_Rename Release.Designer.cs">
+      <DependentUpon>201702100850132_Rename Release.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702100852555_Rename Release Field.cs" />
+    <Compile Include="Migrations\201702100852555_Rename Release Field.Designer.cs">
+      <DependentUpon>201702100852555_Rename Release Field.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702100916271_Add reference to softwareversion in release.cs" />
+    <Compile Include="Migrations\201702100916271_Add reference to softwareversion in release.Designer.cs">
+      <DependentUpon>201702100916271_Add reference to softwareversion in release.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702100917263_Change SoftwareVersion Model.cs" />
+    <Compile Include="Migrations\201702100917263_Change SoftwareVersion Model.Designer.cs">
+      <DependentUpon>201702100917263_Change SoftwareVersion Model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -395,7 +427,8 @@
     <Compile Include="Models\IsmIoTPortalContext.cs" />
     <Compile Include="Models\Location.cs" />
     <Compile Include="Models\PbiDashboardInfo.cs" />
-    <Compile Include="Models\Software.cs" />
+    <Compile Include="Models\SoftwareVersion.cs" />
+    <Compile Include="Models\Release.cs" />
     <Compile Include="Models\SoftwareView.cs" />
     <Compile Include="PortalUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -588,6 +621,30 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702070913291_Fix Exposure.resx">
       <DependentUpon>201702070913291_Fix Exposure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702091257035_Rename Software to Release.resx">
+      <DependentUpon>201702091257035_Rename Software to Release.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100824106_test.resx">
+      <DependentUpon>201702100824106_test.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100830477_Add SoftwareVersion Model to database.resx">
+      <DependentUpon>201702100830477_Add SoftwareVersion Model to database.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100834316_Update SoftwareVersion Model.resx">
+      <DependentUpon>201702100834316_Update SoftwareVersion Model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100850132_Rename Release.resx">
+      <DependentUpon>201702100850132_Rename Release.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100852555_Rename Release Field.resx">
+      <DependentUpon>201702100852555_Rename Release Field.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100916271_Add reference to softwareversion in release.resx">
+      <DependentUpon>201702100916271_Add reference to softwareversion in release.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100917263_Change SoftwareVersion Model.resx">
+      <DependentUpon>201702100917263_Change SoftwareVersion Model.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

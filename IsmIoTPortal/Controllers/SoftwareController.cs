@@ -29,7 +29,7 @@ namespace IsmIoTPortal.Controllers
         // GET: Software
         public ActionResult Index()
         {
-            return View(db.Software.ToList());
+            return View(db.Releases.ToList());
         }
 
         // GET: Software/Details/5
@@ -39,7 +39,7 @@ namespace IsmIoTPortal.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Software software = db.Software.Find(id);
+            Release software = db.Releases.Find(id);
             if (software == null)
             {
                 return HttpNotFound();
@@ -58,40 +58,77 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "SoftwareId,SoftwareVersion,Changelog")] Software software, HttpPostedFileBase upload)
+        public Task<ActionResult> Create([Bind(Include = "SoftwareId,Name,Changelog")] Release release, string blobUrl)
         {
             if (ModelState.IsValid)
             {
-                if (upload != null && upload.ContentLength > 0)
+                if (blobUrl != null && blobUrl.Length > 0)
                 {
                     bool error = false;
-                    // If the uploaded file is not a tarfile, return with error
-                    if (!Path.GetExtension(upload.FileName).Equals(".tar"))
+
+                    // Check Software Version
+                    var m = RegexHelper.SoftwareName.Match(release.Name);
+                    if (!m.Success)
                     {
-                        ViewBag.FileError = "Uploaded file must be tarfile packed with update data and a script named 'apply.sh'";
+                        ViewBag.NameError = "Your prefix and suffix aren't valid values.";
+                        error = true;
+                    }
+                    // If the uploaded file is not a tarfile, return with error
+                    if (!RegexHelper.FwBlobUrl.IsMatch(blobUrl))
+                    {
+                        ViewBag.FileError = "URL must link to tarfile in an Azure BLOB storage container named 'fwupdates' packed with update data and a script named 'apply.sh'";
                         error = true;
                     }
                     // If the software version already exists
-                    if (db.Software.Any(s => s.SoftwareVersion.ToLower().Equals(software.SoftwareVersion.ToLower())))
+                    if (db.Releases.Any(s => s.Name.ToLower().Equals(release.Name.ToLower())))
                     {
                         ViewBag.NameError = "This software version already exists.";
                         error = true;
                     }
                     if (error)
-                        return View("Create");
+                        return Task.Factory.StartNew<ActionResult>(
+                          () => {
+                              return View("Create");
+                          });
+
+                    // Ok, form is valid
+                    // Read associated SoftwareVersion
+                    // Get the group 
+                    var prefix = m.Groups[1].Value;
+                    var suffix = m.Groups[3].Value;
+                    var releaseNum = m.Groups[2].Value;
+                    var softwareVersion = db.SoftwareVersions.First(sv => sv.Prefix.Equals(prefix) && sv.Suffix.Equals(suffix));
+                    // If we don't find a SoftwareVersion in database, create a new one
+                    if (softwareVersion == null)
+                    {
+                        softwareVersion = new SoftwareVersion
+                        {
+                            Prefix = prefix,
+                            Suffix = suffix,
+                            // First release
+                            CurrentReleaseNum = new int[] { 0, 0, 1 }
+                        };
+                        db.SoftwareVersions.Add(softwareVersion);
+                    }
+                    // Add reference to SoftwareVersion to Release
+                    release.SoftwareVersionId = softwareVersion.SoftwareVersionId;
+
                     try
                     {
-                        software.Status = "Uploaded";
-                        software.Author = "SWT";
-                        software.Date = DateTime.Now;
+                        release.Status = "Uploaded";
+                        release.Author = "SWT";
+                        release.Date = DateTime.Now;
                         // Add to database
-                        db.Software.Add(software);
+                        db.Releases.Add(release);
                         db.SaveChanges();
 
-                        var location = Server.MapPath("~/sw-updates/" + software.SoftwareVersion);
-                        PortalUtils.CreateNewFirmwareUpdateTask(upload, location, software.SoftwareId);
-
-                        return RedirectToAction("Index");
+                        var location = Server.MapPath("~/sw-updates/" + release.Name);
+                        PortalUtils.CreateNewFirmwareUpdateTask(blobUrl, location, release.SoftwareId);
+                        return Task.Factory.StartNew<ActionResult>(
+                          () => {
+                              return RedirectToAction("Index");
+                          });
+                        //return RedirectToAction("Index");
                     }
                     catch (Exception e)
                     {
@@ -99,8 +136,11 @@ namespace IsmIoTPortal.Controllers
                     }
                 }
             }
-
-            return View(software);
+            
+            return Task.Factory.StartNew<ActionResult>(
+              () => {
+                  return View(release);
+              });
         }
 
         // GET: Software/Edit/5
@@ -110,7 +150,7 @@ namespace IsmIoTPortal.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Software software = db.Software.Find(id);
+            Release software = db.Releases.Find(id);
             if (software == null)
             {
                 return HttpNotFound();
@@ -123,7 +163,7 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "SoftwareId,SoftwareVersion")] Software software)
+        public ActionResult Edit([Bind(Include = "SoftwareId,SoftwareVersion")] Release software)
         {
             if (ModelState.IsValid)
             {
@@ -141,7 +181,7 @@ namespace IsmIoTPortal.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Software software = db.Software.Find(id);
+            Release software = db.Releases.Find(id);
             if (software == null)
             {
                 return HttpNotFound();
@@ -154,8 +194,8 @@ namespace IsmIoTPortal.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Software software = db.Software.Find(id);
-            db.Software.Remove(software);
+            Release software = db.Releases.Find(id);
+            db.Releases.Remove(software);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -177,7 +217,7 @@ namespace IsmIoTPortal.Controllers
         {
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            Software software = db.Software.Find(id);
+            Release software = db.Releases.Find(id);
             if (software == null)
                 return HttpNotFound();
 
@@ -208,7 +248,7 @@ namespace IsmIoTPortal.Controllers
         {
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            Software software = db.Software.Find(id);
+            Release software = db.Releases.Find(id);
             if (software == null)
                 return HttpNotFound();
 

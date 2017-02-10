@@ -18,9 +18,9 @@ namespace IsmIoTPortal.Models
         public int LocationId { get; set; }
         [ForeignKey("LocationId")]
         public virtual Location Location { get; set; }
-        public int SoftwareId { get; set; }
-        [ForeignKey("SoftwareId")]
-        public virtual Software Software { get; set; }
+        public int ReleaseId { get; set; }
+        [ForeignKey("ReleaseId")]
+        public virtual Release Release { get; set; }
         public int HardwareId { get; set; }
         [ForeignKey("HardwareId")]
         public virtual Hardware Hardware { get; set; }

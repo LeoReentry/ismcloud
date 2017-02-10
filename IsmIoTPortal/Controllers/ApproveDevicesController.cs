@@ -20,7 +20,7 @@ namespace IsmIoTPortal.Controllers
         // GET: ApproveDevices
         public ActionResult Index()
         {
-            var ismDevices = db.NewDevices.Include(i => i.Hardware).Include(i => i.Location).Include(i => i.Software);
+            var ismDevices = db.NewDevices.Include(i => i.Hardware).Include(i => i.Location).Include(i => i.Release);
             return View(ismDevices.ToList());
         }
 
@@ -62,7 +62,7 @@ namespace IsmIoTPortal.Controllers
             {
                 DeviceId = newDevice.DeviceId,
                 HardwareId = newDevice.HardwareId,
-                SoftwareId = newDevice.SoftwareId,
+                SoftwareId = newDevice.ReleaseId,
                 LocationId = newDevice.LocationId
             };
             // Add to DB

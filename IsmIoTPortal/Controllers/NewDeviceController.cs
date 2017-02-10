@@ -32,8 +32,8 @@ namespace IsmIoTPortal.Controllers
                     new {i.LocationId, i.City, i.Country});
             var hardwares = db.Hardware.Select(i =>
                     new {i.HardwareId, i.Board, i.Camera});
-            var softwares = db.Software.Select(i =>
-                    new { i.SoftwareId, i.SoftwareVersion });
+            var softwares = db.Releases.Select(i =>
+                    new { i.SoftwareId, i.Name });
             return new 
             {
                 Locations = locations,
@@ -69,7 +69,7 @@ namespace IsmIoTPortal.Controllers
                 DeviceId = id,
                 HardwareId = hw,
                 LocationId = loc,
-                SoftwareId = sw,
+                ReleaseId = sw,
                 Code = generator.Next(0, 999999).ToString("D6"),
                 Approved = false,
                 Password = hash
