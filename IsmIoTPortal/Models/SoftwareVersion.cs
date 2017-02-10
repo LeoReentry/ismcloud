@@ -12,7 +12,8 @@ namespace IsmIoTPortal.Models
         public int SoftwareVersionId { get; set; }
         public string Prefix { get; set; }
         public string Suffix { get; set; }
-
-        public int[] CurrentRelease { get; set; }
+        public int MajorVersion { get; set; }
+        public int MinorVersion { get; set; }
+        public int PatchVersion { get; set; }
     }
 }

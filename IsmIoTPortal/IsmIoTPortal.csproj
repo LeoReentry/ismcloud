@@ -394,6 +394,10 @@
     <Compile Include="Migrations\201702100830477_Add SoftwareVersion Model to database.Designer.cs">
       <DependentUpon>201702100830477_Add SoftwareVersion Model to database.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702100834316_Update SoftwareVersion Model.cs" />
+    <Compile Include="Migrations\201702100834316_Update SoftwareVersion Model.Designer.cs">
+      <DependentUpon>201702100834316_Update SoftwareVersion Model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -610,6 +614,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702100830477_Add SoftwareVersion Model to database.resx">
       <DependentUpon>201702100830477_Add SoftwareVersion Model to database.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702100834316_Update SoftwareVersion Model.resx">
+      <DependentUpon>201702100834316_Update SoftwareVersion Model.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
