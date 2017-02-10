@@ -41,7 +41,7 @@
             @*@Html.LabelFor(model => model.SoftwareVersion, htmlAttributes: new { @class = "control-label col-md-4" })*@
             <div class="col-md-6">
                 <input class="form-control text-box single-line" id="SoftwareVersion" name="SoftwareVersion" type="text" value="" disabled/>
-                @Html.ValidationMessageFor(model => model.SoftwareVersion, "", new { @class = "text-danger" })
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
             </div>
         </div>
         <div class="form-group @(ViewBag.FileError != null?"has-error":"")">

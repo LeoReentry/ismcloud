@@ -4,7 +4,7 @@
 }
 
 <h2>Rollout</h2>
-<h2>Software Version&emsp;<b>@Model.Software.SoftwareVersion</b></h2>
+<h2>Software Version&emsp;<b>@Model.Software.Name</b></h2>
 <table class="table">
     <tr>
         <th bgcolor="#FFFFFF">
@@ -22,7 +22,7 @@
 
 @using (Html.BeginForm())
 {
-    <input type="submit" value="Roll out @Model.Software.SoftwareVersion" class="btn btn-success" />
+    <input type="submit" value="Roll out @Model.Software.Name" class="btn btn-success" />
     <br /><br />
     @Html.AntiForgeryToken()
     <table class="table">
@@ -47,7 +47,7 @@
                         @Html.DisplayFor(modelItem => item.DeviceId)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
+                        @Html.DisplayFor(modelItem => item.Software.Name)
                     </td>
                     <td>
                         <input type="checkbox" class="checkbox" name="selectedDevices" value="@item.IsmDeviceId" checked="" />                        
@@ -63,7 +63,7 @@
                     @Html.DisplayFor(modelItem => item.DeviceId)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
+                    @Html.DisplayFor(modelItem => item.Software.Name)
                 </td>
                 <td>
                     <input type="checkbox" class="checkbox" disabled=""/>
@@ -80,7 +80,7 @@
                         @Html.DisplayFor(modelItem => item.DeviceId)
                     </td>
                     <td>
-                        @Html.DisplayFor(modelItem => item.Software.SoftwareVersion)
+                        @Html.DisplayFor(modelItem => item.Software.Name)
                     </td>
                     <td>
                         <input type="checkbox" class="checkbox" disabled="" />
