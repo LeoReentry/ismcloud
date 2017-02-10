@@ -106,12 +106,20 @@ namespace IsmIoTPortal.Controllers
                     // If we don't find a SoftwareVersion in database, create a new one
                     if (softwareVersion == null)
                     {
+                        if (!releaseNum.Equals("1.0.0"))
+                        {
+                            ViewBag.NameError = "A new software version must start with a release 1.0.0";
+                            return Task.Factory.StartNew<ActionResult>(
+                              () => {
+                                  return View("Create");
+                              });
+                        }
                         softwareVersion = new SoftwareVersion
                         {
                             Prefix = prefix,
                             Suffix = suffix,
                             // First release
-                            CurrentReleaseNum = new int[] { 0, 0, 1 }
+                            CurrentReleaseNum = new int[] { 1, 0, 0 }
                         };
                         db.SoftwareVersions.Add(softwareVersion);
                     } else
