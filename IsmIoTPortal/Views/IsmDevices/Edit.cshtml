@@ -18,10 +18,18 @@
         @Html.HiddenFor(model => model.IsmDeviceId)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.DeviceId, htmlAttributes: new { @class = "control-label col-md-2" })
+            <label class="control-label col-md-2" for="DeviceId">Name</label>
             <div class="col-md-10">
-                @Html.EditorFor(model => model.DeviceId, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.DeviceId, "", new { @class = "text-danger" })
+                <input class="form-control text-box single-line" id="DeviceId" name="DeviceId" type="hidden" value="@Model.DeviceId" hidden />
+                <h5>@Model.DeviceId</h5>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="control-label col-md-2" for="DeviceId">Software Version</label>
+            <div class="col-md-10">
+                <input class="form-control text-box single-line" id="SoftwareId" name="SoftwareId" type="hidden" value="@Model.SoftwareId" />
+                <h5>@Model.Software.Name</h5>
             </div>
         </div>
 
@@ -30,14 +38,6 @@
             <div class="col-md-10">
                 @Html.DropDownList("LocationId", null, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.LocationId, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.SoftwareId, "SoftwareId", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.DropDownList("SoftwareId", null, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.SoftwareId, "", new { @class = "text-danger" })
             </div>
         </div>
 
