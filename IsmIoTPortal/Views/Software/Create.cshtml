@@ -15,7 +15,8 @@
                 @foreach (var softwareVersion in Model.SoftwareVersions)
                 {
                     <option>
-                        @(softwareVersion.Prefix + "-r" + softwareVersion.InternalReleaseNum.Replace(';', '.') + '-' + softwareVersion.Suffix)
+                        @(softwareVersion.Prefix + "-r" + softwareVersion.InternalReleaseNum.Replace(';', '.') + 
+                        ((softwareVersion.Suffix != "" && softwareVersion.Suffix != null) ? '-' + softwareVersion.Suffix : ""))
                     </option>
                 }
                 <option>Other</option>

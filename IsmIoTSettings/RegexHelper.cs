@@ -30,6 +30,6 @@ namespace IsmIoTSettings
         /// (r\d\.\d\.\d) Checks the release number
         /// -(.+) Checks the suffix
         /// </summary>
-        public static Regex SoftwareName = new Regex(@"(.+)-(r\d\.\d\.\d)-(.+)");
+        public static Regex SoftwareName = new Regex(@"(.+)-(r\d\.\d\.\d)(-(.+))?");
     }
 }
