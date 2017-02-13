@@ -49,7 +49,10 @@ namespace IsmIoTPortal
             methodInvokation.SetPayloadJson(payload);
             // Invoke method on device
             var response = await serviceClient.InvokeDeviceMethodAsync(device, methodInvokation).ConfigureAwait(false);
-            // TODO Wait until device is finished
+            if (response.Status != 200)
+            {
+                // Handle errors
+            }
         }
 
         /// <summary>
