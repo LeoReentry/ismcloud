@@ -22,5 +22,6 @@ namespace IsmIoTPortal.Models
         [ForeignKey("HardwareId")]
         public virtual Hardware Hardware { get; set; }
         public virtual List<Command> Commands { get; set; }
+        public string UpdateStatus { get; set; }
     }
 }

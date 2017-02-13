@@ -75,7 +75,7 @@ namespace IsmIoTPortal.Controllers
                     var m = RegexHelper.SoftwareName.Match(release.Name);
                     if (!m.Success)
                     {
-                        ViewBag.NameError = "Your prefix and suffix aren't valid values.";
+                        ViewBag.NameError = "Your prefix and suffix aren't valid values. The prefix is not optional.";
                         error = true;
                     }
                     // If the uploaded file is not a tarfile, return with error
@@ -93,7 +93,12 @@ namespace IsmIoTPortal.Controllers
                     if (error)
                         return Task.Factory.StartNew<ActionResult>(
                           () => {
-                              return View("Create");
+                              var softwareVersions = db.SoftwareVersions.ToList();
+                              return View("Create", new SoftwareViewCreate
+                              {
+                                  Release = null,
+                                  SoftwareVersions = softwareVersions
+                              });
                           });
 
                     // Ok, form is valid
@@ -116,11 +121,24 @@ namespace IsmIoTPortal.Controllers
                         db.SoftwareVersions.Add(softwareVersion);
                     } else
                     {
+                        if (softwareVersion.CurrentReleaseNum + 1 != releaseNum)
+                        {
+                            ViewBag.NameError = "The release number is not correct.";
+                            return Task.Factory.StartNew<ActionResult>(
+                              () => {
+                                  var softwareVersions = db.SoftwareVersions.ToList();
+                                  return View("Create", new SoftwareViewCreate
+                                  {
+                                      Release = null,
+                                      SoftwareVersions = softwareVersions
+                                  });
+                              });
+                        }
                         softwareVersion.CurrentReleaseNum = releaseNum;
                     }
                     // Add reference to SoftwareVersion to Release
                     release.SoftwareVersionId = softwareVersion.SoftwareVersionId;
-                    // TODO: release releasenum
+                    release.Num = softwareVersion.CurrentReleaseNum;
 
                     try
                     {
@@ -211,6 +229,9 @@ namespace IsmIoTPortal.Controllers
                     continue;
                 // If the device's software version is newer than the one we'll be updating to, skip this device
                 if (device.Software.Date > software.Date)
+                    continue;
+                // If device is currently doing a firmware update, wait
+                if (device.UpdateStatus == IsmIoTSettings.UpdateStatus.PROCESSING)
                     continue;
                 // Roll out update async
                 PortalUtils.RolloutFwUpdateAsync(device.DeviceId, serviceClient, software);

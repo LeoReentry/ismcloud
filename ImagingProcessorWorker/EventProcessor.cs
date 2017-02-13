@@ -139,6 +139,12 @@ namespace ImagingProcessorWorker
                         DeviceState DeviceState = JsonConvert.DeserializeObject<DeviceState>(serializedDeviceState);
                         Task.Factory.StartNew(() => UpdateDashboardDeviceStateControls(DeviceState));
                     }
+                    else if (eventData.Properties.ContainsKey(IsmIoTPortal.CommandType.D2C_COMMAND) && (string)eventData.Properties[IsmIoTPortal.CommandType.D2C_COMMAND] == IsmIoTPortal.CommandType.FIRMWARE_UPDATE_STATUS)
+                    {
+                        string serializedUpdateState = Encoding.UTF8.GetString(eventData.GetBytes());
+                        var updateState = JsonConvert.DeserializeObject<UpdateState>(serializedUpdateState);
+                        Task.Factory.StartNew(() => UpdateFirmwareUpdateStatus(updateState));
+                    }
                 }
             }
             catch (Exception ex)
@@ -159,6 +165,24 @@ namespace ImagingProcessorWorker
 
         }
 
+        private void UpdateFirmwareUpdateStatus(UpdateState updateState)
+        {
+            using (IsmIoTPortalContext db = new IsmIoTPortalContext())
+            {
+                string deviceId = updateState.DeviceId;
+                var device = db.IsmDevices.FirstOrDefault(d => d.DeviceId.Equals(deviceId));
+                if (device == null)
+                {
+                    this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > UpdateFirmwareUpdateStatus Error: DeviceId unknown.<br>", DateTime.Now.ToString())));
+                    return;
+                }
+                device.UpdateStatus = IsmIoTSettings.UpdateStatus.READY;
+                var release = db.Releases.First(r => r.Num == device.Software.Num + 1);
+                device.SoftwareId = release.SoftwareId;
+                db.SaveChanges();
+                this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > UpdateFirmwareUpdateStatus Info: Update Log: {1} <br>", DateTime.Now.ToString(), updateState.Log)));
+            }
+        }
         private void UpdateDashboardDeviceStateControls(DeviceState DeviceState)
         {
             try

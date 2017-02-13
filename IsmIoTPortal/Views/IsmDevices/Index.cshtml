@@ -64,6 +64,9 @@
             Provisioning Status
         </th>
         <th>
+            Update Status
+        </th>
+        <th>
             Command Messages
         </th>
         <th>
@@ -119,6 +122,9 @@
         </td>
         <td>
              @((ViewBag.DeviceList as Dictionary<string, Microsoft.Azure.Devices.Device>)[item.DeviceId].Status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.UpdateStatus)
         </td>
         <td>
             @if ((ViewBag.DeviceList as Dictionary<string, Microsoft.Azure.Devices.Device>)[item.DeviceId].Status == Microsoft.Azure.Devices.DeviceStatus.Disabled)

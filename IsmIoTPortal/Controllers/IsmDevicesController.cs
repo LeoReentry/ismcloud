@@ -181,7 +181,12 @@ namespace IsmIoTPortal.Controllers
             if (!db.IsmDevices.Any(d => d.IsmDeviceId == ismDevice.IsmDeviceId))
             //if (db.IsmDevices.Find(ismDevice.IsmDeviceId) == null)
                 return HttpNotFound();
-
+            // Check that unchangeable data (that is, current software and device ID) has not been tampered with.
+            if (!db.IsmDevices.Any(d =>
+                    d.IsmDeviceId == ismDevice.IsmDeviceId &&
+                    d.DeviceId.Equals(ismDevice.DeviceId) &&
+                    d.SoftwareId == ismDevice.SoftwareId));
+                return HttpNotFound();
             if (ModelState.IsValid)
             {
                 db.Entry(ismDevice).State = EntityState.Modified;                

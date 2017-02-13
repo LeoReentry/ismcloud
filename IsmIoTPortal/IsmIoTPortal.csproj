@@ -426,10 +426,19 @@
     <Compile Include="Migrations\201702130806411_Only one release number.Designer.cs">
       <DependentUpon>201702130806411_Only one release number.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702131357415_Add status field to device.cs" />
+    <Compile Include="Migrations\201702131357415_Add status field to device.Designer.cs">
+      <DependentUpon>201702131357415_Add status field to device.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702131440059_New model.cs" />
+    <Compile Include="Migrations\201702131440059_New model.Designer.cs">
+      <DependentUpon>201702131440059_New model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\DateTimeInterval.cs" />
+    <Compile Include="Models\UpdateState.cs" />
     <Compile Include="Models\DeviceState.cs" />
     <Compile Include="Models\FilamentData.cs" />
     <Compile Include="Models\Hardware.cs" />
@@ -664,6 +673,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702130806411_Only one release number.resx">
       <DependentUpon>201702130806411_Only one release number.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702131357415_Add status field to device.resx">
+      <DependentUpon>201702131357415_Add status field to device.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702131440059_New model.resx">
+      <DependentUpon>201702131440059_New model.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

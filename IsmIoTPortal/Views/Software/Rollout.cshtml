@@ -34,6 +34,9 @@
                 Current Software Version
             </th>
             <th>
+                Status
+            </th>
+            <th>
                 Update
             </th>
         </tr>
@@ -50,7 +53,12 @@
                         @Html.DisplayFor(modelItem => item.Software.Name)
                     </td>
                     <td>
-                        <input type="checkbox" class="checkbox" name="selectedDevices" value="@item.IsmDeviceId" checked="" />                        
+                        @Html.DisplayFor(modelItem => item.UpdateStatus)
+                    </td>
+                    <td>
+                        <input type="checkbox" class="checkbox" name="selectedDevices" value="@item.IsmDeviceId"
+                               @(item.UpdateStatus == IsmIoTSettings.UpdateStatus.PROCESSING ? "disabled=\"\"" : "checked=\"\" ")
+                               />                        
                     </td>
                 </tr>
             }
@@ -64,6 +72,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Software.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.UpdateStatus)
                 </td>
                 <td>
                     <input type="checkbox" class="checkbox" disabled=""/>
@@ -81,6 +92,9 @@
                     </td>
                     <td>
                         @Html.DisplayFor(modelItem => item.Software.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.UpdateStatus)
                     </td>
                     <td>
                         <input type="checkbox" class="checkbox" disabled="" />

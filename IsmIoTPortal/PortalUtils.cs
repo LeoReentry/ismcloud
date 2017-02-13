@@ -39,18 +39,28 @@ namespace IsmIoTPortal
                 return;
             // Method to invoke
             var methodInvokation = new CloudToDeviceMethod("firmwareUpdate");
-
+            // Select next release if user wants to skip a version
+            if (release.Num - ismDevice.Software.Num > 1)
+                release = allReleases.First(r => r.Num == ismDevice.Software.Num + 1);
             // Method payload
             var payload = JsonConvert.SerializeObject(new
             {
                 blobUrl = release.Url,
                 fileName = release.Url.Split('/').Last()
             });
-
             methodInvokation.SetPayloadJson(payload);
             // Invoke method on device
             var response = await serviceClient.InvokeDeviceMethodAsync(device, methodInvokation).ConfigureAwait(false);
-            // TODO Wait until device is finished
+            if (response.Status != 200)
+            {
+                // Handle errors
+                ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.ERROR;
+            }
+            else
+            {
+                ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.PROCESSING;
+            }
+            db.SaveChanges();
         }
 
         /// <summary>
