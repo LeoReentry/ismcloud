@@ -116,11 +116,19 @@ namespace IsmIoTPortal.Controllers
                         db.SoftwareVersions.Add(softwareVersion);
                     } else
                     {
+                        if (softwareVersion.CurrentReleaseNum + 1 != releaseNum)
+                        {
+                            ViewBag.NameError = "The release number is not correct.";
+                            return Task.Factory.StartNew<ActionResult>(
+                              () => {
+                                  return View("Create");
+                              });
+                        }
                         softwareVersion.CurrentReleaseNum = releaseNum;
                     }
                     // Add reference to SoftwareVersion to Release
                     release.SoftwareVersionId = softwareVersion.SoftwareVersionId;
-                    // TODO: release releasenum
+                    release.Num = softwareVersion.CurrentReleaseNum;
 
                     try
                     {
