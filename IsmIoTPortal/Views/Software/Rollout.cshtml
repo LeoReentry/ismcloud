@@ -56,7 +56,9 @@
                         @Html.DisplayFor(modelItem => item.UpdateStatus)
                     </td>
                     <td>
-                        <input type="checkbox" class="checkbox" name="selectedDevices" value="@item.IsmDeviceId" checked="" />                        
+                        <input type="checkbox" class="checkbox" name="selectedDevices" value="@item.IsmDeviceId"
+                               @(item.UpdateStatus == IsmIoTSettings.UpdateStatus.PROCESSING ? "disabled=\"\"" : "checked=\"\" ")
+                               />                        
                     </td>
                 </tr>
             }
