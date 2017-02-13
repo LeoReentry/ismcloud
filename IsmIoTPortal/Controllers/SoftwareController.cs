@@ -230,6 +230,9 @@ namespace IsmIoTPortal.Controllers
                 // If the device's software version is newer than the one we'll be updating to, skip this device
                 if (device.Software.Date > software.Date)
                     continue;
+                // If device is currently doing a firmware update, wait
+                if (device.UpdateStatus == IsmIoTSettings.UpdateStatus.PROCESSING)
+                    continue;
                 // Roll out update async
                 PortalUtils.RolloutFwUpdateAsync(device.DeviceId, serviceClient, software);
 

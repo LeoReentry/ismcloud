@@ -39,7 +39,9 @@ namespace IsmIoTPortal
                 return;
             // Method to invoke
             var methodInvokation = new CloudToDeviceMethod("firmwareUpdate");
-
+            // Select next release if user wants to skip a version
+            if (release.Num - ismDevice.Software.Num > 1)
+                release = allReleases.First(r => r.Num == ismDevice.Software.Num + 1);
             // Method payload
             var payload = JsonConvert.SerializeObject(new
             {
