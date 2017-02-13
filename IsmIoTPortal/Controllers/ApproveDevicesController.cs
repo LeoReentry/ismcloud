@@ -63,7 +63,8 @@ namespace IsmIoTPortal.Controllers
                 DeviceId = newDevice.DeviceId,
                 HardwareId = newDevice.HardwareId,
                 SoftwareId = newDevice.ReleaseId,
-                LocationId = newDevice.LocationId
+                LocationId = newDevice.LocationId,
+                UpdateStatus = IsmIoTSettings.UpdateStatus.READY
             };
             // Add to DB
             db.IsmDevices.Add(device);

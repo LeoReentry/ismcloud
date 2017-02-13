@@ -19,6 +19,7 @@ namespace IsmIoTPortal
         public const string GET_DEVICE_STATE = "GetDeviceSettings";
         public const string SET_DEVICE_STATE = "SetDevicesettings";
         public const string UPDATE_DASHBOARD_CONTROLS = "UpdateDashboardControls";
+        public const string FIRMWARE_UPDATE_STATUS = "FirmwareUpdateStatus";
 
         // D2C Commands
         public const string D2C_COMMAND = "D2C_Command";

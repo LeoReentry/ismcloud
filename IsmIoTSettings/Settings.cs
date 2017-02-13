@@ -23,4 +23,10 @@ namespace IsmIoTSettings
 #endif
 
    }
+    public class UpdateStatus
+    {
+        public static string READY = "Ready to receive updates";
+        public static string ERROR = "Error during last firmware update";
+        public static string PROCESSING = "Executing firmware update";
+    }
 }

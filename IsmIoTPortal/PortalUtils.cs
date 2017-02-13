@@ -52,7 +52,13 @@ namespace IsmIoTPortal
             if (response.Status != 200)
             {
                 // Handle errors
+                ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.ERROR;
             }
+            else
+            {
+                ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.PROCESSING;
+            }
+            db.SaveChanges();
         }
 
         /// <summary>
