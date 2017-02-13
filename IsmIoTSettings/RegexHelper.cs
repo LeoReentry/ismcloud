@@ -27,9 +27,11 @@ namespace IsmIoTSettings
         /// <summary>
         /// This regex tests a software name for validity.
         /// (.+)- Checks the prefix
-        /// (r\d\.\d\.\d) Checks the release number
-        /// -(.+) Checks the suffix
+        /// r(\d+) Checks the release number
+        /// (-(.+))? Checks the suffix:
+        ///     (...)? makes the suffix optional
+        ///     -(.+) captures the suffix
         /// </summary>
-        public static Regex SoftwareName = new Regex(@"(.+)-r(\d\.\d\.\d)(-(.+))?");
+        public static Regex SoftwareName = new Regex(@"(.+)-r(\d+)(-(.+))?");
     }
 }

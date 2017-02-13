@@ -46,7 +46,6 @@ namespace IsmIoTPortal
                 blobUrl = release.Url,
                 fileName = release.Url.Split('/').Last()
             });
-
             methodInvokation.SetPayloadJson(payload);
             // Invoke method on device
             var response = await serviceClient.InvokeDeviceMethodAsync(device, methodInvokation).ConfigureAwait(false);
