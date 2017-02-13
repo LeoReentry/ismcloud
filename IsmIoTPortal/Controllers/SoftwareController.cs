@@ -101,30 +101,22 @@ namespace IsmIoTPortal.Controllers
                     // Get the group 
                     var prefix = m.Groups[1].Value;
                     var suffix = m.Groups[4].Value;
-                    var releaseNum = m.Groups[2].Value;
+                    var releaseNum = Int32.Parse(m.Groups[2].Value);
                     var softwareVersion = db.SoftwareVersions.FirstOrDefault(sv => sv.Prefix.Equals(prefix) && sv.Suffix.Equals(suffix));
                     // If we don't find a SoftwareVersion in database, create a new one
                     if (softwareVersion == null)
                     {
-                        if (!releaseNum.Equals("1.0.0"))
-                        {
-                            ViewBag.NameError = "A new software version must start with a release 1.0.0";
-                            return Task.Factory.StartNew<ActionResult>(
-                              () => {
-                                  return View("Create");
-                              });
-                        }
                         softwareVersion = new SoftwareVersion
                         {
                             Prefix = prefix,
                             Suffix = suffix,
                             // First release
-                            CurrentReleaseNum = new int[] { 1, 0, 0 }
+                            CurrentReleaseNum = 1
                         };
                         db.SoftwareVersions.Add(softwareVersion);
                     } else
                     {
-                        softwareVersion.CurrentReleaseNum = Array.ConvertAll(releaseNum.Split('.'), Int32.Parse);
+                        softwareVersion.CurrentReleaseNum = releaseNum;
                     }
                     // Add reference to SoftwareVersion to Release
                     release.SoftwareVersionId = softwareVersion.SoftwareVersionId;

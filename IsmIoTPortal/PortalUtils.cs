@@ -37,70 +37,20 @@ namespace IsmIoTPortal
             var ismDevice = db.IsmDevices.FirstOrDefault(d => d.DeviceId.Equals(device));
             if (ismDevice == null)
                 return;
-            var currentRelease = ismDevice.Software;
             // Method to invoke
             var methodInvokation = new CloudToDeviceMethod("firmwareUpdate");
 
-            // If we bump from version 0.3.0 to version 1.0.3, first install 1.0.0
-            while (currentRelease.ReleaseNum[MAJOR_VERSION] < release.ReleaseNum[MAJOR_VERSION])
+            // Method payload
+            var payload = JsonConvert.SerializeObject(new
             {
-                var nextRelease = allReleases.First(
-                    r => Enumerable.SequenceEqual(
-                        r.ReleaseNum,
-                        // Next major version, e.g. currentRelease == 1.4.0 => nextRelease == 2.0.0
-                        new int[] { currentRelease.ReleaseNum[MAJOR_VERSION] + 1, 0, 0 }
-                        ));
-                // Method payload
-                var payload = JsonConvert.SerializeObject(new
-                {
-                    blobUrl = nextRelease.Url,
-                    fileName = nextRelease.Url.Split('/').Last()
-                });
-                methodInvokation.SetPayloadJson(payload);
-                // Invoke method on device
-                var response = await serviceClient.InvokeDeviceMethodAsync(device, methodInvokation).ConfigureAwait(false);
-                currentRelease = nextRelease;
-                // TODO wait until device is finished
-            }
-            // Now the next minor version bump
-            if (currentRelease.ReleaseNum[MINOR_VERSION] < release.ReleaseNum[MINOR_VERSION])
-            {
-                var nextRelease = allReleases.First(
-                    r => Enumerable.SequenceEqual(
-                        r.ReleaseNum,
-                        // Next minor version, e.g. currentRelease == 1.4.3 => nextRelease == 1.5.0
-                        new int[] {
-                            currentRelease.ReleaseNum[MAJOR_VERSION],
-                            currentRelease.ReleaseNum[MINOR_VERSION] + 1,
-                            0 }
-                        ));
-                // Method payload
-                var payload = JsonConvert.SerializeObject(new
-                {
-                    blobUrl = nextRelease.Url,
-                    fileName = nextRelease.Url.Split('/').Last()
-                });
-                methodInvokation.SetPayloadJson(payload);
-                // Invoke method on device
-                var response = await serviceClient.InvokeDeviceMethodAsync(device, methodInvokation).ConfigureAwait(false);
-                currentRelease = nextRelease;
-                // TODO wait until device is finished
-            }
-            // Now the patch version
-            if (currentRelease.ReleaseNum[PATCH] < release.ReleaseNum[PATCH])
-            {
-                // Method payload
-                var payload = JsonConvert.SerializeObject(new
-                {
-                    blobUrl = release.Url,
-                    fileName = release.Url.Split('/').Last()
-                });
-                methodInvokation.SetPayloadJson(payload);
-                // Invoke method on device
-                var response = await serviceClient.InvokeDeviceMethodAsync(device, methodInvokation).ConfigureAwait(false);
-                // TODO wait until device is finished
+                blobUrl = release.Url,
+                fileName = release.Url.Split('/').Last()
+            });
 
-            }
+            methodInvokation.SetPayloadJson(payload);
+            // Invoke method on device
+            var response = await serviceClient.InvokeDeviceMethodAsync(device, methodInvokation).ConfigureAwait(false);
+            // TODO Wait until device is finished
         }
 
         /// <summary>
