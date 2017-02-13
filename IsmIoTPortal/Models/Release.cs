@@ -15,7 +15,7 @@ namespace IsmIoTPortal.Models
         public int SoftwareVersionId { get; set; }
         [ForeignKey("SoftwareVersionId")]
         public virtual SoftwareVersion SoftwareVersion { get; set; }
-        public int[] ReleaseNum { get; set; }
+        public int Num { get; set; }
         public string Url { get; set; }
         public string Status { get; set; }
         public string Checksum { get; set; }

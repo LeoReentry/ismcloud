@@ -422,6 +422,10 @@
     <Compile Include="Migrations\201702101117107_Change internal data mapping for SoftwareVersion.Designer.cs">
       <DependentUpon>201702101117107_Change internal data mapping for SoftwareVersion.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702130806411_Only one release number.cs" />
+    <Compile Include="Migrations\201702130806411_Only one release number.Designer.cs">
+      <DependentUpon>201702130806411_Only one release number.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -657,6 +661,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702101117107_Change internal data mapping for SoftwareVersion.resx">
       <DependentUpon>201702101117107_Change internal data mapping for SoftwareVersion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702130806411_Only one release number.resx">
+      <DependentUpon>201702130806411_Only one release number.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
