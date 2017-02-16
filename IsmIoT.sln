@@ -41,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FilamentDetection", "Filame
 		MatlabProjects\FilamentDetection\new_detectFilaments.m = MatlabProjects\FilamentDetection\new_detectFilaments.m
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Commands", "Commands\Commands.csproj", "{67038C1E-FFE4-4E45-A117-F040D320C64E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -213,6 +215,22 @@ Global
 		{1DA742A5-736C-466C-9E7E-AA0A7BAA7997}.Release|x64.Build.0 = Release|x64
 		{1DA742A5-736C-466C-9E7E-AA0A7BAA7997}.Release|x86.ActiveCfg = Release|Any CPU
 		{1DA742A5-736C-466C-9E7E-AA0A7BAA7997}.Release|x86.Build.0 = Release|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Debug|ARM.Build.0 = Debug|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Debug|x64.Build.0 = Debug|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Debug|x86.Build.0 = Debug|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Release|ARM.ActiveCfg = Release|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Release|ARM.Build.0 = Release|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Release|x64.ActiveCfg = Release|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Release|x64.Build.0 = Release|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Release|x86.ActiveCfg = Release|Any CPU
+		{67038C1E-FFE4-4E45-A117-F040D320C64E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

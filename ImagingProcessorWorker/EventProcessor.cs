@@ -18,6 +18,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.WindowsAzure;
+using Commands;
 
 namespace ImagingProcessorWorker
 {
@@ -125,8 +126,8 @@ namespace ImagingProcessorWorker
 
                 foreach (EventData eventData in messages)
                 {
-                    // PRV || DAT
-                    if (eventData.Properties.ContainsKey("messageType") && eventData.Properties.ContainsKey("DeviceId") && ((string)eventData.Properties["messageType"] == IsmIoTPortal.CommandType.D2C_COMMAND))
+                    // This case shows the new planed convention. Use EventType as Key and CommandType as Value
+                    if (eventData.Properties.ContainsKey(Commands.EventType.D2C_COMMAND) && ((string)eventData.Properties[Commands.EventType.D2C_COMMAND] == Commands.CommandType.CAPTURE_UPLOADED))
                     {
                         string serializedDeviceState = Encoding.UTF8.GetString(eventData.GetBytes());
                         DeviceState DeviceState = JsonConvert.DeserializeObject<DeviceState>(serializedDeviceState);

@@ -158,6 +158,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Commands\Commands.csproj">
+      <Project>{67038c1e-ffe4-4e45-a117-f040d320c64e}</Project>
+      <Name>Commands</Name>
+    </ProjectReference>
     <ProjectReference Include="..\IsmIoTPortal\IsmIoTPortal.csproj">
       <Project>{78a46301-06cd-4be3-995b-a6a4c11bb26f}</Project>
       <Name>IsmIoTPortal</Name>
