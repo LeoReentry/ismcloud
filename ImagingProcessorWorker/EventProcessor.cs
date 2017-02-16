@@ -130,15 +130,15 @@ namespace ImagingProcessorWorker
                     if (eventData.Properties.ContainsKey(Commands.EventType.D2C_COMMAND) && ((string)eventData.Properties[Commands.EventType.D2C_COMMAND] == Commands.CommandType.CAPTURE_UPLOADED))
                     {
                         string serializedDeviceState = Encoding.UTF8.GetString(eventData.GetBytes());
-                        DeviceState DeviceState = JsonConvert.DeserializeObject<DeviceState>(serializedDeviceState);
-                        Task.Factory.StartNew(() => ProcessImage(DeviceState));
+                        DeviceSettings DeviceSettings = JsonConvert.DeserializeObject<DeviceSettings>(serializedDeviceState);
+                        Task.Factory.StartNew(() => ProcessImage(DeviceSettings));
                     }
                     // UPDATE_DASHBOARD_CONTROLS
                     else if (eventData.Properties.ContainsKey(IsmIoTPortal.CommandType.D2C_COMMAND) && (string)eventData.Properties[IsmIoTPortal.CommandType.D2C_COMMAND] == IsmIoTPortal.CommandType.UPDATE_DASHBOARD_CONTROLS)
                     {
-                        string serializedDeviceState = Encoding.UTF8.GetString(eventData.GetBytes());
-                        DeviceState DeviceState = JsonConvert.DeserializeObject<DeviceState>(serializedDeviceState);
-                        Task.Factory.StartNew(() => UpdateDashboardDeviceStateControls(DeviceState));
+                        string serializedDeviceSettings = Encoding.UTF8.GetString(eventData.GetBytes());
+                        DeviceSettings DeviceSettings = JsonConvert.DeserializeObject<DeviceSettings>(serializedDeviceSettings);
+                        Task.Factory.StartNew(() => UpdateDashboardDeviceStateControls(DeviceSettings));
                     }
                     else if (eventData.Properties.ContainsKey(IsmIoTPortal.CommandType.D2C_COMMAND) && (string)eventData.Properties[IsmIoTPortal.CommandType.D2C_COMMAND] == IsmIoTPortal.CommandType.FIRMWARE_UPDATE_STATUS)
                     {
@@ -184,14 +184,14 @@ namespace ImagingProcessorWorker
                 this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > UpdateFirmwareUpdateStatus Info: Update Log: {1} <br>", DateTime.Now.ToString(), updateState.Log)));
             }
         }
-        private void UpdateDashboardDeviceStateControls(DeviceState DeviceState)
+        private void UpdateDashboardDeviceStateControls(DeviceSettings DeviceSettings)
         {
             try
             {
 
                 // Send message to queue for dashboard controls update
                 //    
-                var queueMessage = new BrokeredMessage(DeviceState);
+                var queueMessage = new BrokeredMessage(DeviceSettings);
                 queueMessage.Label = IsmIoTPortal.CommandType.UPDATE_DASHBOARD_CONTROLS; // BrokeredMessage.Label reicht aus um Nachrichtentyp festzulegen
                 queueClient.SendAsync(queueMessage).Wait();
 
@@ -238,18 +238,18 @@ namespace ImagingProcessorWorker
             return blob.Uri + blob.GetSharedAccessSignature(policy);
         }
 
-        private void ProcessImage(DeviceState DeviceState)
+        private void ProcessImage(DeviceSettings DeviceSettings)
         {
             try
             {
                 //
                 MWArray[] argsIn = new MWArray[6];
-                argsIn[0] = GetBlobSasUri(DeviceState.CurrentCaptureName); // Path / Uri of the image (with Shared Access Signature for MATLAB)
-                argsIn[1] = DeviceState.VarianceThreshold; //var_thresh = 0.0025; % variance threshold
-                argsIn[2] = DeviceState.DistanceMapThreshold; //dist_thresh = 8.5; % distance - map threshold
-                argsIn[3] = DeviceState.RGThreshold; //RG_thresh = 3.75; % R.R.G.threshold
-                argsIn[4] = DeviceState.RestrictedFillingThreshold; //fill_area = 4; % Restricted filling threshold
-                argsIn[5] = DeviceState.DilateValue; // dilate_value = 16; % Size of square SE used for dilation of dist.- map mask
+                argsIn[0] = GetBlobSasUri(DeviceSettings.CurrentCaptureUri); // Path / Uri of the image (with Shared Access Signature for MATLAB)
+                argsIn[1] = DeviceSettings.VarianceThreshold; //var_thresh = 0.0025; % variance threshold
+                argsIn[2] = DeviceSettings.DistanceMapThreshold; //dist_thresh = 8.5; % distance - map threshold
+                argsIn[3] = DeviceSettings.RGThreshold; //RG_thresh = 3.75; % R.R.G.threshold
+                argsIn[4] = DeviceSettings.RestrictedFillingThreshold; //fill_area = 4; % Restricted filling threshold
+                argsIn[5] = DeviceSettings.DilateValue; // dilate_value = 16; % Size of square SE used for dilation of dist.- map mask
 
                 MWArray[] argsOut = new MWArray[3]; // [TEFL, real_length, img_colored]
                 FilamentDetection filamentDetection = new FilamentDetection();
@@ -304,10 +304,10 @@ namespace ImagingProcessorWorker
                     /*
                         IsmDeviceId ist Foreign-Key von FilamentData zu IsmDevice
                     */
-                    int id = db.IsmDevices.Where(d => d.DeviceId == DeviceState.DeviceId).First().IsmDeviceId;
+                    int id = db.IsmDevices.Where(d => d.DeviceId == DeviceSettings.DeviceId).First().IsmDeviceId;
 
                     IsmIoTPortal.Models.FilamentData fildata = new IsmIoTPortal.Models.FilamentData(fc, fl, id, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10,
-                        DeviceState.DeviceId, DeviceState.CurrentCaptureName, blob.Name);
+                        DeviceSettings.DeviceId, DeviceSettings.CurrentCaptureUri, blob.Name);
 
                     // 1.) Sende in Queue für DashboardBroker
                     // FilamentData ist [DataContract], somit sind die Objekte mit DataContractSerializer serialisierbar
@@ -315,7 +315,7 @@ namespace ImagingProcessorWorker
                     queueMessage.Label = IsmIoTPortal.CommandType.PRV; // BrokeredMessage.Label reicht aus um Nachrichtentyp festzulegen
 
                     // CapturePeriod als Information für DashboardBroker mitsenden.
-                    queueMessage.Properties.Add(new KeyValuePair<string, object>("capturePeriod", DeviceState.CapturePeriod));
+                    queueMessage.Properties.Add(new KeyValuePair<string, object>("capturePeriod", DeviceSettings.CapturePeriod));
 
                     queueClient.SendAsync(queueMessage).Wait();
 
@@ -329,7 +329,7 @@ namespace ImagingProcessorWorker
                     */
 
                     // 2.) Bei DAT sende die Daten in EventHub, bei PRV nicht
-                    if (DeviceState.State == IsmIoTPortal.DeviceStates.RUN_STATE)
+                    if (DeviceSettings.StateName == IsmIoTPortal.DeviceStates.RUN_STATE)
                     {
                         ForwaredFilamentDataToEventHub(fildata);
                     }

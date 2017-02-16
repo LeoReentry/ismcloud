@@ -51,11 +51,11 @@ namespace IsmIoTPortal.Controllers
 
 
         // Device State Setzen
-        private static async Task C2DSetDeviceStateAsync(string deviceId, DeviceState deviceState)
+        private static async Task C2DSetDeviceStateAsync(string deviceId, DeviceSettings deviceSettings)
         {
             // Durch View veränderter DeviceState in Message Body packen
-            string serializedDeviceState = JsonConvert.SerializeObject(deviceState);
-            var commandMessage = new Message(Encoding.ASCII.GetBytes(serializedDeviceState));
+            string serializedDeviceSettings = JsonConvert.SerializeObject(deviceSettings);
+            var commandMessage = new Message(Encoding.ASCII.GetBytes(serializedDeviceSettings));
 
             commandMessage.Properties["C2D_Command"] = CommandType.SET_DEVICE_STATE;
 
@@ -95,10 +95,10 @@ namespace IsmIoTPortal.Controllers
                 return RedirectToAction("Index");
 
             // Load page
-            DeviceState deviceState = new DeviceState();
-            deviceState.DeviceId = deviceId;
+            DeviceSettings deviceSettings = new DeviceSettings();
+            deviceSettings.DeviceId = deviceId;
             //await C2DGetDeviceStateAsync(DeviceId);
-            return View(deviceState);
+            return View(deviceSettings);
         }
 
         // POST: IsmDevices/Dashboard/<DeviceState>
@@ -106,21 +106,21 @@ namespace IsmIoTPortal.Controllers
         // Malicious attacks with additional form data can not be successful
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Dashboard([Bind(Include = "DeviceId,VarianceThreshold,DistanceMapThreshold,RGThreshold,RestrictedFillingThreshold,DilateValue,CapturePeriod")]DeviceState deviceState)
+        public async Task<ActionResult> Dashboard([Bind(Include = "DeviceId,VarianceThreshold,DistanceMapThreshold,RGThreshold,RestrictedFillingThreshold,DilateValue,CapturePeriod")]DeviceSettings deviceSettings)
         {
             // Check Device ID against a whitelist of values to prevent XSS
-            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(deviceState.DeviceId))
+            if (!IsmIoTSettings.RegexHelper.Text.IsMatch(deviceSettings.DeviceId))
                 return HttpNotFound();
 
             // If device doesn't exist, redirect to index
             // The rest of the user input is sanitized by parsing the value to numbers
-            if (await registryManager.GetDeviceAsync(deviceState.DeviceId) == null)
+            if (await registryManager.GetDeviceAsync(deviceSettings.DeviceId) == null)
                 return RedirectToAction("Index");
 
             // C2D Message die dem Device einen durch die Controls veränderten DeviceState mitteilt
-            await C2DSetDeviceStateAsync(deviceState.DeviceId, deviceState);
+            await C2DSetDeviceStateAsync(deviceSettings.DeviceId, deviceSettings);
             //ModelState.Clear();
-            return View(deviceState);
+            return View(deviceSettings);
         }
 
         private static async Task<string> AddDeviceAsync(string deviceId)

@@ -171,12 +171,12 @@ namespace DashboardBrokerWorker
                         break;
                     // UPDATE_DASHBOARD_CONTROLS: Update the Control Elements in Dashboard with the Values from the Device
                     case CommandType.UPDATE_DASHBOARD_CONTROLS:
-                        DeviceState deviceState = message.GetBody<DeviceState>();
+                        DeviceSettings deviceSettings = message.GetBody<DeviceSettings>();
 
                         //Sende Values der Controls mit SignalR and Dashboard
-                        signalRHelper.ValuesForDashboardControlsTask(deviceState.DeviceId, deviceState.CapturePeriod,
-                            deviceState.VarianceThreshold, deviceState.DistanceMapThreshold, deviceState.RGThreshold,
-                            deviceState.RestrictedFillingThreshold, deviceState.DilateValue).ContinueWith(t => { }, cancellationToken);
+                        signalRHelper.ValuesForDashboardControlsTask(deviceSettings.DeviceId, (int)deviceSettings.CapturePeriod,
+                            deviceSettings.VarianceThreshold, deviceSettings.DistanceMapThreshold, deviceSettings.RGThreshold,
+                            deviceSettings.RestrictedFillingThreshold, deviceSettings.DilateValue).ContinueWith(t => { }, cancellationToken);
 
                         //message.Complete();
                         break;

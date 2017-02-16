@@ -438,8 +438,8 @@
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\DateTimeInterval.cs" />
+    <Compile Include="Models\DeviceSettings.cs" />
     <Compile Include="Models\UpdateState.cs" />
-    <Compile Include="Models\DeviceState.cs" />
     <Compile Include="Models\FilamentData.cs" />
     <Compile Include="Models\Hardware.cs" />
     <Compile Include="Models\ImagingProcessorWorkerInstance.cs" />
