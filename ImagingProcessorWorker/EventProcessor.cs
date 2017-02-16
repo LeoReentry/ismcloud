@@ -244,7 +244,9 @@ namespace ImagingProcessorWorker
             {
                 //
                 MWArray[] argsIn = new MWArray[6];
-                argsIn[0] = GetBlobSasUri(DeviceSettings.CurrentCaptureUri); // Path / Uri of the image (with Shared Access Signature for MATLAB)
+                string uri = DeviceSettings.CurrentCaptureUri;
+                string blobname = uri.Substring((uri.LastIndexOf("/") + 1), uri.Length - (uri.LastIndexOf("/") + 1));
+                argsIn[0] = GetBlobSasUri(blobname); // Path / Uri of the image (with Shared Access Signature for MATLAB)            
                 argsIn[1] = DeviceSettings.VarianceThreshold; //var_thresh = 0.0025; % variance threshold
                 argsIn[2] = DeviceSettings.DistanceMapThreshold; //dist_thresh = 8.5; % distance - map threshold
                 argsIn[3] = DeviceSettings.RGThreshold; //RG_thresh = 3.75; % R.R.G.threshold
