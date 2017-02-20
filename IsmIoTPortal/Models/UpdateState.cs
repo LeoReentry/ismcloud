@@ -19,5 +19,9 @@ namespace IsmIoTPortal.Models
         public string FwUpdateStatus { get; set; }
         [DataMember]
         public string Log { get; set; }
+        [DataMember]
+        public string Message { get; set; }
+        [DataMember]
+        public string Version { get; set; }
     }
 }
