@@ -24,6 +24,7 @@ namespace IsmIoTPortal.Models
         public virtual List<Command> Commands { get; set; }
         public string UpdateStatus { get; set; }
         public string UpdateMessage { get; set; }
+        [DataType(DataType.MultilineText)]
         public string UpdateLog { get; set; }
     }
 }

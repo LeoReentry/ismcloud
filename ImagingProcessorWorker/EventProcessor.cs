@@ -191,6 +191,8 @@ namespace ImagingProcessorWorker
                     db.SaveChanges();
                     return;
                 }
+                device.UpdateMessage = updateState.Message;
+                device.UpdateLog = updateState.Log;
                 device.SoftwareId = release.SoftwareId;
                 db.SaveChanges();
                 this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > UpdateFirmwareUpdateStatus Info: Update Log: {1} <br>", DateTime.Now.ToString(), updateState.Log)));
