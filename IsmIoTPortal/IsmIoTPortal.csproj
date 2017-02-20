@@ -599,6 +599,7 @@
     <Content Include="Views\ApproveDevices\Index.cshtml" />
     <Content Include="Views\Account\Unauthorized.cshtml" />
     <Content Include="Views\Software\Rollout.cshtml" />
+    <Content Include="Views\IsmDevices\Log.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
