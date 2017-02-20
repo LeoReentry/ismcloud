@@ -32,6 +32,6 @@ namespace IsmIoTSettings
         ///     (...)? makes the suffix optional
         ///     -(.+) captures the suffix
         /// </summary>
-        public static Regex SoftwareName = new Regex(@"(.+)-r(\d+)(-(.+))?");
+        public static Regex SoftwareName = new Regex(@"([\w\d_]+)-r(\d+)(-([\w\d_]+))?");
     }
 }

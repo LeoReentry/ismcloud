@@ -434,6 +434,14 @@
     <Compile Include="Migrations\201702131440059_New model.Designer.cs">
       <DependentUpon>201702131440059_New model.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702201233566_UpdateState Model changed.cs" />
+    <Compile Include="Migrations\201702201233566_UpdateState Model changed.Designer.cs">
+      <DependentUpon>201702201233566_UpdateState Model changed.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201702201439172_Add message and log to device model.cs" />
+    <Compile Include="Migrations\201702201439172_Add message and log to device model.Designer.cs">
+      <DependentUpon>201702201439172_Add message and log to device model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -591,6 +599,7 @@
     <Content Include="Views\ApproveDevices\Index.cshtml" />
     <Content Include="Views\Account\Unauthorized.cshtml" />
     <Content Include="Views\Software\Rollout.cshtml" />
+    <Content Include="Views\IsmDevices\Log.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -679,6 +688,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702131440059_New model.resx">
       <DependentUpon>201702131440059_New model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702201233566_UpdateState Model changed.resx">
+      <DependentUpon>201702201233566_UpdateState Model changed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702201439172_Add message and log to device model.resx">
+      <DependentUpon>201702201439172_Add message and log to device model.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

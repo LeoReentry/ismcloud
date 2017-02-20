@@ -145,6 +145,21 @@ namespace IsmIoTPortal.Controllers
             return View(ismDevice);
         }
 
+        // GET: IsmDevices/Log/5
+        public ActionResult Log(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            IsmDevice ismDevice = db.IsmDevices.Find(id);
+            if (ismDevice == null)
+            {
+                return HttpNotFound();
+            }
+            return View(ismDevice);
+        }
+
 
         // GET: IsmDevices/Edit/5
         public ActionResult Edit(int? id)

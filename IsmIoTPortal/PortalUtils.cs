@@ -46,7 +46,8 @@ namespace IsmIoTPortal
             var payload = JsonConvert.SerializeObject(new
             {
                 blobUrl = release.Url,
-                fileName = release.Url.Split('/').Last()
+                fileName = release.Url.Split('/').Last(),
+                version = release.Name
             });
             methodInvokation.SetPayloadJson(payload);
             // Invoke method on device
