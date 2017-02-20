@@ -244,8 +244,7 @@ namespace ImagingProcessorWorker
             {
                 //
                 MWArray[] argsIn = new MWArray[6];
-                string uri = DeviceSettings.CurrentCaptureUri;
-                string blobname = uri.Substring((uri.LastIndexOf("/") + 1), uri.Length - (uri.LastIndexOf("/") + 1));
+                string blobname = DeviceSettings.CurrentCaptureName;
                 argsIn[0] = GetBlobSasUri(blobname); // Path / Uri of the image (with Shared Access Signature for MATLAB)            
                 argsIn[1] = DeviceSettings.VarianceThreshold; //var_thresh = 0.0025; % variance threshold
                 argsIn[2] = DeviceSettings.DistanceMapThreshold; //dist_thresh = 8.5; % distance - map threshold
@@ -309,7 +308,7 @@ namespace ImagingProcessorWorker
                     int id = db.IsmDevices.Where(d => d.DeviceId == DeviceSettings.DeviceId).First().IsmDeviceId;
 
                     IsmIoTPortal.Models.FilamentData fildata = new IsmIoTPortal.Models.FilamentData(fc, fl, id, h1, h2, h3, h4, h5, h6, h7, h8, h9, h10,
-                        DeviceSettings.DeviceId, DeviceSettings.CurrentCaptureUri, blob.Name);
+                        DeviceSettings.DeviceId, DeviceSettings.CurrentCaptureName, blob.Name);
 
                     // 1.) Sende in Queue für DashboardBroker
                     // FilamentData ist [DataContract], somit sind die Objekte mit DataContractSerializer serialisierbar
