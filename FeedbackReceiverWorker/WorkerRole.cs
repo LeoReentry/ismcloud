@@ -61,6 +61,8 @@ namespace FeedbackReceiverWorker
                 //
                 foreach (FeedbackRecord record in feedbackBatch.Records)
                 {
+                    // https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-messaging#cloud-to-device-messages
+                    // Message is always success, because MQTT clients can't reject C2D Messages
                     switch (record.OriginalMessageId.Substring(0, 3)) // Substring(0, 3) is the MessageIdPrefix
                     {
                         // CMD
