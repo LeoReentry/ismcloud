@@ -438,6 +438,10 @@
     <Compile Include="Migrations\201702201233566_UpdateState Model changed.Designer.cs">
       <DependentUpon>201702201233566_UpdateState Model changed.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702201439172_Add message and log to device model.cs" />
+    <Compile Include="Migrations\201702201439172_Add message and log to device model.Designer.cs">
+      <DependentUpon>201702201439172_Add message and log to device model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\Contact.cs" />
@@ -686,6 +690,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702201233566_UpdateState Model changed.resx">
       <DependentUpon>201702201233566_UpdateState Model changed.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702201439172_Add message and log to device model.resx">
+      <DependentUpon>201702201439172_Add message and log to device model.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

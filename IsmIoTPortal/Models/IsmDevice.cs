@@ -23,5 +23,7 @@ namespace IsmIoTPortal.Models
         public virtual Hardware Hardware { get; set; }
         public virtual List<Command> Commands { get; set; }
         public string UpdateStatus { get; set; }
+        public string UpdateMessage { get; set; }
+        public string UpdateLog { get; set; }
     }
 }
