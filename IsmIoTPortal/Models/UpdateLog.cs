@@ -14,7 +14,7 @@ namespace IsmIoTPortal.Models
         public int IsmDeviceId { get; set; }
         [ForeignKey("IsmDeviceId")]
         public virtual IsmDevice IsmDevice { get; set; }
-        public int ReleaseId { get; set; }
+        public int? ReleaseId { get; set; }
         [ForeignKey("ReleaseId")]
         public virtual Release Release { get; set; }
 
