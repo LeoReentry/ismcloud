@@ -444,6 +444,7 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
+    <Compile Include="Models\UpdateLog.cs" />
     <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\DateTimeInterval.cs" />
     <Compile Include="Models\UpdateState.cs" />
