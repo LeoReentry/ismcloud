@@ -40,10 +40,10 @@
                 Update
             </th>
         </tr>
-        @* Items that have older software versions *@
+        @* Items that have older software versions or are on a different SoftwareVersion may be updated *@
         @foreach (var item in Model.Devices)
         {
-            if (item.Software.Date < Model.Software.Date)
+            if (item.Software.Date < Model.Software.Date || item.Software.SoftwareVersionId != Model.Software.SoftwareVersionId)
             {
                 <tr>
                     <td>
@@ -63,7 +63,7 @@
                 </tr>
             }
         }
-        @* Items with the same software version *@
+        @* Items with the same Release may never be updated *@
         @foreach (var item in Model.Software.IsmDevices)
         {
             <tr bgcolor="#BBBBBB">
@@ -81,10 +81,10 @@
                 </td>
             </tr>
         }
-        @* Items with newer software versions *@
+        @* Items with newer software versions may not be updated if they are from the same SoftwareVersion *@
         @foreach (var item in Model.Devices)
         {
-            if (item.Software.Date > Model.Software.Date)
+            if (item.Software.Date > Model.Software.Date && item.Software.SoftwareVersionId == Model.Software.SoftwareVersionId)
             {
                 <tr bgcolor="#999999">
                     <td>
