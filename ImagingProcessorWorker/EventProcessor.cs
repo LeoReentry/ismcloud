@@ -151,7 +151,7 @@ namespace ImagingProcessorWorker
             {
                 //...
             }
-
+            context.CheckpointAsync();
             if (this.checkpointStopWatch.Elapsed > TimeSpan.FromMinutes(5))
             {
                 lock (this)
