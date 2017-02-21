@@ -60,7 +60,8 @@
             @Html.DisplayNameFor(model => model.UpdateLog)
         </dt>
         <dd>
-            @Html.ActionLink("View Log", "Log", new { id = Model.IsmDeviceId })
+            @Html.ActionLink("View last Log", "Log", new { id = Model.IsmDeviceId }) |
+            @Html.ActionLink("View all Logs", "Logs", new { id = Model.IsmDeviceId })
         </dd>
 
     </dl>
