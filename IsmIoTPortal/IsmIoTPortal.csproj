@@ -605,6 +605,8 @@
     <Content Include="Views\Account\Unauthorized.cshtml" />
     <Content Include="Views\Software\Rollout.cshtml" />
     <Content Include="Views\IsmDevices\Log.cshtml" />
+    <Content Include="Views\IsmDevices\Logs.cshtml" />
+    <Content Include="Views\IsmDevices\Showlog.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

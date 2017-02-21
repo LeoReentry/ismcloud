@@ -160,6 +160,36 @@ namespace IsmIoTPortal.Controllers
             return View(ismDevice);
         }
 
+        // GET: IsmDevices/Log/5
+        public ActionResult Logs(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            IsmDevice ismDevice = db.IsmDevices.Find(id);
+            if (ismDevice == null)
+            {
+                return HttpNotFound();
+            }
+            return View(ismDevice);
+        }
+
+        // GET: IsmDevices/Log/5
+        public ActionResult Showlog(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var updateLog = db.UpdateLogs.Find(id);
+            if (updateLog == null)
+            {
+                return HttpNotFound();
+            }
+            return View(updateLog);
+        }
+
 
         // GET: IsmDevices/Edit/5
         public ActionResult Edit(int? id)
