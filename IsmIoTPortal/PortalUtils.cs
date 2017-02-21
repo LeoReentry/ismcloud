@@ -33,15 +33,12 @@ namespace IsmIoTPortal
         /// <returns></returns>
         public static async Task RolloutFwUpdateAsync(string device, ServiceClient serviceClient, Release release)
         {
-            var allReleases = db.Releases.ToList();
+            // Get reference to device
             var ismDevice = db.IsmDevices.FirstOrDefault(d => d.DeviceId.Equals(device));
             if (ismDevice == null)
                 return;
             // Method to invoke
             var methodInvokation = new CloudToDeviceMethod("firmwareUpdate");
-            // Select next release if user wants to skip a version
-            if (release.Num - ismDevice.Software.Num > 1)
-                release = allReleases.First(r => r.Num == ismDevice.Software.Num + 1);
             // Method payload
             var payload = JsonConvert.SerializeObject(new
             {
