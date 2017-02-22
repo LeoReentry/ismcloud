@@ -446,6 +446,10 @@
     <Compile Include="Migrations\201702211351047_New UpdateLogs Model.Designer.cs">
       <DependentUpon>201702211351047_New UpdateLogs Model.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201702221243480_Remove Log message string from Device Model.cs" />
+    <Compile Include="Migrations\201702221243480_Remove Log message string from Device Model.Designer.cs">
+      <DependentUpon>201702221243480_Remove Log message string from Device Model.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Command.cs" />
     <Compile Include="Models\UpdateLog.cs" />
@@ -703,6 +707,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201702211351047_New UpdateLogs Model.resx">
       <DependentUpon>201702211351047_New UpdateLogs Model.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201702221243480_Remove Log message string from Device Model.resx">
+      <DependentUpon>201702221243480_Remove Log message string from Device Model.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
