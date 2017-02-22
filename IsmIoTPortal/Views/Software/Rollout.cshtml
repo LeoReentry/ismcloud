@@ -57,7 +57,9 @@
                     </td>
                     <td>
                         <input type="checkbox" class="checkbox" name="selectedDevices" value="@item.IsmDeviceId"
-                               @(item.UpdateStatus == IsmIoTSettings.UpdateStatus.PROCESSING ? "disabled=\"\"" : "checked=\"\" ")
+                               @((item.UpdateStatus == IsmIoTSettings.UpdateStatus.PROCESSING ||
+                                item.UpdateStatus == IsmIoTSettings.UpdateStatus.REQUESTED)
+                                 ? "disabled=\"\"" : "checked=\"\" ")
                                />                        
                     </td>
                 </tr>
