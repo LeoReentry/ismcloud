@@ -15,6 +15,7 @@ using SharpCompress.Writers;
 using SharpCompress.Common;
 using Microsoft.Azure.Devices;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace IsmIoTPortal
 {
@@ -38,7 +39,7 @@ namespace IsmIoTPortal
             if (ismDevice == null)
                 return;
             // Method to invoke
-            var methodInvokation = new CloudToDeviceMethod("firmwareUpdate");
+            var methodInvokation = new CloudToDeviceMethod("firmwareUpdate") { ResponseTimeout = TimeSpan.FromSeconds(30) };
             // Method payload
             var payload = JsonConvert.SerializeObject(new
             {
