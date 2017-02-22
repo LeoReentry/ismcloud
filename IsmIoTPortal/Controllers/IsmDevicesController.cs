@@ -143,24 +143,9 @@ namespace IsmIoTPortal.Controllers
                 return HttpNotFound();
             }
             return View(ismDevice);
-        }
+        }        
 
-        // GET: IsmDevices/Log/5
-        public ActionResult Log(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            IsmDevice ismDevice = db.IsmDevices.Find(id);
-            if (ismDevice == null)
-            {
-                return HttpNotFound();
-            }
-            return View(ismDevice);
-        }
-
-        // GET: IsmDevices/Log/5
+        // GET: IsmDevices/Logs/5
         public ActionResult Logs(int? id)
         {
             if (id == null)
@@ -176,7 +161,7 @@ namespace IsmIoTPortal.Controllers
         }
 
         // GET: IsmDevices/Log/5
-        public ActionResult Showlog(int? id)
+        public ActionResult Log(int? id)
         {
             if (id == null)
             {
