@@ -27,8 +27,8 @@ namespace IsmIoTSettings
     {
         public static string READY = "Ready to receive updates";
         public static string ERROR = "Error during last firmware update";
-        public static string CANCELATION = "Device not reachable during last Firmware Update request";
-        public static string OFFLINE = "Device not found. Probably offline.";
+        public static string CANCELATION = "Firmware Update timed out";
+        public static string OFFLINE = "Device not found. Probably offline";
         public static string REQUESTED = "Firmware Update requested";
         public static string PROCESSING = "Executing firmware update";
     }

@@ -76,9 +76,16 @@ namespace IsmIoTPortal.Controllers
             foreach (IsmDevice d in ismDevices)
             {
                 Device device = await registryManager.GetDeviceAsync(d.DeviceId);
+                // If a device was offline during last firmware update and is now online again,
+                // Update the UpdateStatus to ready.
+                if (d.UpdateStatus == IsmIoTSettings.UpdateStatus.OFFLINE && device.ConnectionState == DeviceConnectionState.Connected)
+                {
+                    d.UpdateStatus = IsmIoTSettings.UpdateStatus.READY;
+                }
                 devices.Add(d.DeviceId, device);
             }
             ViewBag.DeviceList = devices;
+            db.SaveChanges();
 
             return View(ismDevices.ToList());
         }

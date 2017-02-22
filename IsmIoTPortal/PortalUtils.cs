@@ -53,9 +53,9 @@ namespace IsmIoTPortal
             ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.REQUESTED;
             db.SaveChanges();
             // Invoke method on device
-            // Cancellation after 30 seconds
+            // Cancellation after 45 seconds
             var cts = new CancellationTokenSource();
-            cts.CancelAfter(30000);
+            cts.CancelAfter(45000);
             var methodTask = serviceClient.InvokeDeviceMethodAsync(device, methodInvokation, cts.Token);
             //var timeoutTask = Task.WhenAny(methodTask, Task.Delay(3000));
             try
