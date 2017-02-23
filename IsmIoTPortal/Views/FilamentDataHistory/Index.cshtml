@@ -27,19 +27,15 @@
 
 <hr />
 
-<h3>Average filament count</h3>
-<canvas id="test" style="width: 400; height: 400;"></canvas>
+<h3>Average filament count and length</h3>
 <div style="width: 90%; height: 400px; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
     <canvas id="fcchart" style="width: 100%; height: 100%;"></canvas>
 </div>
 
 <hr />
-
-<h3>Average filament length (µm)</h3>
-<div style="width: 90%; height: 400px; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
-    <canvas id="flchart" style="width: 100%; height: 100%;"></canvas>
-</div>
-
+<hr />
+<hr />
+<hr />
 <hr />
 
 <h3>Histogram accumulated</h3>
@@ -82,7 +78,49 @@
             var fill = false;
             var bg_color = 'rgba(255, 99, 132, 0.2)';
             var fc_color = "rgba(75,192,192.1)";
-            var fl_color = "rgba(192,75,192.1)";
+            var fl_color = "rgba(192,75,75)";
+            var fc_grid = "rgba(75,192,192,0.3)";
+            var fl_grid = "rgba(192,75,75,0.3)";
+
+
+            var options = {
+                scales: {
+                    yAxes: [{
+                        type: 'linear',
+                        position: 'left',
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Filament Count",
+                            fontColor: fc_color,
+                        },
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        gridLines: {
+                            display: true,
+                            color: fc_grid
+                        },
+                        id: "fc-axis"
+                    },
+                    {
+                        type: 'linear',
+                        position: 'right',
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Filament Length (µm)",
+                            fontColor: fl_color,
+                        },
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        gridLines: {
+                            display: true,
+                            color: fl_grid
+                        },
+                        id: "fl-axis"
+                    }]
+                }
+            }
             // Data chart
             var alldata = {
                 labels: [
@@ -103,6 +141,7 @@
                     borderColor: fc_color,
                     borderWidth: lineWidth,
                     fill: fill,
+                    yAxisID: 'fc-axis',
                     data: [
                         @for (int i = 0; i < Model.List.Count; i++)
                         {
@@ -123,6 +162,7 @@
                     borderColor: fl_color,
                     borderWidth: lineWidth,
                     fill: fill,
+                    yAxisID: 'fl-axis',
                     data: [
                         @for (int i = 0; i < Model.List.Count; i++)
                         {
@@ -135,84 +175,6 @@
                             </text>
                         }
                     ]
-                }]
-            }
-
-            // FC Chart
-            var fcdata = {
-                labels: [
-                    @for (int i = 0; i < Model.List.Count; i++)
-                    {
-                        <text> "@(Model.List.ElementAt(i).Time)" </text>
-                        if (i < Model.List.Count - 1)
-                        {
-                            //<text>,</text>
-                            @(",")
-                        }
-                    }
-                ],
-                datasets: [{
-                    label: '@Model.DeviceId',
-                    lineTension: 0.1,
-                    fill: false,
-                    data: [
-                            @for (int i = 0; i < Model.List.Count; i++)
-                            {
-
-                                <text>@Model.List.ElementAt(i).FC.ToString().Replace(",", ".")
-                                @if(i < Model.List.Count - 1)
-                                {
-                                    @(",")
-                                }
-                                </text>
-                            }
-                    ],
-                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                    borderColor: "rgba(75,192,192.1)",
-                    borderWidth: 2,
-                }]
-            }
-
-
-            // FL Chart
-            var fldata = {
-                labels: [
-                    @for (int i = 0; i < Model.List.Count; i++)
-                    {
-                        <text> "@(Model.List.ElementAt(i).Time)" </text>
-                        if (i < Model.List.Count - 1)
-                        {
-                            //<text>,</text>
-                            @(",")
-                        }
-                    }
-                ],
-                datasets: [{
-                    label: '@Model.DeviceId',
-                    lineTension: 0.1,
-                    fill: false,
-                    data: [
-                        @for (int i = 0; i < Model.List.Count; i++)
-                        {
-
-                            <text>@Model.List.ElementAt(i).FL.ToString().Replace(",", ".")
-                            @if(i < Model.List.Count - 1)
-                            {
-                                @(",")
-                            }
-                            </text>
-                        }
-                    ],
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: "rgba(75,192,192.1)",
-                    borderWidth: 2,
                 }]
             }
 
@@ -269,33 +231,12 @@
                 ]
             }
 
-            var options = {
-                scales: {
-                    yAxes: [{
-                        type: 'linear',
-                        scaleLabel: {
-                            display: true,
-                            labelString: "Filament Count"
-                        },
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }]
-                }
-            }
 
-            // FC Chart
+            // FC and FL chart
             var ctx = $("#fcchart");
             var chart = new Chart(ctx, {
                 type: 'line',
                 data: alldata,
-                options: options
-            });
-            // FL Chart
-            ctx = $("#flchart");
-            chart = new Chart(ctx, {
-                type: 'line',
-                data: fldata,
                 options: options
             });
 
