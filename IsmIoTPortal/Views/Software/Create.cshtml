@@ -5,7 +5,14 @@
 }
 
 <h2>Create new Release</h2>
-
+<div>
+    <button id="exp-button" class="btn btn-default">Hide explanation</button>
+</div>
+<div id="explanation">
+    <p>Firmware Update Releases have the following structure: </p>
+    <p>You specify a Firmware Update file (*.tar) in the BLOB storage. It must be in the container 'fwupdates'. This web app will download the tarfile, sign it and reupload it as [Release Name].tar.gz and delete the original tarfile. Please remember that a script called [Release Name].sh must be placed in the GitHub repository ism-device-scripts inside the folder fw-settings-scripts.</p>
+    <p>The tarfile you upload must contain a script called apply.sh. The device will run this script to apply the firmware update. Usually, you should use the program build-firmware-udpate supplied with the device. It will automatically compress all non-hidden files in the home folder into a file called 'home.tgz'. Then it will generate a script 'apply.sh' that unpacks said file onto the home folder and then applies the settings. Both files will be placed in a file called 'update.tar' that can be used here.</p>
+</div>
 <h3>Version Builder</h3>
 <div class="row form-inline">
     <div id="automaticselector">
@@ -87,6 +94,16 @@
     @Scripts.Render("~/bundles/jqueryval")
         <script>
         $(document).ready(function () {
+            $('#exp-button').on('click', () => {
+                if ($('#exp-button').text() == "Hide explanation") {
+                    $('#explanation').hide()
+                    $('#exp-button').text("Show explanation")
+                } else {
+                    $('#explanation').show()
+                    $('#exp-button').text("Hide explanation")
+
+                }
+            });
             $('#sw-prefix').on('input', changeInput)
             $('#sw-release').on('input', changeInput)
             $('#sw-suffix').on('input', changeInput)

@@ -1,0 +1,20 @@
+﻿@model IsmIoTPortal.Models.UpdateLog
+
+@{
+    ViewBag.Title = "Firmware Update Log";
+}
+
+<h2>Firmware Update Log for @Model.IsmDevice.DeviceId</h2>
+
+<div>
+    <h5>@Model.IsmDevice.DeviceId was updated to @Model.Release.Name on @Model.Date</h5>
+    <hr />
+    <div style="font-family:monospace; white-space: pre-line">
+        @Model.LogData
+    </div>
+    <hr />
+</div>
+<p>
+    @Html.ActionLink("Device Details", "Details", new { id = Model.IsmDeviceId }) |
+    @Html.ActionLink("All Device Logs", "Logs", new { id = Model.IsmDeviceId })
+</p>

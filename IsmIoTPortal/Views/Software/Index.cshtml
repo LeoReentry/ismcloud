@@ -26,31 +26,101 @@
         <th>
             @Html.DisplayNameFor(model => model.Checksum)
         </th>
-        <th></th>
+        <th>
+            Actions
+        </th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Author)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Status)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Checksum)
-        </td>
-        <td>
-            @Html.ActionLink("Roll out", "Rollout", new { id = item.SoftwareId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.SoftwareId })
-        </td>
-    </tr>
-}
+@{
+    var softwareversions = Model.GroupBy(r => r.SoftwareVersion).Select(g => g.First()).Select(g => g.SoftwareVersion);
+    var groupQuery = Model.GroupBy(r => r.SoftwareVersion);
+    foreach (var group in groupQuery)
+    {
+        var sw = group.First().SoftwareVersion;
+        var name = sw.Prefix + "-r" + sw.CurrentReleaseNum + ((sw.Suffix != "") ? ("-" + sw.Suffix) : "");
+        var release = Model.First(r => r.Name.Equals(name));
+        <tr>
+            <th colspan="2">
+                Software Version:
+            </th>
+            <th colspan="2">
+                <span style="font-size:20px">@release.Name</span>
+            </th>
+            <th colspan="2">
+                <button id="@release.Name" class="btn btn-default">Show all Releases of this Software Version</button>
+            </th>
+        </tr>
+        <tr class="success">
+            <td style="border-top: none !important;">
+                @release.Name
+            </td>
+            <td style="border-top: none !important;">
+                @release.Author
+            </td>
+            <td style="border-top: none !important;">
+                @release.Status
+            </td>
+            <td style="border-top: none !important;">
+                @release.Date
+            </td>
+            <td style="border-top: none !important;">
+                @release.Checksum
+            </td>
+            <td style="border-top: none !important;">
+                @Html.ActionLink("Roll out latest Release", "Rollout", new { id = release.SoftwareId }) |
+                @Html.ActionLink("Details", "Details", new { id = release.SoftwareId })
+            </td>
+        </tr>
+
+        var releases = Model.Where(r => r.SoftwareVersionId == release.SoftwareVersionId && !r.Name.Equals(release.Name));
+        foreach (var rel in releases)
+        {
+            <tr class="@release.Name danger" hidden>
+                <td>
+                    @rel.Name
+                </td>
+                <td>
+                    @rel.Author
+                </td>
+                <td>
+                    @rel.Status
+                </td>
+                <td>
+                    @rel.Date
+                </td>
+                <td>
+                    @rel.Checksum
+                </td>
+                <td>
+                    @Html.ActionLink(release.Name.Equals(rel.Name) ? "Roll out latest Release" : "Roll out", "Rollout", new { id = rel.SoftwareId }) |
+                    @Html.ActionLink("Details", "Details", new { id = rel.SoftwareId })
+                </td>
+            </tr>
+
+            }
+
+        }
+    }
 
 </table>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            var softwareversions = @Html.Raw(Json.Encode(Model.GroupBy(r => r.SoftwareVersion).Select(g => g.First()).Select(g => g.SoftwareVersion)));
+            for (var i = 0; i < softwareversions.length; i++) {
+                var name = softwareversions[i].Prefix + '-r' + softwareversions[i].CurrentReleaseNum;
+                name += softwareversions[i].Suffix ? '-' + softwareversions[i].Suffix : '';
+                $('#' + name).on('click', {name: name}, toggleRow)
+            }
+        });
+
+        function toggleRow(event) {
+            $('.' + event.data.name).toggle({duration: 500})
+        }
+
+    </script>
+}
+
+

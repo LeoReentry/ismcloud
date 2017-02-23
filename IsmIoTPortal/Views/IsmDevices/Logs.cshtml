@@ -1,0 +1,42 @@
+﻿@model IsmIoTPortal.Models.IsmDevice
+
+@{
+    ViewBag.Title = "Firmware Update Log";
+}
+
+<h2>Firmware Update Logs for @Model.DeviceId</h2>
+
+
+<table class="table">
+    <tr>
+        <th>
+            Version
+        </th>
+        <th>
+            Date
+        </th>
+        <th>
+            Action
+        </th>
+    </tr>
+    @{ 
+        foreach(var updateLog in Model.UpdateLogs)
+        {
+            <tr>
+                <td>
+                    @updateLog.Release.Name
+                </td>
+                <td>
+                    @updateLog.Date
+                </td>
+                <td>
+                    @Html.ActionLink("Show log", "Log", new { id = updateLog.UpdateLogId })
+                </td>
+            </tr>
+        }
+    }
+
+    </table>
+<p>
+    @Html.ActionLink("Back to Details", "Details", new { id = Model.IsmDeviceId })
+</p>

@@ -61,7 +61,7 @@
             <br/>(latest @n commands)
         </th>
         <th>
-            Provisioning Status
+            Status / Connection
         </th>
         <th>
             Update Status
@@ -121,7 +121,8 @@
             }
         </td>
         <td>
-             @((ViewBag.DeviceList as Dictionary<string, Microsoft.Azure.Devices.Device>)[item.DeviceId].Status)
+             @((ViewBag.DeviceList as Dictionary<string, Microsoft.Azure.Devices.Device>)[item.DeviceId].Status) / 
+            @((ViewBag.DeviceList as Dictionary<string, Microsoft.Azure.Devices.Device>)[item.DeviceId].ConnectionState)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.UpdateStatus)

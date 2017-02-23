@@ -18,5 +18,6 @@ namespace IsmIoTPortal.Models
         public DbSet<Command> Commands { get; set; }
         public DbSet<FilamentData> FilamentData { get; set; }
         public DbSet<ImagingProcessorWorkerInstance> ImagingProcessorWorkerInstances { get; set; }
+        public DbSet<UpdateLog> UpdateLogs { get; set; }
     }
 }

@@ -15,6 +15,8 @@ using SharpCompress.Writers;
 using SharpCompress.Common;
 using Microsoft.Azure.Devices;
 using Newtonsoft.Json;
+using System.Threading;
+using Microsoft.Azure.Devices.Common.Exceptions;
 
 namespace IsmIoTPortal
 {
@@ -33,34 +35,54 @@ namespace IsmIoTPortal
         /// <returns></returns>
         public static async Task RolloutFwUpdateAsync(string device, ServiceClient serviceClient, Release release)
         {
-            var allReleases = db.Releases.ToList();
+            // Get reference to device
             var ismDevice = db.IsmDevices.FirstOrDefault(d => d.DeviceId.Equals(device));
             if (ismDevice == null)
                 return;
             // Method to invoke
-            var methodInvokation = new CloudToDeviceMethod("firmwareUpdate");
-            // Select next release if user wants to skip a version
-            if (release.Num - ismDevice.Software.Num > 1)
-                release = allReleases.First(r => r.Num == ismDevice.Software.Num + 1);
+            var methodInvokation = new CloudToDeviceMethod("firmwareUpdate") { ResponseTimeout = TimeSpan.FromSeconds(30) };
             // Method payload
             var payload = JsonConvert.SerializeObject(new
             {
                 blobUrl = release.Url,
-                fileName = release.Url.Split('/').Last()
+                fileName = release.Url.Split('/').Last(),
+                version = release.Name
             });
             methodInvokation.SetPayloadJson(payload);
+
+            ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.REQUESTED;
+            db.SaveChanges();
             // Invoke method on device
-            var response = await serviceClient.InvokeDeviceMethodAsync(device, methodInvokation).ConfigureAwait(false);
-            if (response.Status != 200)
+            // Cancellation after 45 seconds
+            var cts = new CancellationTokenSource();
+            cts.CancelAfter(45000);
+            var methodTask = serviceClient.InvokeDeviceMethodAsync(device, methodInvokation, cts.Token);
+            //var timeoutTask = Task.WhenAny(methodTask, Task.Delay(3000));
+            try
             {
-                // Handle errors
+                var response = await methodTask.ConfigureAwait(false);
+                if (response.Status != 200)
+                    // Handle errors
+                    ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.ERROR;
+                else
+                    ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.PROCESSING;
+            }
+            catch (OperationCanceledException e)
+            {
+                ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.CANCELATION;
+            }
+            catch (DeviceNotFoundException e)
+            {
+                ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.OFFLINE;
+            }
+            catch(Exception e)
+            {
                 ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.ERROR;
             }
-            else
+            finally
             {
-                ismDevice.UpdateStatus = IsmIoTSettings.UpdateStatus.PROCESSING;
+                db.SaveChanges();
             }
-            db.SaveChanges();
         }
 
         /// <summary>

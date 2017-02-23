@@ -152,7 +152,7 @@ namespace ImagingProcessorWorker
             {
                 //...
             }
-
+            context.CheckpointAsync();
             if (this.checkpointStopWatch.Elapsed > TimeSpan.FromMinutes(5))
             {
                 lock (this)
@@ -170,6 +170,7 @@ namespace ImagingProcessorWorker
         {
             using (IsmIoTPortalContext db = new IsmIoTPortalContext())
             {
+                // Get reference to device
                 string deviceId = updateState.DeviceId;
                 var device = db.IsmDevices.FirstOrDefault(d => d.DeviceId.Equals(deviceId));
                 if (device == null)
@@ -177,8 +178,29 @@ namespace ImagingProcessorWorker
                     this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > UpdateFirmwareUpdateStatus Error: DeviceId unknown.<br>", DateTime.Now.ToString())));
                     return;
                 }
-                device.UpdateStatus = IsmIoTSettings.UpdateStatus.READY;
-                var release = db.Releases.First(r => r.Num == device.Software.Num + 1);
+                // Check update status for error
+                if (updateState.FwUpdateStatus.Contains("Error"))
+                    device.UpdateStatus = updateState.FwUpdateStatus;
+                else
+                    device.UpdateStatus = IsmIoTSettings.UpdateStatus.READY;
+
+                // Get reference to release
+                var release = db.Releases.FirstOrDefault(r => r.Name.Equals(updateState.Version));
+                if (release == null)
+                {
+                    this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > UpdateFirmwareUpdateStatus Error: Release unknown.<br>", DateTime.Now.ToString())));
+                    db.SaveChanges();
+                    return;
+                }
+                device.UpdateMessage = updateState.Message;
+                var updateLog = new UpdateLog
+                {
+                    IsmDeviceId = device.IsmDeviceId,
+                    ReleaseId = release.SoftwareId,
+                    LogData = updateState.Log,
+                    Date = DateTime.Now
+                };
+                db.UpdateLogs.Add(updateLog);
                 device.SoftwareId = release.SoftwareId;
                 db.SaveChanges();
                 this.OnLogMessage(new LogMessageEventArgs(String.Format("{0} > UpdateFirmwareUpdateStatus Info: Update Log: {1} <br>", DateTime.Now.ToString(), updateState.Log)));

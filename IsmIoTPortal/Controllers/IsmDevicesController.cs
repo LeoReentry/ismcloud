@@ -76,9 +76,16 @@ namespace IsmIoTPortal.Controllers
             foreach (IsmDevice d in ismDevices)
             {
                 Device device = await registryManager.GetDeviceAsync(d.DeviceId);
+                // If a device was offline during last firmware update and is now online again,
+                // Update the UpdateStatus to ready.
+                if (d.UpdateStatus == IsmIoTSettings.UpdateStatus.OFFLINE && device.ConnectionState == DeviceConnectionState.Connected)
+                {
+                    d.UpdateStatus = IsmIoTSettings.UpdateStatus.READY;
+                }
                 devices.Add(d.DeviceId, device);
             }
             ViewBag.DeviceList = devices;
+            db.SaveChanges();
 
             return View(ismDevices.ToList());
         }
@@ -143,6 +150,36 @@ namespace IsmIoTPortal.Controllers
                 return HttpNotFound();
             }
             return View(ismDevice);
+        }        
+
+        // GET: IsmDevices/Logs/5
+        public ActionResult Logs(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            IsmDevice ismDevice = db.IsmDevices.Find(id);
+            if (ismDevice == null)
+            {
+                return HttpNotFound();
+            }
+            return View(ismDevice);
+        }
+
+        // GET: IsmDevices/Log/5
+        public ActionResult Log(int? id)
+        {
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+            var updateLog = db.UpdateLogs.Find(id);
+            if (updateLog == null)
+            {
+                return HttpNotFound();
+            }
+            return View(updateLog);
         }
 
 

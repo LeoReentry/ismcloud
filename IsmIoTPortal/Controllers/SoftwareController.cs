@@ -214,7 +214,7 @@ namespace IsmIoTPortal.Controllers
         // finden Sie unter http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Rollout(int? id, int[] selectedDevices)
+        public async Task<ActionResult> Rollout(int? id, int[] selectedDevices)
         {
             if (id == null)
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -228,10 +228,10 @@ namespace IsmIoTPortal.Controllers
                 if (device == null)
                     continue;
                 // If the device's software version is newer than the one we'll be updating to, skip this device
-                if (device.Software.Date > software.Date)
+                if (device.Software.Date > software.Date && device.Software.SoftwareVersionId == software.SoftwareVersionId)
                     continue;
                 // If device is currently doing a firmware update, wait
-                if (device.UpdateStatus == IsmIoTSettings.UpdateStatus.PROCESSING)
+                if (device.UpdateStatus == IsmIoTSettings.UpdateStatus.PROCESSING || device.UpdateStatus == IsmIoTSettings.UpdateStatus.REQUESTED)
                     continue;
                 // Roll out update async
                 PortalUtils.RolloutFwUpdateAsync(device.DeviceId, serviceClient, software);

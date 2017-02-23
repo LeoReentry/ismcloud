@@ -42,6 +42,41 @@
             @Html.DisplayFor(model => model.DeviceId)
         </dd>
 
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdateStatus)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UpdateStatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdateMessage)
+        </dt>
+        <dd>
+            @Html.DisplayFor(model => model.UpdateMessage)
+        </dd>
+
+        <dt>
+            Update Logs
+        </dt>
+        <dd>
+            @{
+                var log = Model.UpdateLogs.OrderByDescending(l => l.Date).FirstOrDefault();
+                if (log == null)
+                {
+                    <span>@Model.DeviceId doesn't have any update logs</span>
+                }
+                else
+                {
+                    <span>
+                        @Html.ActionLink("View last Log", "Log", new { id = log.UpdateLogId }) |
+                        @Html.ActionLink("View all Logs", "Logs", new { id = Model.IsmDeviceId })
+                    </span>
+                }
+
+            }
+        </dd>
+
     </dl>
 </div>
 <p>
