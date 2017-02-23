@@ -44,6 +44,10 @@
 </div>
 
 <hr />
+<hr />
+<hr />
+<hr />
+<hr />
 
 <h3>Table of average fc and fl</h3>
 <div style="width: 90%; height: 400px; overflow-y: auto; margin-left: auto; margin-right: auto; margin-top:40px;">
@@ -146,57 +150,34 @@
                 }]
             }
 
+            var hist_bg_color = 'rgba(75, 192, 192, 0.2)';
+            var hist_color = "rgba(75,192,192.1, 1)";
             // Histogram Chart
             var histdata = {
-                labels: [
-                    @for (int i = 10; i <= 100; i += 10)
-            {
-                <text>"@(i)"</text>
-                if (i < 100)
-                {
-                    <text>,</text>
-                }
-            }
-                ],
-                datasets: [
-                    {
-                        //strokeColor: "#228B22",
-                        fillColor: "#800080",
+                labels: [ @Html.Raw(string.Join(",", @Enumerable.Range(1, 10).Select(n => { return $"'{n * 10}'"; })))],
+                datasets: [{
+                        label: 'Filament Number',
+                        backgroundColor: hist_bg_color,
+                        borderColor: hist_color,
+                        borderWidth: lineWidth,
                         data: [
-                            @{
-                            int? h1, h2, h3, h4, h5, h6, h7, h8, h9, h10; // akkumulierte Histogram Werte
-            h1 = h2 = h3 = h4 = h5 = h6 = h7 = h8 = h9 = h10 = 0;
-            foreach (var item in Model.List)
-            {
-                h1 += item.H1;
-                h2 += item.H2;
-                h3 += item.H3;
-                h4 += item.H4;
-                h5 += item.H5;
-                h6 += item.H6;
-                h7 += item.H7;
-                h8 += item.H8;
-                h9 += item.H9;
-                h10 += item.H10;
-            }
-        }
-
-                                @if (Model.List.Count > 0)
-        {
-            @(h1)@(",")
-            @(h2)@(",")
-            @(h3)@(",")
-            @(h4)@(",")
-            @(h5)@(",")
-            @(h6)@(",")
-            @(h7)@(",")
-            @(h8)@(",")
-            @(h9)@(",")
-            @(h10)
-        }
+                            @(
+                                string.Join(",", new List<int?>
+                                {
+                                    Model.List.Sum(f => f.H1),
+                                    Model.List.Sum(f => f.H2),
+                                    Model.List.Sum(f => f.H3),
+                                    Model.List.Sum(f => f.H4),
+                                    Model.List.Sum(f => f.H5),
+                                    Model.List.Sum(f => f.H6),
+                                    Model.List.Sum(f => f.H7),
+                                    Model.List.Sum(f => f.H8),
+                                    Model.List.Sum(f => f.H9),
+                                    Model.List.Sum(f => f.H10)
+                                })
+                            )
                         ]
-                    }
-                ]
+                    }]
             }
 
 
@@ -209,8 +190,11 @@
             });
 
             // Histogram Chart
-            ctx = $("#histchart").get(0).getContext("2d");
-            chart = new Chart(ctx).Bar(histdata);
+            ctx = $("#histchart");
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: histdata
+            });
 
             // Date Time Picker
             var t;
