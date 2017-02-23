@@ -159,7 +159,8 @@ namespace IsmIoTPortal.Controllers
                     }
                     catch (Exception e)
                     {
-
+                        release.Status = "Error during initialization";
+                        db.SaveChanges();
                     }
                 }
             }
