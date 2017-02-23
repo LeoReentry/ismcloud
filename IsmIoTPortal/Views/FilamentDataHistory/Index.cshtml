@@ -123,17 +123,7 @@
             }
             // Data chart
             var alldata = {
-                labels: [
-                    @for (int i = 0; i < Model.List.Count; i++)
-                    {
-                        <text> "@(Model.List.ElementAt(i).Time)" </text>
-                        if (i < Model.List.Count - 1)
-                        {
-                            //<text>,</text>
-                            @(",")
-                        }
-                    }
-                ],
+                labels: [@Html.Raw(string.Join(",", Model.List.Select(f => { return $"'{f.Time}'"; })))],
                 datasets: [{
                     label: 'Filament Count',
                     lineTension: lineTension,
@@ -142,18 +132,7 @@
                     borderWidth: lineWidth,
                     fill: fill,
                     yAxisID: 'fc-axis',
-                    data: [
-                        @for (int i = 0; i < Model.List.Count; i++)
-                        {
-
-                            <text>@Model.List.ElementAt(i).FC.ToString().Replace(",", ".")
-                            @if(i < Model.List.Count - 1)
-                            {
-                                @(",")
-                            }
-                            </text>
-                        }
-                    ]
+                    data: [@string.Join(",", Model.List.Select(f => f.FC))]
                 },
                 {
                     label: 'Filament Length',
@@ -163,18 +142,7 @@
                     borderWidth: lineWidth,
                     fill: fill,
                     yAxisID: 'fl-axis',
-                    data: [
-                        @for (int i = 0; i < Model.List.Count; i++)
-                        {
-
-                            <text>@Model.List.ElementAt(i).FL.ToString().Replace(",", ".")
-                            @if(i < Model.List.Count - 1)
-                            {
-                                @(",")
-                            }
-                            </text>
-                        }
-                    ]
+                    data: [@string.Join(",", Model.List.Select(f => f.FL))]
                 }]
             }
 
