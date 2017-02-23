@@ -80,9 +80,9 @@
             var lineWidth = 2;
             var lineTension = 0.1;
             var fill = false;
-            var bg_color = 'rgba(255, 99, 132, 0.2)';
-            var fc_color = "rgba(75,192,192.1)";
-            var fl_color = "rgba(192,75,75)";
+            var bg_color = 'rgba(255, 99, 132, 0)';
+            var fc_color = "rgb(75,192,192)";
+            var fl_color = "rgb(192,75,75)";
             var fc_grid = "rgba(75,192,192,0.3)";
             var fl_grid = "rgba(192,75,75,0.3)";
 
@@ -151,7 +151,7 @@
             }
 
             var hist_bg_color = 'rgba(75, 192, 192, 0.2)';
-            var hist_color = "rgba(75,192,192.1, 1)";
+            var hist_color = "rgba(75,192,192, 1)";
             // Histogram Chart
             var histdata = {
                 labels: [ @Html.Raw(string.Join(",", @Enumerable.Range(1, 10).Select(n => { return $"'{n * 10}'"; })))],
