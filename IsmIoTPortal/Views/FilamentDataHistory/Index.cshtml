@@ -28,6 +28,7 @@
 <hr />
 
 <h3>Average filament count</h3>
+<canvas id="test" style="width: 400; height: 400;"></canvas>
 <div style="width: 90%; height: 400px; margin-left: auto; margin-right: auto; margin-bottom: 20px;">
     <canvas id="fcchart" style="width: 100%; height: 100%;"></canvas>
 </div>
@@ -80,32 +81,42 @@
             var fcdata = {
                 labels: [
                     @for (int i = 0; i < Model.List.Count; i++)
-            {
-                <text> "@(Model.List.ElementAt(i).Time)" </text>
-                if (i < Model.List.Count - 1)
-                {
-                    //<text>,</text>
-                    @(",")
-                }
-            }
-                ],
-
-                datasets: [
                     {
-                        strokeColor: "#DC143C",
-                        data: [
-                            @for (int i = 0; i < Model.List.Count; i++)
-            {
-                
-                @Model.List.ElementAt(i).FC.ToString().Replace(",", ".");
-                if (i < Model.List.Count - 1)
-                {
-                    @(",")
-                }
-            }
-                        ]
+                        <text> "@(Model.List.ElementAt(i).Time)" </text>
+                        if (i < Model.List.Count - 1)
+                        {
+                            //<text>,</text>
+                            @(",")
+                        }
                     }
-                ]
+                ],
+                datasets: [{
+                    label: '@Model.DeviceId',
+                    lineTension: 0.1,
+                    fill: false,
+                    data: [
+                            @for (int i = 0; i < Model.List.Count; i++)
+                            {
+
+                                <text>@Model.List.ElementAt(i).FC.ToString().Replace(",", ".")
+                                @if(i < Model.List.Count - 1)
+                                {
+                                    @(",")
+                                }
+                                </text>
+                            }
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: "rgba(75,192,192.1)",
+                    borderWidth: 2,
+                }]
             }
 
 
@@ -113,33 +124,42 @@
             var fldata = {
                 labels: [
                     @for (int i = 0; i < Model.List.Count; i++)
-            {
-                <text> "@(Model.List.ElementAt(i).Time)" </text>
-                if (i < Model.List.Count - 1)
-                {
-                    //<text>,</text>
-                    @(",")
-                }
-            }
-                ],
-
-                datasets: [
+                    {
+                        <text> "@(Model.List.ElementAt(i).Time)" </text>
+                        if (i < Model.List.Count - 1)
                         {
-                            strokeColor: "#228B22",
-                            data: [
-                                @for (int i = 0; i < Model.List.Count; i++)
-        {
-
-            @Model.List.ElementAt(i).FL.ToString().Replace(",", ".");
-            if (i < Model.List.Count - 1)
-            {
-                @(",")
-            }
-        }
-                            ]
+                            //<text>,</text>
+                            @(",")
                         }
+                    }
+                ],
+                datasets: [{
+                    label: '@Model.DeviceId',
+                    lineTension: 0.1,
+                    fill: false,
+                    data: [
+                        @for (int i = 0; i < Model.List.Count; i++)
+                        {
 
-                ]
+                            <text>@Model.List.ElementAt(i).FL.ToString().Replace(",", ".")
+                            @if(i < Model.List.Count - 1)
+                            {
+                                @(",")
+                            }
+                            </text>
+                        }
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: "rgba(75,192,192.1)",
+                    borderWidth: 2,
+                }]
             }
 
             // Histogram Chart
@@ -195,18 +215,35 @@
                 ]
             }
 
-
             var options = {
-                bezierCurve: false,
-                datasetFill: false
+                scales: {
+                    yAxes: [{
+                        type: 'linear',
+                        scaleLabel: {
+                            display: true,
+                            labelString: "Filament Count"
+                        },
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
             }
 
             // FC Chart
-            var ctx = $("#fcchart").get(0).getContext("2d");
-            var chart = new Chart(ctx).Line(fcdata, options);
+            var ctx = $("#fcchart");
+            var chart = new Chart(ctx, {
+                type: 'line',
+                data: fcdata,
+                options: options
+            });
             // FL Chart
-            ctx = $("#flchart").get(0).getContext("2d");
-            chart = new Chart(ctx).Line(fldata, options);
+            ctx = $("#flchart");
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: fldata,
+                options: options
+            });
 
             // Histogram Chart
             ctx = $("#histchart").get(0).getContext("2d");
