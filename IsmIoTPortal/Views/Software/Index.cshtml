@@ -33,7 +33,7 @@
 
 @{
     var softwareversions = Model.GroupBy(r => r.SoftwareVersion).Select(g => g.First()).Select(g => g.SoftwareVersion);
-    var groupQuery = Model.GroupBy(r => r.SoftwareVersion);
+    var groupQuery = Model.OrderBy(r => r.SoftwareVersion.Prefix).GroupBy(r => r.SoftwareVersion);
     foreach (var group in groupQuery)
     {
         var sw = group.First().SoftwareVersion;
