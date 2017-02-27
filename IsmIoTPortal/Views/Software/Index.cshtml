@@ -47,7 +47,7 @@
                 <span style="font-size:20px">@release.Name</span>
             </th>
             <th colspan="2">
-                <button id="@release.Name" class="btn btn-default">Show all Releases of this Software Version</button>
+                <button id="@release.Name" class="btn btn-default @(sw.CurrentReleaseNum == 1 ? "disabled" : "" )">Show all Releases of this Software Version</button>
             </th>
         </tr>
         <tr class="success">
@@ -63,7 +63,7 @@
             <td style="border-top: none !important;">
                 @release.Date
             </td>
-            <td style="border-top: none !important;">
+            <td style="border-top: none !important; font-family:monospace;">
                 @release.Checksum
             </td>
             <td style="border-top: none !important;">
@@ -88,7 +88,7 @@
                 <td>
                     @rel.Date
                 </td>
-                <td>
+                <td style="font-family:monospace;">
                     @rel.Checksum
                 </td>
                 <td>
